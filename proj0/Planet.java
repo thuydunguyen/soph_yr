@@ -45,28 +45,26 @@ public double xxPos;
   		return (G*mass*p.mass)/(calcDistance(p)*calcDistance(p));}
 
 
-  	public double calcNetForceExertedByX(Planet p){
-  		return calcForceExertedBy(p)*(xdist(p)/calcDistance(p));}
+  	public double calcForceExertedByX(Planet p){
+  		return -calcForceExertedBy(p)*xdist(p)/calcDistance(p);}
 
-  	public double calcNetForceExertedByY(Planet p){
-  		return calcForceExertedBy(p)*(ydist(p)/calcDistance(p));}
+  	public double calcForceExertedByY(Planet p){
+  		return -calcForceExertedBy(p)*ydist(p)/calcDistance(p);}
 
   	public double calcNetForceExertedByX(Planet[] planets){
   		double t_force = 0;
   		double force;
   		for (int n=0; n<planets.length;n=n+1){
   		if (this.equals(planets[n])) {continue;}
-  		force = calcForceExertedBy(planets[n])*(xdist(planets[n])/calcDistance(planets[n]));
-  		t_force += force;}
+  		t_force += calcForceExertedByX(planets[n]);}
   		return t_force;}
 
   	public double calcNetForceExertedByY(Planet[] planets){
   		double t_force = 0;
   		double force;
-  		for (int n=0; n<planets.length;n++){
+  		for (int n=0; n<planets.length;n=n+1){
   		if (this.equals(planets[n])) {continue;}
-  		force = calcForceExertedBy(planets[n])*(ydist(planets[n])/calcDistance(planets[n]));
-  		t_force += force;}
+  		t_force += calcForceExertedByY(planets[n]);}
   		return t_force;}
 
  	}
