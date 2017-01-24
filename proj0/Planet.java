@@ -67,5 +67,15 @@ public double xxPos;
   		t_force += calcForceExertedByY(planets[n]);}
   		return t_force;}
 
+  	public void update(double dt, double fX, double fY) {
+  		double aX = fX/mass;
+  		double aY = fY/mass;
+  		xxVel += dt*aX;
+  		yyVel += dt*aY;
+  		xxPos += xxVel*dt;
+  		yyPos += yyVel*dt;
+  	} 
+
+
  	}
 
