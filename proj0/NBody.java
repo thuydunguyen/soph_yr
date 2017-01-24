@@ -25,7 +25,47 @@ public class NBody {
 		return list;}
 
 
+	public static void main(String[] args) {
+		double T = Double.parseDouble(args[0]);
+		double dt = Double.parseDouble(args[1]);
+		String filename = args[2];
+		double radius = readRadius(filename);
+		Planet[] planets = readPlanets(filename);
+		StdDraw.setScale(-radius, radius);
+		StdDraw.clear();
+		StdDraw.picture(0,0,"images/starfield.jpg");
+		for (int n=0; n < planets.length; n+=1) {
+			planets[n].draw();
+		}
 
+		int num_pl = planets.length;
+		for (int time = 0; time < T; time += dt) {
+			double[] xForces = new double[num_pl];
+			double[] yForces = new double[num_pl];
+			for (int i=0; i < num_pl; i+= 1) {
+				xForces[i] = planets[i].calcNetForceExertedByX(planets);
+				yForces[i] = planets[i].calcNetForceExertedByY(planets);
+				}
+			for (int j = 0; j < num_pl; j+= 1) {
+				planets[j].update(dt, xForces[j], yForces[j]);
+				}
+
+			StdDraw.picture(0,0,"images/starfield.jpg");
+			for (int n=0; n < planets.length; n+=1) {
+			planets[n].draw();
+				}
+			StdDraw.show(10);
+
+			}
+
+		StdOut.printf("%d\n", planets.length);
+		StdOut.printf("%.2e\n", radius);
+		for (int i = 0; i < planets.length; i++) {
+		StdOut.printf("%11.4e %11.4e %11.4e %11.4e %11.4e %12s\n",
+   		planets[i].xxPos, planets[i].yyPos, planets[i].xxVel, planets[i].yyVel, planets[i].mass, planets[i].imgFileName);	
+}		
+
+	}
 
 
 }
