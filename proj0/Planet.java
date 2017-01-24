@@ -5,6 +5,7 @@ public double xxPos;
 	public double yyVel;
 	public double mass;
 	public String imgFileName;
+	public double G = 6.67*Math.pow(10, -11);
 
 
 	public Planet(double xP, double yP, double xV,
@@ -28,4 +29,45 @@ public double xxPos;
     	imgFileName = p.imgFileName;
   		}
 
+  	public double xdist(Planet p) {
+  		return xxPos - p.xxPos;}
+
+  	public double ydist(Planet p) {
+  		return yyPos - p.yyPos;}
+  				
+
+  	public double calcDistance(Planet p) {
+  		return Math.sqrt((xdist(p) * xdist(p)) + (ydist(p) * ydist(p)));
+  	}
+
+
+  	public double calcForceExertedBy(Planet p) {
+  		return (G*mass*p.mass)/(calcDistance(p)*calcDistance(p));}
+
+
+  	public double calcNetForceExertedByX(Planet p){
+  		return calcForceExertedBy(p)*(xdist(p)/calcDistance(p));}
+
+  	public double calcNetForceExertedByY(Planet p){
+  		return calcForceExertedBy(p)*(ydist(p)/calcDistance(p));}
+
+  	public double calcNetForceExertedByX(Planet[] planets){
+  		double t_force = 0;
+  		double force;
+  		for (int n=0; n<planets.length;n=n+1){
+  		if (this.equals(planets[n])) {continue;}
+  		force = calcForceExertedBy(planets[n])*(xdist(planets[n])/calcDistance(planets[n]));
+  		t_force += force;}
+  		return t_force;}
+
+  	public double calcNetForceExertedByY(Planet[] planets){
+  		double t_force = 0;
+  		double force;
+  		for (int n=0; n<planets.length;n++){
+  		if (this.equals(planets[n])) {continue;}
+  		force = calcForceExertedBy(planets[n])*(ydist(planets[n])/calcDistance(planets[n]));
+  		t_force += force;}
+  		return t_force;}
+
  	}
+
