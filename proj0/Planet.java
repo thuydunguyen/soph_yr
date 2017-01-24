@@ -5,7 +5,7 @@ public double xxPos;
 	public double yyVel;
 	public double mass;
 	public String imgFileName;
-	public double G = 6.67*Math.pow(10, -11);
+	private double G = 6.67*Math.pow(10, -11);
 
 
 	public Planet(double xP, double yP, double xV,
@@ -29,10 +29,10 @@ public double xxPos;
     	imgFileName = p.imgFileName;
   		}
 
-  	public double xdist(Planet p) {
+  	private double xdist(Planet p) {
   		return xxPos - p.xxPos;}
 
-  	public double ydist(Planet p) {
+  	private double ydist(Planet p) {
   		return yyPos - p.yyPos;}
   				
 
