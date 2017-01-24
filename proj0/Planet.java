@@ -5,7 +5,7 @@ public double xxPos;
 	public double yyVel;
 	public double mass;
 	public String imgFileName;
-	private double G = 6.67*Math.pow(10, -11);
+	public double G = 6.67*Math.pow(10, -11);
 
 
 	public Planet(double xP, double yP, double xV,
