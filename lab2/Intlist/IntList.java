@@ -81,12 +81,14 @@ public class IntList {
 
     public static IntList dcatenate(IntList A, IntList B) {
         //TODO:  fill in method
+        if (A == null) {
+            A.rest = B;
+        }
+        else {
         IntList C = A;
         while (C.rest != null) {
             C = C.rest;}
-        C.rest = B;
-        if (A == null) {
-        	C = B;}
+        C.rest = B;}
         return A;
     }
 
