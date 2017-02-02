@@ -19,7 +19,7 @@ public class ArrayDeque<Item> {
         items = (Item[]) new Object[10];
         size = 0;
         NextFirst = 0;
-        NextLast = 0;
+        NextLast = 1;
     }
 
     private void resize(int nsize) {
@@ -37,9 +37,6 @@ public class ArrayDeque<Item> {
         if (size == items.length) {
             resize(items.length * 2);
         }
-        if (NextLast == NextFirst) {
-            NextFirst = nextMove(NextFirst, -1);
-        }
 
         items[NextFirst] = x;
         NextFirst = nextMove(NextFirst, -1);
@@ -52,9 +49,7 @@ public class ArrayDeque<Item> {
         if (size == items.length) {
             resize(items.length * 2);
         }
-        if (NextLast == NextFirst) {
-            NextLast = nextMove(NextLast, 1);
-        }
+
         items[NextLast] = x;
         NextLast = nextMove(NextLast, 1);
         size += 1;
