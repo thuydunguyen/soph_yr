@@ -83,6 +83,7 @@ public class LinkedListDeque<Item> {
         if (ghost.next == ghost) {
             last = ghost;
         }
+        ghost.next.prev = ghost;
         return f.item;
     }
 
