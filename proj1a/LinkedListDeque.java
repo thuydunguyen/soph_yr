@@ -84,8 +84,11 @@ public class LinkedListDeque<Item> {
 		size -= 1;
 		Listing f = ghost.next;
 		ghost.next = ghost.next.next;
+		if (ghost.next == ghost) {
+			last = ghost;}
 		return f.item;
 	}
+
 
 	public Item removeLast() {
 

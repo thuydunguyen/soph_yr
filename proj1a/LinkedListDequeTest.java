@@ -70,13 +70,24 @@ public class LinkedListDequeTest {
 		// should be empty 
 		boolean passed = checkEmpty(true, lld1.isEmpty());
 
-		lld1.addFirst(0);
-		// should not be empty 
-		passed = checkEmpty(false, lld1.isEmpty()) && passed;
+		lld1.addLast(0);
+		// should not be empty
 
-		lld1.removeLast();
+		lld1.removeFirst();
+
+		lld1.addLast(2);
+
+
+
+		System.out.println(lld1.removeFirst());
+
+
+		passed = true;
+
+
+
 		// should be empty 
-		passed = checkEmpty(true, lld1.isEmpty()) && passed;
+
 
 		printTestStatus(passed);
 		
