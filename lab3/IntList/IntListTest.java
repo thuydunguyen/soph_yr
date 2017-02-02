@@ -35,7 +35,7 @@ public class IntListTest {
 
         IntList K = IntList.list(null);
         IntList.reverse(K);
-        assertEquals(null, K);
+        assertEquals(IntList.list(null), K);
 
     }
 
