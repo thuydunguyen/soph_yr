@@ -26,7 +26,7 @@ public class ArrayDeque<Item> {
         Item[] a = (Item[]) new Object[nsize];
         System.arraycopy(items, 0, a, 0, size);
         items = a;
-        NextFirst = items.length -1;
+        NextFirst = items.length - 1;
         NextLast = size + 1;
 
     }
@@ -38,7 +38,8 @@ public class ArrayDeque<Item> {
             resize(items.length * 2);
         }
         if (NextLast == NextFirst) {
-            NextFirst = nextMove(NextFirst, -1);}
+            NextFirst = nextMove(NextFirst, -1);
+        }
 
         items[NextFirst] = x;
         NextFirst = nextMove(NextFirst, -1);
@@ -106,7 +107,7 @@ public class ArrayDeque<Item> {
         if (isEmpty()) {
             return null;
         }
-        NextFirst = nextMove(NextFirst,1);
+        NextFirst = nextMove(NextFirst, 1);
         items[NextFirst] = null;
         Item x = items[0];
         size -= 1;
@@ -119,7 +120,7 @@ public class ArrayDeque<Item> {
             return null;
         }
 
-        NextLast = nextMove(NextLast,-1);
+        NextLast = nextMove(NextLast, -1);
         if (NextLast < 0) {
             NextLast = items.length - 1;
         }
