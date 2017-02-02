@@ -82,9 +82,13 @@ public class ArrayDequeTest {
 		// should not be empty
 		passed = checkEmpty(false, lld1.isEmpty()) && passed;
 
+		lld1.addFirst(7);
+
 		lld1.removeLast();
+
+		lld1.printDeque();
 		// should be empty
-		passed = checkEmpty(true, lld1.isEmpty()) && passed;
+		passed = checkEmpty(false, lld1.isEmpty()) && passed;
 
 		printTestStatus(passed);
 		
