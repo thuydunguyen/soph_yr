@@ -61,7 +61,10 @@ public class LinkedListDeque<Item> {
 	public void printDeque() {
 		Listing p = first;
 		while (p != null){
-			System.out.print(p.item + " ");
+			if (p.next == null) {
+				System.out.println(p.item);}
+				else{
+					System.out.print(p.item + " ");}
 			p = p.next;}
 
 		}
