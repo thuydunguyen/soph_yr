@@ -1,157 +1,140 @@
 public class LinkedListDeque<Item> {
 
-    private class Listing {
-        public Item item;
-        public Listing next;
-        public Listing prev;
+	private class Listing {
+		public Item item;
+		public Listing next;
+		public Listing prev;
 
-        public Listing(Item i, Listing n) {
-            item = i;
-            next = n;
-        }
-    }
+		public Listing(Item i, Listing n, Listing p) {
+			item = i;
+			next = n;
+			prev = p;
+		}
+	}
 
-    private Listing ghost;
-    private int size;
-    private Listing last;
-    private Listing first;
-
-    public LinkedListDeque() {
-        Listing ghost = new Listing(null, null);
-        size = 0;
-    }
-
-    public LinkedListDeque(Item x) {
-        Listing ghost = new Listing(null, null);
-        ghost.next = new Listing(x, null);
-        first = ghost.next;
-        last = ghost.next;
-
-    }
+	private Listing ghost;
+	private int size;
+	private Listing last;
 
 
-    public void addFirst(Item item) {
-        size += 1;
-        Listing p = new Listing(item, first);
+	public LinkedListDeque() {
+		ghost = new Listing(null, null, null);
+		size = 0;
+		last = ghost;
+	}
 
-        if (first != null) {
-            first.prev = p;
-        }
+	public LinkedListDeque(Item x) {
+		Listing ghost = new Listing(null, null, null);
+		ghost.next = new Listing(x, ghost, ghost);
+		last = ghost.next;
 
-        first = p;
-
-        if (last == null) {
-            last = first;
-        }
-
-    }
+	}
 
 
+	public void addFirst(Item item) {
+		size += 1;
+		Listing p = new Listing(item, ghost.next, ghost);
+		ghost.next = p;
 
-    public void addLast(Item item) {
-        size += 1;
-        Listing p = new Listing(item, null);
+		if (last == ghost) {
+			last = p;
+		}
 
-        if (first == null) {
-            first = p;
-        }
-
-        p.prev = last;
-        last.next = p;
-        last = p;
-    }
+	}
 
 
-    public boolean isEmpty() {
-        return size == 0;}
-
-    public int size() {
-        return size;}
-
-    public void printDeque() {
-        Listing p = first;
-        while (p != null) {
-
-            if (p.next == null) {
-                System.out.println(p.item);
-            }
-
-                else {
-                    System.out.print(p.item + " ");
-                }
-
-            p = p.next;
-        }
-
-    }
+	public void addLast(Item item) {
+		size += 1;
+		Listing p = new Listing(item, ghost, last);
+		last.next = p;
+		last = p;
+	}
 
 
-    public Item removeFirst() {
+	public boolean isEmpty() {
+		return size == 0;
+	}
 
-        if (isEmpty()) {
-            return null;
-        }
+	public int size() {
+		return size;
+	}
 
-        size -= 1;
-        Listing f = first;
-        first = first.next;
-        return f.item;
-    }
+	public void printDeque() {
+		Listing p = ghost.next;
+		while (p != ghost) {
 
-    public Item removeLast() {
+			if (p.next == ghost) {
+				System.out.println(p.item);
+			} else {
+				System.out.print(p.item + " ");
+			}
 
-            if (isEmpty()) {
-                return null;
-            }
+			p = p.next;
+		}
 
-        size -= 1;
-        Listing l = last;
-        last = last.prev;
-        last.next = null;
-        return l.item;
-    }
+	}
 
 
+	public Item removeFirst() {
 
-    public Item get(int index) {
-        int count = 0;
-        Listing p = first;
+		if (isEmpty()) {
+			return null;
+		}
 
-        if (size < index) {
-            return null;
-        }
+		size -= 1;
+		Listing f = ghost.next;
+		ghost.next = ghost.next.next;
+		return f.item;
+	}
 
-        while (count != index) {
-            p = p.next;
-            count += 1;
-        }
+	public Item removeLast() {
 
-        return p.item;
-    }
+		if (isEmpty()) {
+			return null;
+		}
 
-
-
-    private Item getRhelper(int index, Listing p) {
-
-        if (index == 0) {
-            return p.item;
-        }
-
-        return getRhelper(index-1, p.next);
-    }
+		size -= 1;
+		Listing l = last;
+		last = last.prev;
+		last.next = ghost;
+		return l.item;
+	}
 
 
-    public Item getRecursive(int index) {
+	public Item get(int index) {
+		int count = 0;
+		Listing p = ghost.next;
 
-        if (size < index) {
-            return null;
-        }
+		if (size < index) {
+			return null;
+		}
 
-        return getRhelper(index, first);
-    }
+		while (count != index) {
+			p = p.next;
+			count += 1;
+		}
+
+		return p.item;
+	}
 
 
+	private Item getRhelper(int index, Listing p) {
+
+		if (index == 0) {
+			return p.item;
+		}
+
+		return getRhelper(index - 1, p.next);
+	}
 
 
+	public Item getRecursive(int index) {
+
+		if (size < index) {
+			return null;
+		}
+
+		return getRhelper(index, ghost.next);
+	}
 
 }
