@@ -21,6 +21,8 @@ public class LinkedListDeque<Item> {
 		ghost = new Listing(null, null, null);
 		size = 0;
 		last = ghost;
+		ghost.next = ghost;
+		ghost.prev = ghost;
 	}
 
 	public LinkedListDeque(Item x) {
@@ -34,6 +36,7 @@ public class LinkedListDeque<Item> {
 	public void addFirst(Item item) {
 		size += 1;
 		Listing p = new Listing(item, ghost.next, ghost);
+		ghost.next.prev = p;
 		ghost.next = p;
 
 		if (last == ghost) {

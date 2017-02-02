@@ -66,23 +66,24 @@ public class LinkedListDequeTest {
 		System.out.println("Running add/remove test.");
 
 		
-		LinkedListDeque<Integer> lld1 = new LinkedListDeque<Integer>();
-		// should be empty 
-		boolean passed = checkEmpty(true, lld1.isEmpty());
+		LinkedListDeque<Integer> k = new LinkedListDeque<Integer>();
+		// should be empty
+		boolean passed = checkEmpty(true, k.isEmpty());
 
-		lld1.addLast(0);
-		// should not be empty
-
-		lld1.removeFirst();
-
-		lld1.addLast(2);
-
-
-
-		System.out.println(lld1.removeFirst());
+		k.addFirst(0);
+		k.addLast(1);
+		k.addFirst(2);
+		k.removeLast();
+		k.addFirst(4);
+		k.removeFirst();
+		k.addFirst(6);
+		k.removeLast();
 
 
-		passed = true;
+
+
+
+		passed = k.getRecursive(0) == 6;
 
 
 
