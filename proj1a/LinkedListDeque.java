@@ -25,12 +25,6 @@ public class LinkedListDeque<Item> {
 		ghost.prev = ghost;
 	}
 
-	public LinkedListDeque(Item x) {
-		Listing ghost = new Listing(null, null, null);
-		ghost.next = new Listing(x, ghost, ghost);
-		last = ghost.next;
-
-	}
 
 
 	public void addFirst(Item item) {
