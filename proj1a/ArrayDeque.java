@@ -1,5 +1,5 @@
 public class ArrayDeque<Item> {
-    private Item[] items; 
+    private Item[] items;
     private int size;
 
     public ArrayDeque() {
@@ -18,13 +18,14 @@ public class ArrayDeque<Item> {
 
         if (size == items.length) {
             resize(size + 1);
-        } 
+        }
 
         Item[] a = (Item[]) new Object[items.length];
         System.arraycopy(items, 0, a, 1, size);
         items = a;
         items[0] = x;
-        size += 1;}
+        size += 1;
+    }
 
 
     public void addLast(Item x) {
@@ -40,8 +41,8 @@ public class ArrayDeque<Item> {
 
     public Item get(int index) {
 
-    	if (size < index) {
-    	    return null;
+        if (size < index) {
+            return null;
         }
         return items[index];
     }
@@ -70,12 +71,11 @@ public class ArrayDeque<Item> {
         int n = 0;
 
         while (n < size) {
-            if (n == (size-1)) {
+            if (n == (size - 1)) {
                 System.out.println(items[n]);
+            } else {
+                System.out.print(items[n] + " ");
             }
-                else {
-                    System.out.print(items[n] + " ");
-                }
             n += 1;
         }
     }
