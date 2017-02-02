@@ -88,7 +88,7 @@ public class ArrayDeque<Item> {
 
         Item x = items[0];
         size -= 1;
-        Item[] a = (Item[]) new Object[size];
+        Item[] a = (Item[]) new Object[size + 1];
         System.arraycopy(items, 1, a, 0, size);
         items = a;
         return x;
