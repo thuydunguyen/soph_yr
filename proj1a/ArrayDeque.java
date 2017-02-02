@@ -60,7 +60,7 @@ public class ArrayDeque<Item> {
         if (isEmpty()) {
             return null;
         }
-
+        resize(size * 2);
         size -= 1;
         Item x = items[size];
         items[size] = null;
@@ -87,7 +87,7 @@ public class ArrayDeque<Item> {
         }
 
         Item x = items[0];
-        Item[] a = (Item[]) new Object[size];
+        Item[] a = (Item[]) new Object[size * 2];
         size -= 1;
         System.arraycopy(items, 1, a, 0, size);
         items = a;
