@@ -106,7 +106,7 @@ public class IntList {
 
     }
 
-    public static void reverse(IntList A) {
+    public static IntList reverse(IntList A) {
         IntList frontOfReversed = null;
         IntList nextNodeToAdd = A;
         while (nextNodeToAdd != null) {
@@ -118,6 +118,8 @@ public class IntList {
             nextNodeToAdd = remainderOfOriginal;
         }
         A = frontOfReversed;
+
+        return A;
     }
 
 
