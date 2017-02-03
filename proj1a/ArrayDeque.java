@@ -24,7 +24,8 @@ public class ArrayDeque<Item> {
         System.arraycopy(items, 0, a, 1, size);
         items = a;
         items[0] = x;
-        size += 1;}
+        size += 1;
+    }
 
 
     public void addLast(Item x) {
@@ -70,10 +71,9 @@ public class ArrayDeque<Item> {
         int n = 0;
 
         while (n < size) {
-            if (n == (size-1)) {
+            if (n == (size - 1)) {
                 System.out.println(items[n]);
-            }
-            else {
+            } else {
                 System.out.print(items[n] + " ");
             }
             n += 1;
