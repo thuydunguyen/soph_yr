@@ -17,8 +17,9 @@ public class TestArrayDeque1B {
         Integer s1 = s.removeLast();
         Integer t1 = s.removeLast();
         DequeOperation op = new DequeOperation("initialize");
+        int lim = 0;
 
-        while (x) {
+        while (x && lim < 1000) {
             int func = StdRandom.uniform(150);
             int num = StdRandom.uniform(50);
             if (func < 25) {
@@ -80,6 +81,7 @@ public class TestArrayDeque1B {
 
             }
             fail.addOperation(op);
+            lim++;
         }
         assertEquals(fail.toString(), s1, t1);
     }
