@@ -1,5 +1,5 @@
 public class LinkedListDeque<Item> {
-
+	
     private class Listing {
         private Item item;
         private Listing next;
@@ -16,7 +16,7 @@ public class LinkedListDeque<Item> {
     private int size;
     private Listing last;
 
-
+    
     public LinkedListDeque() {
         ghost = new Listing(null, null, null);
         size = 0;
@@ -25,7 +25,7 @@ public class LinkedListDeque<Item> {
         ghost.prev = ghost;
     }
 
-
+    
     public void addFirst(Item item) {
         size += 1;
         Listing p = new Listing(item, ghost.next, ghost);
@@ -38,7 +38,7 @@ public class LinkedListDeque<Item> {
 
     }
 
-
+    
     public void addLast(Item item) {
         size += 1;
         Listing p = new Listing(item, ghost, last);
@@ -46,15 +46,15 @@ public class LinkedListDeque<Item> {
         last = p;
     }
 
-
+    
     public boolean isEmpty() {
         return size == 0;
     }
-
+    
     public int size() {
         return size;
     }
-
+  
     public void printDeque() {
         Listing p = ghost.next;
         while (p != ghost) {
@@ -70,7 +70,7 @@ public class LinkedListDeque<Item> {
 
     }
 
-
+    
     public Item removeFirst() {
 
         if (isEmpty()) {
@@ -87,7 +87,7 @@ public class LinkedListDeque<Item> {
         return f.item;
     }
 
-
+    
     public Item removeLast() {
 
         if (isEmpty()) {
@@ -101,7 +101,7 @@ public class LinkedListDeque<Item> {
         return l.item;
     }
 
-
+    
     public Item get(int index) {
         int count = 0;
         Listing p = ghost.next;
@@ -118,7 +118,7 @@ public class LinkedListDeque<Item> {
         return p.item;
     }
 
-
+    
     private Item getRhelper(int index, Listing p) {
 
         if (index == 0) {
@@ -128,7 +128,7 @@ public class LinkedListDeque<Item> {
         return getRhelper(index - 1, p.next);
     }
 
-
+    
     public Item getRecursive(int index) {
 
         if (size < index) {
