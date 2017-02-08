@@ -2,7 +2,6 @@
  * Created by Thuy-Du on 2/6/2017.
  */
 
-
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -32,7 +31,7 @@ public class TestArrayDeque1B {
             } else if (func < 50) {
                 s1 = s.removeFirst();
                 t1 = t.removeFirst();
-                if ((s.size() == 0) || (s.size() != t.size())) {
+                if (s.size() != t.size()) {
                     x = t.size() == s.size();
                     op = new DequeOperation("size");
                     s1 = s.size();
@@ -65,7 +64,7 @@ public class TestArrayDeque1B {
                 s1 = s.size();
                 t1 = t.size();
                 x = s1 == t1;
-            } else if (func < 150) {
+            } else if (func <= 150) {
                 if ((s.size() == 0) || (s.size() != t.size())) {
                     x = t.size() == s.size();
                     op = new DequeOperation("size");
