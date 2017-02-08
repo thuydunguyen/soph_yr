@@ -15,8 +15,8 @@ public class TestArrayDeque1B {
         ArrayDequeSolution<Integer> s = new ArrayDequeSolution<>();
         boolean x = true;
         OperationSequence fail = new OperationSequence();
-        Integer s1 = 1;
-        Integer t1 = 1;
+        Integer s1 = s.removeLast();
+        Integer t1 = s.removeLast();
         DequeOperation op = new DequeOperation("initialize");
 
         while (x) {
@@ -51,7 +51,7 @@ public class TestArrayDeque1B {
             } else if (func < 100) {
                 s1 = s.removeLast();
                 t1 = t.removeLast();
-                if ((s.size() == 0) || (s.size() != t.size())) {
+                if (s.size() != t.size()) {
                     x = t.size() == s.size();
                     op = new DequeOperation("size");
                     s1 = s.size();
