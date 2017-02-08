@@ -7,8 +7,6 @@ import org.junit.Test;
 
 import static org.junit.Assert.*;
 
-import java.util.ArrayDeque;
-
 public class TestArrayDeque1B {
 
     @Test
