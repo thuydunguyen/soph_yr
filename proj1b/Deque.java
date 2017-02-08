@@ -2,15 +2,15 @@
  * Created by Thuy-Du on 2/6/2017.
  */
 public interface Deque<Item> {
-    public void printDeque();
+    void printDeque();
 
-    public Item getRecursive(int i);
+    Item getRecursive(int i);
 
-    public Item removeFirst();
+    Item removeFirst();
 
-    public Item removeLast();
+    Item removeLast();
 
-    public void addFirst(Item x);
+    void addFirst(Item x);
 
-    public void addLast(Item x);
+    void addLast(Item x);
 }

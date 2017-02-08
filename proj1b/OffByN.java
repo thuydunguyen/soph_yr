@@ -2,7 +2,7 @@
  * Created by Thuy-Du on 2/6/2017.
  */
 public class OffByN implements CharacterComparator {
-    int n;
+    private int n;
 
     public OffByN(int N) {
         this.n = N;
