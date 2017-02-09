@@ -4,23 +4,23 @@ ArrayDeque:
 
 Q: Give an example of at least one idea from the staff solution that would have made your solution better (if any).
 
-A: 
+A: I would have used pointers and if I had used pointers, I would have used two separate methods (like in the staff solution) to increment/decrement rather than have them in one method.
 
 Q: What's something you felt proud of in your code, if anything?
 
-A:
+A: Was pretty clean for my standards.
 
 Q: What's something that was particularly inelegant in your code, if anything?
 
-A:
+A: Made copies of the original array multiple times in the class.
 
 Q: What do you wish you would have known before writing ArrayDeque, if anything?
 
-A:
+A: THe autograder tested for performance speed.
 
 Q: If you wrote ArrayDeque again, what would you do differently, if anything?
 
-A:
+A: I would have used pointers to make my code run constant time and not use array.copy for my addFirst/removeFirst methods.
 
 -----
 
@@ -28,23 +28,23 @@ LinkedListDeque:
 
 Q: Give an example of at least one idea from the staff solution that would have made your solution better (if any).
 
-A: 
+A: N/A
 
 Q: What's something you felt proud of in your code, if anything?
 
-A:
+A: My code passed all the autograder tests.
 
 Q: What's something that was particularly inelegant in your code, if anything?
 
-A:
+A: A lot of lines and repeated "if statements". Tried to incorporate circular lists, but not sure if it actually worked.
 
-Q: What do you wish you would have known before writing ArrayDeque, if anything?
+Q: What do you wish you would have known before writing LinkedListDeque, if anything?
 
-A:
+A: N/A
 
 Q: If you wrote LinkedListDeque again, what would you do differently, if anything?
 
-A:
+A: Added comments to make keeping track of my methods easier in case I needed to debug. Take some time to clean upmy code.
 
 -----
 
@@ -52,4 +52,4 @@ Meta:
 
 Q: This is the first time we've tried something like this. Did you like this design review process? Anything we should do differently next time?
 
-A: 
+A: Liked the idea, but these questions are a little hard to discuss about with a partner.
