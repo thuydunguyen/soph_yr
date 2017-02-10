@@ -26,9 +26,6 @@ public class TestArrayDeque1B {
                 op = new DequeOperation("addFirst", num);
                 s.addFirst(num);
                 t.addFirst(num);
-                s1 = s.getFirst();
-                t1 = t.get(0);
-                x = s1 == t1;
             } else if (func < 50) {
                 s1 = s.removeFirst();
                 t1 = t.removeFirst();
@@ -45,9 +42,6 @@ public class TestArrayDeque1B {
                 op = new DequeOperation("addLast", num);
                 s.addLast(num);
                 t.addLast(num);
-                s1 = s.getLast();
-                t1 = t.get(t.size() - 1);
-                x = s1 == t1;
             } else if (func < 100) {
                 s1 = s.removeLast();
                 t1 = t.removeLast();
