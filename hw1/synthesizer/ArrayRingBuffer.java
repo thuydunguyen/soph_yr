@@ -1,6 +1,7 @@
 // TODO: Make sure to make this class a part of the synthesizer package
 // package <package name>;
 package synthesizer;
+
 import java.util.Iterator;
 import java.util.Objects;
 
@@ -43,11 +44,11 @@ public class ArrayRingBuffer<T> extends AbstractBoundedQueue<T> {
             throw new RuntimeException("Ring buffer overflow)");
         }
         rb[last] = x;
-        if (last+1 == capacity) {
+        if (last + 1 == capacity) {
             last = 0;
+        } else {
+            last = last + 1;
         }
-        else {
-        last = last+1;}
 
         fillCount += 1;
 
@@ -68,9 +69,9 @@ public class ArrayRingBuffer<T> extends AbstractBoundedQueue<T> {
         rb[first] = null;
         if (first == capacity - 1) {
             first = 0;
+        } else {
+            first = first + 1;
         }
-        else {
-            first = first+1;}
 
         fillCount -= 1;
         return item;

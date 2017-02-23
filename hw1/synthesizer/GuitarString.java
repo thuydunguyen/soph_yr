@@ -1,13 +1,16 @@
 // TODO: Make sure to make this class a part of the synthesizer package
 //package <package name>;
 package synthesizer;
+
 import java.util.stream.DoubleStream;
 
 //Make sure this class is public
 public class GuitarString {
-    /** Constants. Do not change. In case you're curious, the keyword final means
+    /**
+     * Constants. Do not change. In case you're curious, the keyword final means
      * the values cannot be changed at runtime. We'll discuss this and other topics
-     * in lecture on Friday. */
+     * in lecture on Friday.
+     */
     private static final int SR = 44100;      // Sampling Rate
     private static final double DECAY = .996; // energy decay factor
 
@@ -20,8 +23,8 @@ public class GuitarString {
         //       cast the result of this division operation into an int. For better
         //       accuracy, use the Math.round() function before casting.
         //       Your buffer should be initially filled with zeros.
-        int capacity = (int) Math.round(SR/ frequency);
-        buffer = new ArrayRingBuffer (capacity);
+        int capacity = (int) Math.round(SR / frequency);
+        buffer = new ArrayRingBuffer(capacity);
     }
 
 
@@ -50,7 +53,7 @@ public class GuitarString {
         //       Do not call StdAudio.play().
         Double item = buffer.dequeue();
         double nfirst = buffer.peek();
-        double avg = (item+nfirst)*DECAY/2;
+        double avg = (item + nfirst) * DECAY / 2;
         buffer.enqueue(avg);
 
     }
