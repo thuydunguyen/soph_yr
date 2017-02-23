@@ -89,7 +89,7 @@ public class ArrayRingBuffer<T> extends AbstractBoundedQueue<T> {
     private class Iter implements Iterator<T> {
         private int index;
 
-        public Iter() {
+        Iter() {
             index = 0;
         }
 
