@@ -24,6 +24,9 @@ public class GuitarString {
         //       Your buffer should be initially filled with zeros.
         int capacity = (int) Math.round(SR / frequency);
         buffer = new ArrayRingBuffer(capacity);
+        for (int x = 0; x < capacity; x++) {
+            buffer.enqueue(0);
+        }
 
     }
 
@@ -51,7 +54,6 @@ public class GuitarString {
 
         //       the average of the two multiplied by the DECAY factor.
         //       Do not call StdAudio.play().
-        pluck();
         Double item = buffer.dequeue();
         double nfirst = buffer.peek();
         double avg = (item + nfirst) * DECAY / 2;
