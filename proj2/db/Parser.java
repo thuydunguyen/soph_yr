@@ -44,92 +44,94 @@ public class Parser {
         eval(args[0]);
     }
 
-    private static void eval(String query) {
+    protected static String eval(String query) {
         Matcher m;
         if ((m = CREATE_CMD.matcher(query)).matches()) {
-            createTable(m.group(1));
+            return createTable(m.group(1));
         } else if ((m = LOAD_CMD.matcher(query)).matches()) {
-            loadTable(m.group(1));
+            return loadTable(m.group(1));
         } else if ((m = STORE_CMD.matcher(query)).matches()) {
-            storeTable(m.group(1));
+            return storeTable(m.group(1));
         } else if ((m = DROP_CMD.matcher(query)).matches()) {
-            dropTable(m.group(1));
+            return dropTable(m.group(1));
         } else if ((m = INSERT_CMD.matcher(query)).matches()) {
-            insertRow(m.group(1));
+            return insertRow(m.group(1));
         } else if ((m = PRINT_CMD.matcher(query)).matches()) {
-            printTable(m.group(1));
+            return printTable(m.group(1));
         } else if ((m = SELECT_CMD.matcher(query)).matches()) {
-            select(m.group(1));
+            return select(m.group(1));
         } else {
-            System.err.printf("Malformed query: %s\n", query);
+            System.err.printf("Malformed query: " + query);
+            return "";
         }
     }
 
-    private static void createTable(String expr) {
+    private static String createTable(String expr) {
         Matcher m;
         if ((m = CREATE_NEW.matcher(expr)).matches()) {
-            createNewTable(m.group(1), m.group(2).split(COMMA));
+            return createNewTable(m.group(1), m.group(2).split(COMMA));
         } else if ((m = CREATE_SEL.matcher(expr)).matches()) {
-            createSelectedTable(m.group(1), m.group(2), m.group(3), m.group(4));
+            return createSelectedTable(m.group(1), m.group(2), m.group(3), m.group(4));
         } else {
-            System.err.printf("Malformed create: %s\n", expr);
+            System.err.printf("Malformed create: " + expr);
+            return "";
         }
     }
 
-    private static void createNewTable(String name, String[] cols) {
+    private static String createNewTable(String name, String[] cols) {
         StringJoiner joiner = new StringJoiner(", ");
         for (int i = 0; i < cols.length - 1; i++) {
             joiner.add(cols[i]);
         }
 
         String colSentence = joiner.toString() + " and " + cols[cols.length - 1];
-        System.out.printf("You are trying to create a table named %s with the columns %s\n", name, colSentence);
+        return "You are trying to create a table named " + name + " with the columns " + colSentence;
     }
 
-    private static void createSelectedTable(String name, String exprs, String tables, String conds) {
-        System.out.printf("You are trying to create a table named %s by selecting these expressions:" +
-                " '%s' from the join of these tables: '%s', filtered by these conditions: '%s'\n", name, exprs, tables, conds);
+    private static String createSelectedTable(String name, String exprs, String tables, String conds) {
+        return "You are trying to create a table named " + name+ " by selecting these expressions: " +
+                 exprs + " from the join of these tables: " + tables + ", filtered by these conditions: " + conds;
     }
 
-    private static void loadTable(String name) {
-        System.out.printf("You are trying to load the table named %s\n", name);
+    private static String loadTable(String name) {
+        return "You are trying to load the table named " + name;
     }
 
-    private static void storeTable(String name) {
-        System.out.printf("You are trying to store the table named %s\n", name);
+    private static String storeTable(String name) {
+        return "You are trying to store the table named " + name;
     }
 
-    private static void dropTable(String name) {
-        System.out.printf("You are trying to drop the table named %s\n", name);
+    private static String dropTable(String name) {
+        return "You are trying to drop the table named " + name;
     }
 
-    private static void insertRow(String expr) {
+    private static String insertRow(String expr) {
         Matcher m = INSERT_CLS.matcher(expr);
         if (!m.matches()) {
-            System.err.printf("Malformed insert: %s\n", expr);
-            return;
+            System.err.printf("Malformed insert: " + expr);
+            return "";
         }
 
-        System.out.printf("You are trying to insert the row \"%s\" into the table %s\n", m.group(2), m.group(1));
+        return "You are trying to insert the row" +  m.group(2) + " into the table " + m.group(1);
     }
 
-    private static void printTable(String name) {
-        System.out.printf("You are trying to print the table named %s\n", name);
+    private static String printTable(String name) {
+        return "You are trying to print the table named " + name;
     }
 
-    private static void select(String expr) {
+    private static String select(String expr) {
         Matcher m = SELECT_CLS.matcher(expr);
         if (!m.matches()) {
-            System.err.printf("Malformed select: %s\n", expr);
-            return;
+            System.err.printf("Malformed select: " + expr);
+            return "";
         }
 
-        select(m.group(1), m.group(2), m.group(3));
+        return select(m.group(1), m.group(2), m.group(3));
     }
 
-    private static void select(String exprs, String tables, String conds) {
-        System.out.printf("You are trying to select these expressions:" +
-                " '%s' from the join of these tables: '%s', filtered by these conditions: '%s'\n", exprs, tables, conds);
+    private static String select(String exprs, String tables, String conds) {
+        return "You are trying to select these expressions: " +
+                exprs + " from the join of these tables: " + tables + ", filtered by these conditions: " + conds;
     }
 }
 

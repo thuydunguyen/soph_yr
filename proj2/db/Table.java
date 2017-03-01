@@ -32,7 +32,7 @@ public class Table<T> {
     }
 
     public void print() {
-        //Prints first n-1 col_names with col_types
+        //Prints col_name and col_type
         String comma;
         for (int x = 0; x < table.size(); x++) {
             if (x == table.size() - 1) {
@@ -44,6 +44,7 @@ public class Table<T> {
                 System.out.print(table.get(x).get(0) + " " + table.get(x).get(1) + comma);
             }
         }
+        //Prints rest of the data
         for (int y = 2; y < table.get(0).size(); y++) {
             for (int x = 0; x < table.size(); x++) {
                 if (x == table.size() - 1) {
