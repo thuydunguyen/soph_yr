@@ -3,6 +3,9 @@ package db;
 import java.util.StringJoiner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import db.Table;
+import db.G_func;
+
 
 /**
  * Created by Thuy-Du on 2/26/2017.
@@ -85,11 +88,11 @@ public class Parser {
         }
 
         String colSentence = joiner.toString() + " and " + cols[cols.length - 1];
-        return "You are trying to create a table named " + name + " with the columns " + colSentence;
+        return "";
     }
 
     private static String createSelectedTable(String name, String exprs, String tables, String conds) {
-        return "You are trying to create a table named " + name+ " by selecting these expressions: " +
+        return "You are trying to create a table named " + name + " by selecting these expressions: " +
                  exprs + " from the join of these tables: " + tables + ", filtered by these conditions: " + conds;
     }
 
@@ -133,6 +136,7 @@ public class Parser {
         return "You are trying to select these expressions: " +
                 exprs + " from the join of these tables: " + tables + ", filtered by these conditions: " + conds;
     }
+
 }
 
 
