@@ -19,8 +19,8 @@ public class Table<T> {
 
     //Creates copy of a Table instance
     public Table(Table to_copy) {
-        names = to_copy.names;
-        types = to_copy.types;
+        names = to_copy.cloning(0);
+        types = to_copy.cloning(1);
         rows = to_copy.rows;
         table = to_copy.cloning();
     }
@@ -71,30 +71,30 @@ public class Table<T> {
             ArrayList<String> named = G_func.combine_lists(shared, notshared1.names, notshared2.names);
             ArrayList<String> typed = G_func.combine_lists(shared_t, notshared1.types, notshared2.types);
             Table curr_new = new Table(total_col, named, typed);
-            for (int x = 0; x < shared.size(); x++) {
-                int colA = A_index.get(x);
-                int colB = B_index.get(x);
-                for (int r = 2; r < curr.rows; r++) {
-                    if (next.gets(colB).contains(curr.gets(colA, r))) {
-                        ArrayList<Integer> rowsB = G_func.each_index(next.gets(colB), curr.gets(colA, r));
-                        for (int z = 0; z < rowsB.size(); z++) {
-                            ArrayList<String> data = new ArrayList<>();
-                            data.add(curr.gets(colA, r));
-                            int rowB = rowsB.get(z);
-                            for (int y = 0; y < notshared1.names.size(); y++) {
+            for (int x = 0; x < shared.size(); x++) { //for each shared column
+                int colA = A_index.get(x); //Shared column x in A
+                int colB = B_index.get(x); //Shared column x in B
+                for (int r = 2; r < curr.rows; r++) { //for each value in shared column of A
+                    ArrayList<Integer> rowsB;
+                    if ((rowsB = G_func.each_index(next.gets(colB), curr.gets(colA, r))).size() > 0) { //gets shared values of shared colB
+                        for (int z = 0; z < rowsB.size(); z++) { //for each index in rowsB
+                            ArrayList<String> data = new ArrayList<>(); //creates row data
+                            data.add(curr.gets(colA, r)); //Adds shared value
+                            int rowB = rowsB.get(z); //gets the zth shared index from rowsB
+                            for (int y = 0; y < notshared1.names.size(); y++) { //Adds data from left table
                                 data.add(notshared1.gets(y, r));
                             }
-                            for (int y = 0; y < notshared2.names.size(); y++) {
+                            for (int y = 0; y < notshared2.names.size(); y++) { //Adds data from right table
                                 data.add(notshared2.gets(y, rowB));
                             }
-                            curr_new.insert(data);
+                            curr_new.insert(data); //inserts data into joined table
                         }
                     }
                 }
             }
-            curr = curr_new;
+            curr = curr_new; //New curr becomes the joined table.
         }
-        table = curr.table;
+        table = curr.table; //Copies over data from complete joined table to construct.
         names = curr.names;
         types = curr.types;
         rows = curr.rows;
@@ -177,6 +177,14 @@ public class Table<T> {
         return (ArrayList<ArrayList<String>>) table.clone();
     }
 
+    public ArrayList<String> cloning(int n) {
+        if (n == 0) {
+        return (ArrayList<String>) names.clone();}
+        else{
+            return (ArrayList<String>) types.clone();
+        }
+    }
+
     //This main method is for testing.
     public static void main(String[] args) {
         String[] first = new String[] {"x","y"};
@@ -189,13 +197,13 @@ public class Table<T> {
         Table u = new Table(3, new ArrayList<String>(Arrays.asList(firsted)), new ArrayList<String>(Arrays.asList(seconds)));
         Integer[] one = new Integer[] {2,5};
         Integer[] two = new Integer[] {8,3};
-        Integer[] three = new Integer[] {8,7};
+        Integer[] three = new Integer[] {13,7};
         Integer[] ones = new Integer[] {2,4};
         Integer[] twos = new Integer[] {8,9};
-        Integer[] threes = new Integer[] {8,1};
+        Integer[] threes = new Integer[] {10,1};
         Integer[] oned = new Integer[] {2,3};
         Integer[] twod = new Integer[] {8,0};
-        Integer[] threed = new Integer[] {10,1};
+        Integer[] threed = new Integer[] {5,1};
         t.insert(new ArrayList<Integer>(Arrays.asList(one)));
         t.insert(new ArrayList<Integer>(Arrays.asList(two)));
         t.insert(new ArrayList<Integer>(Arrays.asList(three)));
@@ -206,12 +214,12 @@ public class Table<T> {
         u.insert(new ArrayList<Integer>(Arrays.asList(twod)));
         u.insert(new ArrayList<Integer>(Arrays.asList(threed)));
         Table k = new Table(new Table[] {t, s});
-        Table j = new Table(new Table[] {k, u}); //Bug when calling constructor twice;
-        j.print();
-        k.print();
+        Table j = new Table(new Table[] {t, u, s});
         t.print();
         s.print();
         u.print();
+        k.print();
+        j.print();
     }
 
 
