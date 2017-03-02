@@ -1,3 +1,4 @@
+package db;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.IOException;
@@ -8,7 +9,7 @@ import java.util.regex.Pattern;
 import db.Database;
 import db.Cmd;
 
-public class Main {
+public class Mains {
     private static final String EXIT   = "exit";
     private static final String PROMPT = "> ";
 

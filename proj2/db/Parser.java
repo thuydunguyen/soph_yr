@@ -86,17 +86,12 @@ public class Parser {
         String[] named = new String[cols.length];
         String[] types = new String[cols.length];
         StringJoiner joiner = new StringJoiner(" ");
-        for (int i = 0; i < cols.length; i++) {
+        for (int i = 0; i < cols.length-1; i++) {
             joiner.add(cols[i]);
-            String[] parts = cols[i].split("\\s+");
-            named[i] = parts[0];
-            types[i] = parts[1];
 
         }
-        String colSentence = joiner.toString();
-        Table t = new Table(named.length, G_func.to_list(named) , G_func.to_list(types));
-        t.print();
-        return colSentence;
+        String colSentence = joiner.toString() + " and " + cols[cols.length -1];
+        return "You are trying to create a table named " + name + " with the columns: " + colSentence;
     }
 
     private static String createSelectedTable(String name, String exprs, String tables, String conds) {

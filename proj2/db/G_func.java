@@ -16,4 +16,5 @@ public class G_func {
     protected static ArrayList<String> to_list(String[] x) {
         return new ArrayList<>(Arrays.asList(x));
     }
+
 }
