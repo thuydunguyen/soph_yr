@@ -51,8 +51,8 @@ public class Table<T> {
             ArrayList<String> shared = new ArrayList<>(); //shared names
             ArrayList<String> shared_t = new ArrayList<>(); //shared types
 
-            //For each column in A.names
-            for (int x = 0; x < next.names.size(); x++) {
+            //For each name in A.names
+            for (int x = 0; x < curr.names.size(); x++) {
                 if (next.names.contains(curr.names.get(x))) {
                     A_index.add(x);
                     int indexb = next.names.indexOf(next.names.get(x));
@@ -75,17 +75,20 @@ public class Table<T> {
                 int colA = A_index.get(x);
                 int colB = B_index.get(x);
                 for (int r = 2; r < curr.rows; r++) {
-                    ArrayList<String> data = new ArrayList<>();
                     if (next.gets(colB).contains(curr.gets(colA, r))) {
-                        data.add(curr.gets(colA, r));
-                        int rowB = next.gets(colB).indexOf(curr.gets(colA, r));
-                        for (int y = 0; y < notshared1.names.size(); y++) {
-                            data.add(notshared1.gets(y, r));
+                        ArrayList<Integer> rowsB = G_func.each_index(next.gets(colB), curr.gets(colA, r));
+                        for (int z = 0; z < rowsB.size(); z++) {
+                            ArrayList<String> data = new ArrayList<>();
+                            data.add(curr.gets(colA, r));
+                            int rowB = rowsB.get(z);
+                            for (int y = 0; y < notshared1.names.size(); y++) {
+                                data.add(notshared1.gets(y, r));
+                            }
+                            for (int y = 0; y < notshared2.names.size(); y++) {
+                                data.add(notshared2.gets(y, rowB));
+                            }
+                            curr_new.insert(data);
                         }
-                        for (int y = 0; y < notshared2.names.size(); y++) {
-                            data.add(notshared2.gets(y, rowB));
-                        }
-                        curr_new.insert(data);
                     }
                 }
             }
@@ -186,10 +189,10 @@ public class Table<T> {
         Table u = new Table(3, new ArrayList<String>(Arrays.asList(firsted)), new ArrayList<String>(Arrays.asList(seconds)));
         Integer[] one = new Integer[] {2,5};
         Integer[] two = new Integer[] {8,3};
-        Integer[] three = new Integer[] {13,7};
+        Integer[] three = new Integer[] {8,7};
         Integer[] ones = new Integer[] {2,4};
         Integer[] twos = new Integer[] {8,9};
-        Integer[] threes = new Integer[] {10,1};
+        Integer[] threes = new Integer[] {8,1};
         Integer[] oned = new Integer[] {2,3};
         Integer[] twod = new Integer[] {8,0};
         Integer[] threed = new Integer[] {10,1};
@@ -203,11 +206,12 @@ public class Table<T> {
         u.insert(new ArrayList<Integer>(Arrays.asList(twod)));
         u.insert(new ArrayList<Integer>(Arrays.asList(threed)));
         Table k = new Table(new Table[] {t, s});
-        Table j = new Table(new Table[] {t, s}); //Bug when calling join Table constructor
-        k.print();
+        Table j = new Table(new Table[] {k, u}); //Bug when calling constructor twice;
         j.print();
+        k.print();
         t.print();
         s.print();
+        u.print();
     }
 
 
