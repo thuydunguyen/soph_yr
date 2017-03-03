@@ -6,15 +6,17 @@ import db.G_func;
  * Created by Thuy-Du on 2/26/2017.
  */
 public class Table<T> {
-    private boolean CrTableSel = false;
-    private ArrayList<ArrayList<String>> table;
-    private ArrayList<String> names;
-    private ArrayList<String> types;
-    private int rows;
+    protected boolean CrTableSel = false;
+    protected ArrayList<ArrayList<String>> table;
+    protected ArrayList<String> names;
+    protected ArrayList<String> types;
+    protected int rows;
+    protected String named;
 
     //Creates blank table
     public Table() {
         table = new ArrayList<>();
+        rows = 0;
     }
 
     //Creates copy of a Table instance
@@ -23,10 +25,12 @@ public class Table<T> {
         types = to_copy.cloning(1);
         rows = to_copy.rows;
         table = to_copy.cloning();
+        named = to_copy.named;
     }
 
     //Creates new table
-    public Table(int cols, ArrayList<String> col_names, ArrayList<String> col_types) {
+    public Table(int cols, ArrayList<String> col_names, ArrayList<String> col_types, String n) {
+        named = n;
         names = col_names;
         types = col_types;
         rows = 2;
@@ -38,9 +42,10 @@ public class Table<T> {
             table.add(sets);
         }
     }
+
     //Creates table as select aka Join
     //Need to add cases for no shared columns and multiple shared columns
-    public Table(Table[] tables) {
+    public Table(Table[] tables, String n) {
         Table curr = new Table(tables[0]);
         for (int t = 1; t < tables.length; t++) {
             Table next = new Table(tables[t]);
@@ -70,7 +75,7 @@ public class Table<T> {
             int total_col = curr.names.size() + next.names.size() - A_index.size();
             ArrayList<String> named = G_func.combine_lists(shared, notshared1.names, notshared2.names);
             ArrayList<String> typed = G_func.combine_lists(shared_t, notshared1.types, notshared2.types);
-            Table curr_new = new Table(total_col, named, typed);
+            Table curr_new = new Table(total_col, named, typed, n);
             for (int x = 0; x < shared.size(); x++) { //for each shared column
                 int colA = A_index.get(x); //Shared column x in A
                 int colB = B_index.get(x); //Shared column x in B
@@ -98,6 +103,14 @@ public class Table<T> {
         names = curr.names;
         types = curr.types;
         rows = curr.rows;
+        named = curr.named;
+    }
+
+    //Creates table from a list of ArrayLists<String>
+    public Table(ArrayList<String>[] columns) {
+        for (int x = 0; x < columns.length; x++) {
+            table.add(columns[x]);
+        }
     }
 
     //Inserts values
@@ -177,6 +190,7 @@ public class Table<T> {
         return (ArrayList<ArrayList<String>>) table.clone();
     }
 
+    //Clones table
     public ArrayList<String> cloning(int n) {
         if (n == 0) {
         return (ArrayList<String>) names.clone();}
@@ -192,9 +206,9 @@ public class Table<T> {
         String[] firsts = new String[] {"x", "z"};
         String[] seconds = new String[] {"int", "int"};
         String[] firsted = new String[] {"x","b"};
-        Table t = new Table(3, new ArrayList<String>(Arrays.asList(first)), new ArrayList<String>(Arrays.asList(second)));
-        Table s = new Table(3, new ArrayList<String>(Arrays.asList(firsts)), new ArrayList<String>(Arrays.asList(seconds)));
-        Table u = new Table(3, new ArrayList<String>(Arrays.asList(firsted)), new ArrayList<String>(Arrays.asList(seconds)));
+        Table t = new Table(3, new ArrayList<String>(Arrays.asList(first)), new ArrayList<String>(Arrays.asList(second)), "t");
+        Table s = new Table(3, new ArrayList<String>(Arrays.asList(firsts)), new ArrayList<String>(Arrays.asList(seconds)), "s");
+        Table u = new Table(3, new ArrayList<String>(Arrays.asList(firsted)), new ArrayList<String>(Arrays.asList(seconds)), "u");
         Integer[] one = new Integer[] {2,5};
         Integer[] two = new Integer[] {8,3};
         Integer[] three = new Integer[] {13,7};
@@ -213,8 +227,8 @@ public class Table<T> {
         u.insert(new ArrayList<Integer>(Arrays.asList(oned)));
         u.insert(new ArrayList<Integer>(Arrays.asList(twod)));
         u.insert(new ArrayList<Integer>(Arrays.asList(threed)));
-        Table k = new Table(new Table[] {t, s});
-        Table j = new Table(new Table[] {t, u, s});
+        Table k = new Table(new Table[] {t, s}, "k");
+        Table j = new Table(new Table[] {t, u, s}, "j");
         t.print();
         s.print();
         u.print();

@@ -6,7 +6,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import db.Database;
-import db.Cmd;
 
 public class Main {
     private static final String EXIT   = "exit";
@@ -33,9 +32,6 @@ public class Main {
                 String result = db.transact(line);
                 if (result.length() > 0) {
                     System.out.println(result);
-                    if (!(malfrm.matcher(result)).matches() || !(expect.matcher(result)).matches()) {
-                        db.storage.add(Cmd.eval(result));
-                    }
                 }
             }
 
