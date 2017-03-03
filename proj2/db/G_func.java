@@ -24,10 +24,10 @@ public class G_func {
 
     //Gets all indexes of a value in and arraylist
     protected static ArrayList<Integer> each_index(ArrayList<String> x, String y) {
-        Iterator z = x.iterator();
         ArrayList<Integer> index = new ArrayList<>();
-        for (int k = 0; k < x.size(); k++) {
-            if (z.next().equals(y)) {
+        for (int k = 2; k < x.size(); k++) {
+            String val = x.get(k);
+            if (val.equals(y)){
                 index.add(k);
             }
         }
@@ -52,76 +52,122 @@ public class G_func {
         }
     }
 
-    //Splits String into parts at every whitespace
+    //Splits String into conditional parts
     protected static String[] splits(String str) {
-        return str.split("\\s+");
+        str = str.replaceAll("\\s+","");
+        String[] result = str.split("(?<=[<=>])|(?=[<=>])");
+        String[] fin = new String[3];
+        if (result.length == 4) {
+            fin[1] = result[1]+result[2];
+            fin[0] = result[0];
+            fin[2] = result[3];}
+        else {
+            fin = result;
+        }
+        return fin;
+
+    }
+
+    //Splits String into tokens;
+    protected static String[] tokens(String str) {
+        String[] result = str.split("(?<=[-+*/])|(?=[-+*/])");
+        return result;
     }
 
     //Computes the operation
-    protected static ArrayList<String> oper (Table t, String operation, String name) {
-        String[] tokes = new String[] {"+", "-", "*", "/",};
+    protected static ArrayList<String>[] oper (Table t, String[] columns) {
+        ArrayList<String>[] new_col = new ArrayList[columns.length];
+        String[] tokes = new String[]{"+", "-", "*", "/",};
         ArrayList<String> tokens = new ArrayList<>(Arrays.asList(tokes));
-        String[] parts = splits(operation);
-        ArrayList<String> news = new ArrayList<>();
-        if (parts.length == 1) {
-            int col = t.names.indexOf(parts[0]);
-            news = t.gets(col);
-        } else {
-            String one = parts[0];
-            String operand = parts[1];
-            String two = parts[2];
-            int ind1 = t.names.indexOf(one);
-            int ind2 = t.names.indexOf(two);
-            ArrayList<String> colA = t.gets(ind1);
-            ArrayList<String> colB = t.gets(ind2);
-            int value;
-            String sentence;
-            String type = type_out(t.types.get(ind1), t.types.get(ind2));
-            news.add(name);
-            if (type.equals("int") || type.equals("float") && tokens.contains(operand)) {
-                news.add(type);
-                for (int val = 2; val < t.rows; val++) {
-                    if (operand.equals("+")) {
-                        value = Integer.parseInt(colA.get(val)) + Integer.parseInt(colB.get(val));
-                    } else if (operand.equals("-")) {
-                        value = Integer.parseInt(colA.get(val)) - Integer.parseInt(colB.get(val));
-                    } else if (operand.equals("*")) {
-                        value = Integer.parseInt(colA.get(val)) * Integer.parseInt(colB.get(val));
-                    } else {
-                        value = Integer.parseInt(colA.get(val)) + Integer.parseInt(colB.get(val));
-                    }
-                    news.add(Integer.toString(value));
+        for (int cols = 0; cols < columns.length; cols++) {
+            String[] check = columns[cols].split("\\s+as\\s+");
+            check[0] = check[0].replaceAll("\\s+", "");
+            String[] parts = tokens(check[0]);
+            ArrayList<String> news = new ArrayList<>();
+            String name;
+            if (parts.length == 1) {
+                int col = t.names.indexOf(parts[0]);
+                news = t.gets(col);
+                if (check.length > 1) {
+                    check[1] = check[1].replaceAll("\\s+", "");
+                    news.set(0,check[1]);
                 }
-            } else if (type.equals("string") && operand.equals("+")) {
-                news.add(type);
-                for (int val = 2; val < t.rows; val++) {
+            } else {
+                String one = parts[0];
+                String operand = parts[1];
+                String two = parts[2];
+                int ind1 = t.names.indexOf(one);
+                int ind2 = t.names.indexOf(two);
+                ArrayList<String> colA = t.gets(ind1);
+                ArrayList<String> colB = t.gets(ind2);
+                int value;
+                float floater;
+                String sentence;
+                String type = type_out(t.types.get(ind1), t.types.get(ind2));
+                check[1] = check[1].replaceAll("\\s+", "");
+                news.add(check[1]);
+                if (type.equals("int") || type.equals("float") && tokens.contains(operand)) {
+                    news.add(type);
+                    if (type.equals("int")) {
+                        for (int val = 2; val < t.rows; val++) {
+                            if (operand.equals("+")) {
+                                value = Integer.parseInt(colA.get(val)) + Integer.parseInt(colB.get(val));
+                            } else if (operand.equals("-")) {
+                                value = Integer.parseInt(colA.get(val)) - Integer.parseInt(colB.get(val));
+                            } else if (operand.equals("*")) {
+                                value = Integer.parseInt(colA.get(val)) * Integer.parseInt(colB.get(val));
+                            } else {
+                                value = Integer.parseInt(colA.get(val)) / Integer.parseInt(colB.get(val));
+                            }
+                            news.add(Integer.toString(value));
+                        }
+                    }
+                    else if (type.equals("float")) {
+                        for (int val = 2; val < t.rows; val++) {
+                            if (operand.equals("+")) {
+                                floater = Float.parseFloat(colA.get(val)) + Float.parseFloat(colB.get(val));
+                            } else if (operand.equals("-")) {
+                                floater = Float.parseFloat(colA.get(val)) - Float.parseFloat(colB.get(val));
+                            } else if (operand.equals("*")) {
+                                floater = Float.parseFloat(colA.get(val)) * Float.parseFloat(colB.get(val));
+                            } else {
+                                floater = Float.parseFloat(colA.get(val)) / Float.parseFloat(colB.get(val));
+                            }
+                            news.add(Float.toString(floater));
+                        }
+                    }
+                } else if (type.equals("string") && operand.equals("+")) {
+                    news.add(type);
+                    for (int val = 2; val < t.rows; val++) {
                         sentence = colA.get(val) + colB.get(val);
                         news.add(sentence);
                     }
-            } else {
-                System.err.printf("Operand: " + operand + " cannot be performed");
+                } else {
+                    System.err.printf("Operand: " + operand + " cannot be performed");
+                }
             }
+            new_col[cols] = news;
         }
-            return news;
+        return new_col;
     }
 
     //Gives rows that do not match conditions
-    protected static ArrayList<Integer> cond(Table t, String conditions) {
+    protected static ArrayList<Integer> condition(Table t, String[] conds) {
         String val_2;
-        String[] conds = conditions.split("\\s+and\\s+");
         ArrayList<Integer> rem = new ArrayList<>();
-        for (int x = 2; x < t.rows; x++) {
-            int failed = 0;
-            for (int y = 0; y < conds.length; y++) {
-                int type_n;
-                String type;
-                String[] parts = splits(conds[y]);
-                int indx1 = t.names.indexOf(parts[0]);
+        Set<Integer> rm_rem = new HashSet<>();
+        for (int x = 2; x < t.rows; x++) { //For each row
+            int failed = 0; //Number of conditions the row failed
+            for (int y = 0; y < conds.length; y++) { //For each condition
+                int type_n; //type number: -1 to 2 from check_literal
+                String type; //column type
+                String[] parts = splits(conds[y]); //splits the condition into tokens
+                int indx1 = t.names.indexOf(parts[0]); //Gets column1
                 ArrayList<String> col1 = t.gets(indx1);
-                ArrayList<String> col2;
-                if ((type_n = check_literal(parts[2])) != -1) {
-                    String col_type;
-                    val_2 = lit_to_str(parts[2]);
+                ArrayList<String> col2; //Initializes column2
+                if ((type_n = check_literal(parts[2])) != -1) { //Checks if  second arg is literal
+                    String col_type; //Sets col_type of second arg based on type_n
+                    val_2 = lit_to_str(parts[2]); //Changes literal to string
                     if (type_n == 0) {
                         col_type = "string";
                     } else if (type_n == 1) {
@@ -129,14 +175,14 @@ public class G_func {
                     } else {
                         col_type = "float";
                     }
-                    String[] vals = new String[t.rows];
-                    Arrays.fill(vals, val_2);
+                    String[] vals = new String[t.rows]; //makes a string with same size as rows
+                    Arrays.fill(vals, val_2); //Filled with second arg
                     col2 = new ArrayList<>(Arrays.asList(vals));
-                    type = type_out(t.types.get(indx1), col_type);
-                } else {
-                    int indx2 = t.names.indexOf(parts[2]);
+                    type = type_out(t.types.get(indx1), col_type); //Gets resulting type
+                } else { //if not a literal
+                    int indx2 = t.names.indexOf(parts[2]); //gets a column as second arg
                     col2 = t.gets(indx2);
-                    type = type_out(t.types.get(indx1), t.types.get(indx2));
+                    type = type_out(t.types.get(indx1), t.types.get(indx2)); //gets resulting type
                 }
                 if (!sing_cond(col1.get(x), col2.get(x), parts[1], type)) {
                     failed++;
@@ -147,6 +193,9 @@ public class G_func {
                 rem.add(x);
             }
         }
+        rm_rem.addAll(rem);
+        rem.clear();
+        rem.addAll(rm_rem);
         Comparator comparator = Collections.reverseOrder();
         Collections.sort(rem,comparator);
         return rem;
@@ -154,11 +203,16 @@ public class G_func {
 
     //Checks values with a single condition
     protected static Boolean sing_cond(String val_1, String val_2, String bool, String type) {
-        int val1;
-        int val2;
+        float val1;
+        float val2;
         if (type != "string") {
-            val1 = Integer.parseInt(val_1);
-            val2 = Integer.parseInt(val_2);}
+            val1 = Float.parseFloat(val_1);
+            val2 = Float.parseFloat(val_2);
+            if (type == "int") {
+                val1 = (float) Math.floor(val1);
+                val2 = (float) Math.floor(val2);
+            }
+        }
         else {
             val1 = val_1.compareTo(val_2);
             val2 = 0;
@@ -210,7 +264,7 @@ public class G_func {
     protected static String lit_to_str(String x) {
         int y = check_literal(x);
         if (y == 0) {
-        return x.substring(1,x.length()-2); }
+        return x.substring(1,x.length()-1); }
         else {
             return x;
         }
@@ -218,38 +272,39 @@ public class G_func {
 
     //testing
     public static void main(String[] args) {
-        String[] first = new String[] {"x","y"};
-        String[] second = new String[] {"int", "int"};
-        String[] firsts = new String[] {"x", "z"};
-        String[] seconds = new String[] {"int", "int"};
-        String[] firsted = new String[] {"x","b"};
+        String[] first = new String[]{"x", "y"};
+        String[] second = new String[]{"int", "int"};
+        String[] firsts = new String[]{"x", "z"};
+        String[] seconds = new String[]{"int", "int"};
         Table t = new Table(3, new ArrayList<String>(Arrays.asList(first)), new ArrayList<String>(Arrays.asList(second)), "t");
         Table s = new Table(3, new ArrayList<String>(Arrays.asList(firsts)), new ArrayList<String>(Arrays.asList(seconds)), "s");
-        Table u = new Table(3, new ArrayList<String>(Arrays.asList(firsted)), new ArrayList<String>(Arrays.asList(seconds)), "u");
-        Integer[] one = new Integer[] {2,5};
-        Integer[] two = new Integer[] {8,3};
-        Integer[] three = new Integer[] {13,7};
-        Integer[] ones = new Integer[] {2,4};
-        Integer[] twos = new Integer[] {8,9};
-        Integer[] threes = new Integer[] {10,1};
-        Integer[] oned = new Integer[] {2,3};
-        Integer[] twod = new Integer[] {8,0};
-        Integer[] threed = new Integer[] {5,1};
+        Integer[] one = new Integer[]{2, 5};
+        Integer[] two = new Integer[]{8, 3};
+        Integer[] three = new Integer[]{13, 7};
+        Integer[] ones = new Integer[]{2, 4};
+        Integer[] twos = new Integer[]{8, 9};
+        Integer[] threes = new Integer[]{10, 1};
         t.insert(new ArrayList<Integer>(Arrays.asList(one)));
         t.insert(new ArrayList<Integer>(Arrays.asList(two)));
         t.insert(new ArrayList<Integer>(Arrays.asList(three)));
         s.insert(new ArrayList<Integer>(Arrays.asList(ones)));
         s.insert(new ArrayList<Integer>(Arrays.asList(twos)));
         s.insert(new ArrayList<Integer>(Arrays.asList(threes)));
-        u.insert(new ArrayList<Integer>(Arrays.asList(oned)));
-        u.insert(new ArrayList<Integer>(Arrays.asList(twod)));
-        u.insert(new ArrayList<Integer>(Arrays.asList(threed)));
-        String conds = "x > y and x == 2";
-        ArrayList<Integer> rem = cond(t,conds);
-        System.out.println(rem.get(0));
-        System.out.println(rem.get(1));
-        System.out.println(rem.get(2));
+        Table j = new Table(new Table[]{t, s}, "j");
+        String expr = "x,y, x/y as z";
+        String cond = "x < y and z < 10";
+        String[] condit = cond.split("\\s+and\\s+");
+        String[] conds = splits(condit[0]);
+        String[] columns = expr.split("\\s*,\\s*");
+        ArrayList<String>[] test = oper(t, columns);
+        Table k = new Table(test);
+        j.print();
+        k.print();
+        ArrayList<Integer> rem = condition(k, condit);
+        for (int x = 0; x < rem.size(); x++) {
+            k.removal_r(rem.get(x));
+        }
+        k.print();
     }
-
 
 }

@@ -34,7 +34,7 @@ public class Table<T> {
         names = col_names;
         types = col_types;
         rows = 2;
-        table = new ArrayList<>(col_names.size());
+        table = new ArrayList<>(cols);
         for (int x = 0; x < col_names.size(); x++) {
             ArrayList<String> sets = new ArrayList<>();
             sets.add(col_names.get(x));
@@ -44,10 +44,11 @@ public class Table<T> {
     }
 
     //Creates table as select aka Join
-    //Need to add cases for no shared columns and multiple shared columns
+    //Need to add cases multiple shared columns
     public Table(Table[] tables, String n) {
         Table curr = new Table(tables[0]);
         for (int t = 1; t < tables.length; t++) {
+            Boolean s_columns = true;
             Table next = new Table(tables[t]);
             ArrayList<Integer> A_index = new ArrayList<>(); //stores shared column index
             ArrayList<Integer> B_index = new ArrayList<>(); //stores shared column index
@@ -56,48 +57,64 @@ public class Table<T> {
             ArrayList<String> shared = new ArrayList<>(); //shared names
             ArrayList<String> shared_t = new ArrayList<>(); //shared types
 
-            //For each name in A.names
+            //For each name in A.names: finds the indexes of shared columns
             for (int x = 0; x < curr.names.size(); x++) {
                 if (next.names.contains(curr.names.get(x))) {
-                    A_index.add(x);
                     int indexb = next.names.indexOf(next.names.get(x));
-                    B_index.add(indexb);
-                    shared.add((String) curr.names.get(x));
-                    shared_t.add((String) curr.types.get(x));
+                    if (next.types.get(indexb).equals(curr.types.get(x))) { //makes sure columns are same type too
+                        A_index.add(x);
+                        B_index.add(indexb);
+                        shared.add((String) curr.names.get(x));
+                        shared_t.add((String) curr.types.get(x));
+                    }
                 }
             }
-            //Used removal rather than removedAll because removedAll was not mutating lists
-            for (int k = A_index.size() - 1; k >= 0; k--) {
-                notshared1.removal(A_index.get(k));
-                notshared2.removal(B_index.get(k));
+            if (shared.size() != 0) {
+            notshared1.removedAll(A_index);
+            notshared2.removedAll(B_index);}
+            else { //For when no columns are shared
+                A_index.add(0);
+                B_index.add(0);
+                notshared1.removal(0);
+                shared.add((String) curr.names.get(0));
+                shared_t.add((String) curr.types.get(0));
+                s_columns = false;
             }
             //Defining variables for col_size, names, and types
-            int total_col = curr.names.size() + next.names.size() - A_index.size();
             ArrayList<String> named = G_func.combine_lists(shared, notshared1.names, notshared2.names);
             ArrayList<String> typed = G_func.combine_lists(shared_t, notshared1.types, notshared2.types);
+            int total_col = named.size();
             Table curr_new = new Table(total_col, named, typed, n);
-            for (int x = 0; x < shared.size(); x++) { //for each shared column
-                int colA = A_index.get(x); //Shared column x in A
-                int colB = B_index.get(x); //Shared column x in B
-                for (int r = 2; r < curr.rows; r++) { //for each value in shared column of A
-                    ArrayList<Integer> rowsB;
-                    if ((rowsB = G_func.each_index(next.gets(colB), curr.gets(colA, r))).size() > 0) { //gets shared values of shared colB
-                        for (int z = 0; z < rowsB.size(); z++) { //for each index in rowsB
-                            ArrayList<String> data = new ArrayList<>(); //creates row data
-                            data.add(curr.gets(colA, r)); //Adds shared value
-                            int rowB = rowsB.get(z); //gets the zth shared index from rowsB
-                            for (int y = 0; y < notshared1.names.size(); y++) { //Adds data from left table
-                                data.add(notshared1.gets(y, r));
-                            }
-                            for (int y = 0; y < notshared2.names.size(); y++) { //Adds data from right table
-                                data.add(notshared2.gets(y, rowB));
-                            }
-                            curr_new.insert(data); //inserts data into joined table
+            int x = 0; //Used to be a for loop but had complications so got rid of it
+            int colA = A_index.get(x); //Shared column x in A
+            int colB = B_index.get(x); //Shared column x in B
+            for (int r = 2; r < curr.rows; r++) { //for each value in shared column of A
+                ArrayList<Integer> rowsB;
+                if (s_columns) {
+                    rowsB = G_func.each_index(next.gets(colB), curr.gets(colA, r));}
+                else {
+                    rowsB = new ArrayList<>();
+                    for (int k = 2; k < curr.rows; k++) {
+                        rowsB.add(k);
+                    }
+                }
+                if (rowsB.size() > 0) { //gets shared values of shared colB
+                    for (int z = 0; z < rowsB.size(); z++) { //for each index in rowsB
+                        ArrayList<String> data = new ArrayList<>(); //creates row data
+                        data.add(curr.gets(colA, r)); //Adds shared value
+                        int rowB = rowsB.get(z); //gets the zth shared index from rowsB
+                        for (int y = 0; y < notshared1.names.size(); y++) { //Adds data from left table
+                            data.add(notshared1.gets(y, r));
                         }
+                        for (int y = 0; y < notshared2.names.size(); y++) { //Adds data from right table
+                            data.add(notshared2.gets(y, rowB));
+                        }
+                        curr_new.insert(data); //inserts data into joined table
                     }
                 }
             }
             curr = curr_new; //New curr becomes the joined table.
+
         }
         table = curr.table; //Copies over data from complete joined table to construct.
         names = curr.names;
@@ -108,9 +125,15 @@ public class Table<T> {
 
     //Creates table from a list of ArrayLists<String>
     public Table(ArrayList<String>[] columns) {
+        table = new ArrayList<ArrayList<String>>();
+        names = new ArrayList<String>();
+        types = new ArrayList<String>();
         for (int x = 0; x < columns.length; x++) {
             table.add(columns[x]);
+            names.add(columns[x].get(0));
+            types.add(columns[x].get(1));
         }
+        rows = columns[0].size();
     }
 
     //Inserts values
@@ -129,8 +152,8 @@ public class Table<T> {
         if (table != null) {
             //Prints col_name and col_type together
             String comma;
-            for (int x = 0; x < table.size(); x++) {
-                if (x == table.size() - 1) {
+            for (int x = 0; x < names.size(); x++) {
+                if (x == names.size() - 1) {
                     comma = "";
                     System.out.println(table.get(x).get(0) + " " + table.get(x).get(1) + comma);
 
@@ -141,8 +164,8 @@ public class Table<T> {
             }
             //Prints rest of the data
             for (int y = 2; y < table.get(0).size(); y++) {
-                for (int x = 0; x < table.size(); x++) {
-                    if (x == table.size() - 1) {
+                for (int x = 0; x < names.size(); x++) {
+                    if (x == names.size() - 1) {
                         comma = "";
                         System.out.println(table.get(x).get(y) + comma);
 
@@ -157,7 +180,6 @@ public class Table<T> {
             return;
         }
     }
-
 
     //Gets the ArrayList at column index
     public ArrayList<String> gets(int index) {
@@ -176,12 +198,22 @@ public class Table<T> {
         types.remove(index);
     }
 
+    public void removal_r(int row) {
+        for (int x = 0; x < names.size(); x++) {
+             ArrayList<String> copy = table.get(x);
+             copy.remove(row);
+             table.set(x,copy);
+        }
+        rows--;
+    }
+
     //Supposed to remove all columns at the specified indexes, but not working
     public void removedAll(ArrayList<Integer> x) {
-        for (int k = x.size() - 1; k >= 0; k--) {
-            table.remove(x.get(k));
-            names.remove(x.get(k));
-            types.remove(x.get(k));
+        for (int k = x.size()-1; k >= 0; k--) {
+            int indx = x.get(k);
+            table.remove(indx);
+            names.remove(indx);
+            types.remove(indx);
         }
     }
 
@@ -205,19 +237,18 @@ public class Table<T> {
         String[] second = new String[] {"int", "int"};
         String[] firsts = new String[] {"x", "z"};
         String[] seconds = new String[] {"int", "int"};
-        String[] firsted = new String[] {"x","b"};
-        Table t = new Table(3, new ArrayList<String>(Arrays.asList(first)), new ArrayList<String>(Arrays.asList(second)), "t");
-        Table s = new Table(3, new ArrayList<String>(Arrays.asList(firsts)), new ArrayList<String>(Arrays.asList(seconds)), "s");
-        Table u = new Table(3, new ArrayList<String>(Arrays.asList(firsted)), new ArrayList<String>(Arrays.asList(seconds)), "u");
+        String[] firsted = new String[] {"a","b"};
+        Table t = new Table(2, new ArrayList<String>(Arrays.asList(first)), new ArrayList<String>(Arrays.asList(second)), "t");
+        Table s = new Table(2, new ArrayList<String>(Arrays.asList(firsts)), new ArrayList<String>(Arrays.asList(seconds)), "s");
+        Table u = new Table(2, new ArrayList<String>(Arrays.asList(firsted)), new ArrayList<String>(Arrays.asList(seconds)), "u");
         Integer[] one = new Integer[] {2,5};
         Integer[] two = new Integer[] {8,3};
         Integer[] three = new Integer[] {13,7};
         Integer[] ones = new Integer[] {2,4};
         Integer[] twos = new Integer[] {8,9};
         Integer[] threes = new Integer[] {10,1};
-        Integer[] oned = new Integer[] {2,3};
-        Integer[] twod = new Integer[] {8,0};
-        Integer[] threed = new Integer[] {5,1};
+        Integer[] oned = new Integer[] {7,0};
+        Integer[] twod = new Integer[] {2,8};
         t.insert(new ArrayList<Integer>(Arrays.asList(one)));
         t.insert(new ArrayList<Integer>(Arrays.asList(two)));
         t.insert(new ArrayList<Integer>(Arrays.asList(three)));
@@ -226,14 +257,8 @@ public class Table<T> {
         s.insert(new ArrayList<Integer>(Arrays.asList(threes)));
         u.insert(new ArrayList<Integer>(Arrays.asList(oned)));
         u.insert(new ArrayList<Integer>(Arrays.asList(twod)));
-        u.insert(new ArrayList<Integer>(Arrays.asList(threed)));
-        Table k = new Table(new Table[] {t, s}, "k");
-        Table j = new Table(new Table[] {t, u, s}, "j");
-        t.print();
-        s.print();
-        u.print();
+        Table k = new Table(new Table[] {t, s, u}, "k");
         k.print();
-        j.print();
     }
 
 

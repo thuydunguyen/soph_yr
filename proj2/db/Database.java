@@ -83,16 +83,25 @@ public class Database {
     //Need to work on combining Table constructor with oper and cond from G_func
     //Figure out how to separate exprs with "as" statement in it
     public void createSelectedTable(String name, String exprs, String tables, String conds) {
-        String[] columns = exprs.split(",");
+        String[] columns = exprs.split("\\s*,\\s*");
         String[] table = tables.split(",");
+        String[] cond;
         try {
-        String[] cond = conds.split("\\s+and\\s+");}
-        catch (NullPointerException e) {
-
+            cond = conds.split("\\s+and\\s+");
+        } catch (NullPointerException e) {
+            cond = new String[0];
         }
         Table[] t = retrieve(table);
         Table joined = new Table(t, name);
-        ArrayList<String>[] select_col = new ArrayList[columns.length];
+        ArrayList<String>[] sel_col = G_func.oper(joined, columns);
+        Table joined2 = new Table(sel_col);
+        if (cond.length != 0) {
+            ArrayList<Integer> rem = G_func.condition(joined2, cond);
+            for (int x = 0; x < rem.size(); x++) {
+                joined2.removal_r(rem.get(x));
+            }
+        }
+        storage.add(joined2);
     }
 
     //Gets tables corresponding to desired names
