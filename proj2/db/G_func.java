@@ -6,6 +6,7 @@ package db;
 import java.util.*;
 import db.Table;
 import java.util.StringTokenizer;
+import db.Database;
 
 public class G_func {
 
@@ -75,7 +76,7 @@ public class G_func {
     }
 
     //Computes the operation
-    protected static ArrayList<String>[] oper (Table t, String[] columns) {
+    protected static Table oper (Table t, String[] columns, String named) {
         ArrayList<String>[] new_col = new ArrayList[columns.length];
         String[] tokes = new String[]{"+", "-", "*", "/",};
         ArrayList<String> tokens = new ArrayList<>(Arrays.asList(tokes));
@@ -86,6 +87,9 @@ public class G_func {
             ArrayList<String> news = new ArrayList<>();
             String name;
             if (parts.length == 1) {
+                if (parts[0].equals("*")) {
+                    return new Table(t);
+                }
                 int col = t.names.indexOf(parts[0]);
                 news = t.gets(col);
                 if (check.length > 1) {
@@ -148,7 +152,7 @@ public class G_func {
             }
             new_col[cols] = news;
         }
-        return new_col;
+        return new Table(new_col, named);
     }
 
     //Gives rows that do not match conditions
@@ -290,21 +294,21 @@ public class G_func {
         s.insert(new ArrayList<Integer>(Arrays.asList(ones)));
         s.insert(new ArrayList<Integer>(Arrays.asList(twos)));
         s.insert(new ArrayList<Integer>(Arrays.asList(threes)));
-        Table j = new Table(new Table[]{t, s}, "j");
-        String expr = "x,y, x/y as z";
-        String cond = "x < y and z < 10";
-        String[] condit = cond.split("\\s+and\\s+");
-        String[] conds = splits(condit[0]);
-        String[] columns = expr.split("\\s*,\\s*");
-        ArrayList<String>[] test = oper(t, columns);
-        Table k = new Table(test);
-        j.print();
+        String tables = "t,s";
+        String operand = "'*'";
+        String[] table = tables.split("\\s*,\\s*");
+        Database db = new Database();
+        db.storage.add(t);
+        db.storage.add(s);
+        Table[] ts =  db.retrieve(table);
+        Table k  = new Table(ts, "k");
         k.print();
-        ArrayList<Integer> rem = condition(k, condit);
-        for (int x = 0; x < rem.size(); x++) {
-            k.removal_r(rem.get(x));
+        String[] columns = operand.split("\\s*,\\s*");
+        for (int x = 0; x < columns.length; x++) {
+            System.out.println(columns[x]);
         }
-        k.print();
+        Table j = oper(k, columns, "j");
+        j.print();
     }
 
 }

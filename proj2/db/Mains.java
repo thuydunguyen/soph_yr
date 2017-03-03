@@ -31,11 +31,8 @@ public class Mains {
 
             if (!line.trim().isEmpty()) {
                 String result = db.transact(line);
-                if (result.length() > 0) {
-                    System.out.println(result);
-                    if (!(malfrm.matcher(result)).matches() || !(expect.matcher(result)).matches()) {
-                        db.eval(result);
-                    }
+                if (result.length() == 0) {
+                    db.eval(line);
                 }
             }
 

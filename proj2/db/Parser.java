@@ -65,7 +65,7 @@ public class Parser {
             return select(m.group(1));
         } else {
             System.err.printf("Malformed query: " + query);
-            return "";
+            return "Error";
         }
     }
 
@@ -77,26 +77,17 @@ public class Parser {
             return createSelectedTable(m.group(1), m.group(2), m.group(3), m.group(4));
         } else {
             System.err.printf("Malformed create: " + expr);
-            return "";
+            return "Error";
         }
     }
 
     //Added statements to get col_names and col_types.
     private static String createNewTable(String name, String[] cols) {
-        String[] named = new String[cols.length];
-        String[] types = new String[cols.length];
-        StringJoiner joiner = new StringJoiner(" ");
-        for (int i = 0; i < cols.length-1; i++) {
-            joiner.add(cols[i]);
-
-        }
-        String colSentence = joiner.toString() + " and " + cols[cols.length -1];
-        return "You are trying to create a table named " + name + " with the columns: " + colSentence;
+       return "";
     }
 
     private static String createSelectedTable(String name, String exprs, String tables, String conds) {
-        return "You are trying to create a table named " + name + " by selecting these expressions: " +
-                 exprs + " from the join of these tables: " + tables + ", filtered by these conditions: " + conds;
+        return "";
     }
 
     private static String loadTable(String name) {
@@ -108,36 +99,35 @@ public class Parser {
     }
 
     private static String dropTable(String name) {
-        return "You are trying to drop the table named " + name;
+        return "";
     }
 
     private static String insertRow(String expr) {
         Matcher m = INSERT_CLS.matcher(expr);
         if (!m.matches()) {
             System.err.printf("Malformed insert: " + expr);
-            return "";
+            return "Error";
         }
 
-        return "You are trying to insert the row" +  m.group(2) + " into the table " + m.group(1);
+        return "";
     }
 
     private static String printTable(String name) {
-        return "You are trying to print the table named " + name;
+        return "";
     }
 
     private static String select(String expr) {
         Matcher m = SELECT_CLS.matcher(expr);
         if (!m.matches()) {
             System.err.printf("Malformed select: " + expr);
-            return "";
+            return "Error";
         }
 
         return select(m.group(1), m.group(2), m.group(3));
     }
 
     private static String select(String exprs, String tables, String conds) {
-        return "You are trying to select these expressions: " +
-                exprs + " from the join of these tables: " + tables + ", filtered by these conditions: " + conds;
+        return "";
     }
 
 }

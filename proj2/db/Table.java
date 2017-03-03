@@ -124,7 +124,7 @@ public class Table<T> {
     }
 
     //Creates table from a list of ArrayLists<String>
-    public Table(ArrayList<String>[] columns) {
+    public Table(ArrayList<String>[] columns, String n) {
         table = new ArrayList<ArrayList<String>>();
         names = new ArrayList<String>();
         types = new ArrayList<String>();
@@ -134,6 +134,7 @@ public class Table<T> {
             types.add(columns[x].get(1));
         }
         rows = columns[0].size();
+        named = n;
     }
 
     //Inserts values

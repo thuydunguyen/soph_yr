@@ -1,4 +1,5 @@
 package db;
+import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.StringJoiner;
@@ -50,7 +51,15 @@ public class Database {
         Matcher m;
         if ((m = CREATE_CMD.matcher(query)).matches()) {
             createTable(m.group(1));
-        }
+        } else if ((m = DROP_CMD.matcher(query)).matches()) {
+            dropTable(m.group(1));
+        } else if ((m = PRINT_CMD.matcher(query)).matches()) {
+            printTable(m.group(1));
+        } else if ((m = SELECT_CMD.matcher(query)).matches()) {
+            select(m.group(1));
+        } else if ((m = INSERT_CMD.matcher(query)).matches()) {
+            insertRow(m.group(1));}
+
     }
 
     public void createTable(String expr) {
@@ -58,7 +67,7 @@ public class Database {
         if ((m = CREATE_NEW.matcher(expr)).matches()) {
             createNewTable(m.group(1), m.group(2).split(COMMA));
         }
-        else {
+        else if ((m = CREATE_SEL.matcher(expr)).matches()) {
             createSelectedTable(m.group(1), m.group(2), m.group(3), m.group(4));
         }
     }
@@ -84,7 +93,7 @@ public class Database {
     //Figure out how to separate exprs with "as" statement in it
     public void createSelectedTable(String name, String exprs, String tables, String conds) {
         String[] columns = exprs.split("\\s*,\\s*");
-        String[] table = tables.split(",");
+        String[] table = tables.split("\\s*,\\s*");
         String[] cond;
         try {
             cond = conds.split("\\s+and\\s+");
@@ -93,9 +102,8 @@ public class Database {
         }
         Table[] t = retrieve(table);
         Table joined = new Table(t, name);
-        ArrayList<String>[] sel_col = G_func.oper(joined, columns);
-        Table joined2 = new Table(sel_col);
-        if (cond.length != 0) {
+        Table joined2 = G_func.oper(joined, columns, name);
+        if (cond.length > 0) {
             ArrayList<Integer> rem = G_func.condition(joined2, cond);
             for (int x = 0; x < rem.size(); x++) {
                 joined2.removal_r(rem.get(x));
@@ -103,6 +111,67 @@ public class Database {
         }
         storage.add(joined2);
     }
+
+    private void dropTable(String name) {
+       int indx = index(name);
+       storage.remove(indx);
+    }
+
+    private void printTable(String name) {
+        Table t = retrieve(name);
+        t.print();
+    }
+
+    private void select(String expr) {
+        Matcher m = SELECT_CLS.matcher(expr);
+        if (!m.matches()) {
+            System.err.printf("Malformed select: %s\n", expr);
+            return;
+        }
+        select(m.group(1), m.group(2), m.group(3));
+    }
+
+    private void select(String exprs, String tables, String conds) {
+        String[] columns = exprs.split("\\s*,\\s*");
+        String[] table = tables.split("\\s*,\\s*");
+        String[] cond;
+        try {
+            cond = conds.split("\\s+and\\s+");
+        } catch (NullPointerException e) {
+            cond = new String[0];
+        }
+        Table[] t = retrieve(table);
+        Table joined = new Table(t, "temp");
+        Table joined2 = G_func.oper(joined, columns, "temp");
+        if (cond.length > 0) {
+            ArrayList<Integer> rem = G_func.condition(joined2, cond);
+            for (int x = 0; x < rem.size(); x++) {
+                joined2.removal_r(rem.get(x));
+            }
+        }
+        joined2.print();
+    }
+
+    private void insertRow(String expr) {
+        Matcher m = INSERT_CLS.matcher(expr);
+
+        if (!m.matches()) {
+            System.err.printf("Malformed insert: %s\n", expr);
+        }
+
+        String name = m.group(1);
+        String data = m.group(2);
+
+        String[] vals = data.split("\\s*,\\s*");
+        ArrayList<String> values = new ArrayList<>(Arrays.asList(vals));
+        int indx = index(name);
+        Table t = retrieve(name);
+        t.insert(values);
+        storage.set(indx, t);
+
+    }
+
+
 
     //Gets tables corresponding to desired names
     public Table[] retrieve(String[] name) {
@@ -118,12 +187,25 @@ public class Database {
     }
 
     public Table retrieve(String name) {
-            for (int x = 0; x < storage.size(); x++) {
-                if (storage.get(x).named.equals(name)) {
-                     return storage.get(x);
-                }
+            int indx = index(name);
+            if (indx >= 0) {
+                return storage.get(indx);
             }
         return new Table();
     }
+
+    public int index(String name) {
+        for (int x = 0; x < storage.size(); x++) {
+            if (storage.get(x).named.equals(name)) {
+                return x;
+            }
+        }
+        return -1;
+    }
+
+    //Need to make commands for:
+    //Load
+    //Insert into
+    //Store
 }
 
