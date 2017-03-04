@@ -30,7 +30,7 @@ public class Table<T> {
 
     //Creates new table
     protected Table(int cols, ArrayList<String> col_names, ArrayList<String> col_types, String n) {
-        ArrayList<String> type_check = new ArrayList<>(Arrays.asList(new String[] {"int", "float", "string"}));
+        ArrayList<String> type_check = new ArrayList<>(Arrays.asList(new String[]{"int", "float", "string"}));
         named = n;
         names = col_names;
         types = col_types;
@@ -40,11 +40,11 @@ public class Table<T> {
             ArrayList<String> sets = new ArrayList<>();
             String typed = col_types.get(x);
             if (type_check.contains(typed)) {
-            sets.add(col_names.get(x));
-            sets.add(col_types.get(x));
-            table.add(sets); }
-            else {
-                rows =  -1;
+                sets.add(col_names.get(x));
+                sets.add(col_types.get(x));
+                table.add(sets);
+            } else {
+                rows = -1;
             }
         }
 
@@ -154,9 +154,9 @@ public class Table<T> {
             String check_type = G_func.check_literal(point);
             if (types.get(c).equals("string")) {
                 if (!check_type.equals("string")) {
-                    error = 1;}
-            }
-            else {
+                    error = 1;
+                }
+            } else {
                 if (!check_type.equals("int") && !check_type.equals("float")) {
                     error = 1;
                 }

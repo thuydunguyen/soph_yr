@@ -36,7 +36,7 @@ public class Mains {
                     db.eval(line);
                 }
                 System.out.print(result);
-                }
+            }
 
 
             System.out.print(PROMPT);
