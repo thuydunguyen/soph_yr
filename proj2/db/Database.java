@@ -4,12 +4,13 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.Arrays;
 import java.util.StringJoiner;
-import java.util.regex.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.ArrayList;
 
 
 public class Database {
-    public ArrayList<Table> storage;
+    private ArrayList<Table> storage;
 
     public Database() {
         storage = new ArrayList<>();
@@ -19,7 +20,7 @@ public class Database {
         return eval(query);
     }
 
-    //***************************************************************************************************************//
+    //*************************************************//
 
     // Various common constructs, simplifies parsing.
     protected static final String REST = "\\s*(.*)\\s*",
@@ -36,18 +37,18 @@ public class Database {
             SELECT_CMD = Pattern.compile("select " + REST);
 
     // Stage 2 syntax, contains the clauses of commands.
-    protected static final Pattern CREATE_NEW = Pattern.compile("(\\S+)\\s+\\((\\S+\\s+\\S+\\s*" +
-            "(?:,\\s*\\S+\\s+\\S+\\s*)*)\\)"),
-            SELECT_CLS = Pattern.compile("([^,]+?(?:,[^,]+?)*)\\s+from\\s+" +
-                    "(\\S+\\s*(?:,\\s*\\S+\\s*)*)(?:\\s+where\\s+" +
-                    "([\\w\\s+\\-*/'<>=!]+?(?:\\s+and\\s+" +
-                    "[\\w\\s+\\-*/'<>=!]+?)*))?"),
-            CREATE_SEL = Pattern.compile("(\\S+)\\s+as select\\s+" +
-                    SELECT_CLS.pattern()),
-            INSERT_CLS = Pattern.compile("(\\S+)\\s+values\\s+(.+?" +
-                    "\\s*(?:,\\s*.+?\\s*)*)");
+    protected static final Pattern CREATE_NEW = Pattern.compile("(\\S+)\\s+\\((\\S+\\s+\\S+\\s*"
+            + "(?:,\\s*\\S+\\s+\\S+\\s*)*)\\)"),
+            SELECT_CLS = Pattern.compile("([^,]+?(?:,[^,]+?)*)\\s+from\\s+"
+                    + "(\\S+\\s*(?:,\\s*\\S+\\s*)*)(?:\\s+where\\s+"
+                    + "([\\w\\s+\\-*/'<>=!]+?(?:\\s+and\\s+"
+                    + "[\\w\\s+\\-*/'<>=!]+?)*))?"),
+            CREATE_SEL = Pattern.compile("(\\S+)\\s+as select\\s+"
+                    + SELECT_CLS.pattern()),
+            INSERT_CLS = Pattern.compile("(\\S+)\\s+values\\s+(.+?"
+                    + "\\s*(?:,\\s*.+?\\s*)*)");
 
-    //****************************************************************************************************************//
+    //***************************************************//
 
     public String eval(String query) {
         Matcher m;
@@ -69,7 +70,7 @@ public class Database {
         return "ERROR: * ";
     }
 
-    //****************************************************************************************************************//
+    //*******************************************//
 
     protected String createTable(String expr) {
         Matcher m;
@@ -93,9 +94,8 @@ public class Database {
             types[i] = parts[1];
 
         }
-        String colSentence = joiner.toString();
-        Table t = new Table(named.length, G_func.to_list(named), G_func.to_list(types), name);
-        if (t.rows < 0) {
+        Table t = new Table(G_func.to_list(named), G_func.to_list(types), name);
+        if (t.error > 0) {
             return "ERROR: Column type not allowed";
         }
         storage.add(t);
@@ -258,4 +258,3 @@ public class Database {
     //Need to add in errors
 
 }
-

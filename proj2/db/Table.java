@@ -29,13 +29,13 @@ public class Table<T> {
     }
 
     //Creates new table
-    protected Table(int cols, ArrayList<String> col_names, ArrayList<String> col_types, String n) {
+    protected Table(ArrayList<String> col_names, ArrayList<String> col_types, String n) {
         ArrayList<String> type_check = new ArrayList<>(Arrays.asList(new String[]{"int", "float", "string"}));
         named = n;
         names = col_names;
         types = col_types;
         rows = 2;
-        table = new ArrayList<>(cols);
+        table = new ArrayList<>(col_names.size());
         for (int x = 0; x < col_names.size(); x++) {
             ArrayList<String> sets = new ArrayList<>();
             String typed = col_types.get(x);
@@ -44,7 +44,7 @@ public class Table<T> {
                 sets.add(col_types.get(x));
                 table.add(sets);
             } else {
-                rows = -1;
+                error = 1;
             }
         }
 
@@ -90,8 +90,7 @@ public class Table<T> {
             //Defining variables for col_size, names, and types
             ArrayList<String> named = G_func.combine_lists(shared, notshared1.names, notshared2.names);
             ArrayList<String> typed = G_func.combine_lists(shared_t, notshared1.types, notshared2.types);
-            int total_col = named.size();
-            Table curr_new = new Table(total_col, named, typed, n);
+            Table curr_new = new Table(named, typed, n);
             int x = 0; //Used to be a for loop but had complications so got rid of it
             int colA = A_index.get(x); //Shared column x in A
             int colB = B_index.get(x); //Shared column x in B
@@ -149,28 +148,14 @@ public class Table<T> {
 
     //Inserts values
     protected void insert(ArrayList<T> data) {
-        for (int c = 0; c < data.size(); c++) {
-            String point = data.get(c).toString();
-            String check_type = G_func.check_literal(point);
-            if (types.get(c).equals("string")) {
-                if (!check_type.equals("string")) {
-                    error = 1;
-                }
-            } else {
-                if (!check_type.equals("int") && !check_type.equals("float")) {
-                    error = 1;
-                }
-            }
+        for (int x = 0; x < data.size(); x++) {
+            ArrayList<String> copy = table.get(x);
+            T item = data.get(x);
+            String point = item.toString();
+            copy.add(point);
+            table.set(x, copy);
         }
-        if (error != 1) {
-            for (int x = 0; x < data.size(); x++) {
-                ArrayList copy = table.get(x);
-                String point = data.get(x).toString();
-                copy.add(point);
-                table.set(x, copy);
-            }
-            rows++;
-        }
+        rows++;
     }
 
     //Prints table
@@ -190,7 +175,7 @@ public class Table<T> {
                 }
             }
             //Prints rest of the data
-            for (int y = 2; y < table.get(0).size(); y++) {
+            for (int y = 2; y < rows; y++) {
                 for (int x = 0; x < names.size(); x++) {
                     if (x == names.size() - 1) {
                         comma = "";
@@ -302,6 +287,28 @@ public class Table<T> {
         } else {
             return (ArrayList<String>) types.clone();
         }
+    }
+
+    public static void main(String[] args) {
+        String[] first = new String[] {"x","y"};
+        String[] second = new String[] {"int", "int"};
+        String[] firsts = new String[] {"x", "z"};
+        String[] seconds = new String[] {"int", "int"};
+        String[] firsted = new String[] {"a","b"};
+        Table t = new Table(new ArrayList<String>(Arrays.asList(first)), new ArrayList<String>(Arrays.asList(second)), "t");
+        Table s = new Table(new ArrayList<String>(Arrays.asList(firsts)), new ArrayList<String>(Arrays.asList(seconds)), "s");
+        Table u = new Table(new ArrayList<String>(Arrays.asList(firsted)), new ArrayList<String>(Arrays.asList(seconds)), "u");
+        Integer[] one = new Integer[] {2,5};
+        Integer[] two = new Integer[] {8,3};
+        Integer[] three = new Integer[] {13,7};
+        Integer[] ones = new Integer[] {2,4};
+        Integer[] twos = new Integer[] {8,9};
+        Integer[] threes = new Integer[] {10,1};
+        Integer[] oned = new Integer[] {7,0};
+        Integer[] twod = new Integer[] {2,8};
+        t.insert(new ArrayList<Integer>(Arrays.asList(one)));
+        t.print();
+
     }
 
 

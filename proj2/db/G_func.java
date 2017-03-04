@@ -121,7 +121,9 @@ public class G_func {
                             } else if (operand.equals("*")) {
                                 value = Integer.parseInt(colA.get(val)) * Integer.parseInt(colB.get(val));
                             } else {
+
                                 value = Integer.parseInt(colA.get(val)) / Integer.parseInt(colB.get(val));
+
                             }
                             news.add(Integer.toString(value));
                         }
@@ -250,6 +252,7 @@ public class G_func {
         }
     }
 
+
     //Creates table from a path aka load
     protected static Table loadComp(String path, String name) {
         ArrayList<String> names = new ArrayList<>();
@@ -268,7 +271,7 @@ public class G_func {
                 names.add(parts[0]);
                 types.add(parts[1]);
             }
-            Table t = new Table(names.size(), names, types, name);
+            Table t = new Table(names, types, name);
             for (int z = 1; z < nlines; z++) {
                 ArrayList<String> values = new ArrayList<>();
                 String[] vals = lines[z].split("\\s*,\\s*");
