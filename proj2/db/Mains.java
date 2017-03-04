@@ -1,4 +1,5 @@
 package db;
+
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.IOException;
@@ -9,7 +10,7 @@ import java.util.regex.Pattern;
 import db.Database;
 
 public class Mains {
-    private static final String EXIT   = "exit";
+    private static final String EXIT = "exit";
     private static final String PROMPT = "> ";
 
 
@@ -33,6 +34,8 @@ public class Mains {
                 String result = db.transact(line);
                 if (result.length() == 0) {
                     db.eval(line);
+                } else {
+                    System.out.println("");
                 }
             }
 

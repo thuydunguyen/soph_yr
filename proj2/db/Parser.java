@@ -3,6 +3,7 @@ package db;
 import java.util.StringJoiner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 import db.Table;
 import db.G_func;
 
@@ -83,7 +84,7 @@ public class Parser {
 
     //Added statements to get col_names and col_types.
     private static String createNewTable(String name, String[] cols) {
-       return "";
+        return "";
     }
 
     private static String createSelectedTable(String name, String exprs, String tables, String conds) {
@@ -91,11 +92,11 @@ public class Parser {
     }
 
     private static String loadTable(String name) {
-        return "You are trying to load the table named " + name;
+        return "";
     }
 
     private static String storeTable(String name) {
-        return "You are trying to store the table named " + name;
+        return "";
     }
 
     private static String dropTable(String name) {

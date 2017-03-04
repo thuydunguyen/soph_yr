@@ -3,10 +3,10 @@ package db;
 /**
  * Created by Thuy-Du on 3/1/2017.
  */
+
+import java.io.*;
 import java.util.*;
-import db.Table;
-import java.util.StringTokenizer;
-import db.Database;
+
 
 public class G_func {
 
@@ -28,7 +28,7 @@ public class G_func {
         ArrayList<Integer> index = new ArrayList<>();
         for (int k = 2; k < x.size(); k++) {
             String val = x.get(k);
-            if (val.equals(y)){
+            if (val.equals(y)) {
                 index.add(k);
             }
         }
@@ -37,17 +37,15 @@ public class G_func {
 
     //Compares types and outputs resulting type
     protected static String type_out(Object a, Object b) {
-        ArrayList<String> nums = new ArrayList<String>(Arrays.asList(new String[] {"int", "float"}));
-        ArrayList<String> words = new ArrayList<String>(Arrays.asList(new String[] {"string"}));
+        ArrayList<String> nums = new ArrayList<String>(Arrays.asList(new String[]{"int", "float"}));
+        ArrayList<String> words = new ArrayList<String>(Arrays.asList(new String[]{"string"}));
         if (nums.contains(a) && nums.contains(b)) {
             int x = nums.indexOf(a);
             int y = nums.indexOf(b);
-            return nums.get(Math.max(x,y));
-        }
-        else if (words.contains(a) && words.contains(b)) {
+            return nums.get(Math.max(x, y));
+        } else if (words.contains(a) && words.contains(b)) {
             return "string";
-        }
-        else {
+        } else {
             System.err.printf("Cannot perform operation with class: " + a + " and " + b);
             return "";
         }
@@ -55,14 +53,14 @@ public class G_func {
 
     //Splits String into conditional parts
     protected static String[] splits(String str) {
-        str = str.replaceAll("\\s+","");
+        str = str.replaceAll("\\s+", "");
         String[] result = str.split("(?<=[<=>])|(?=[<=>])");
         String[] fin = new String[3];
         if (result.length == 4) {
-            fin[1] = result[1]+result[2];
+            fin[1] = result[1] + result[2];
             fin[0] = result[0];
-            fin[2] = result[3];}
-        else {
+            fin[2] = result[3];
+        } else {
             fin = result;
         }
         return fin;
@@ -76,7 +74,12 @@ public class G_func {
     }
 
     //Computes the operation
-    protected static Table oper (Table t, String[] columns, String named) {
+    protected static Table oper(Table t, String[] columns, String named) {
+        if (columns[0].equals("*")) {
+            Table Q = new Table(t);
+            Q.named = named;
+            return Q;
+        }
         ArrayList<String>[] new_col = new ArrayList[columns.length];
         String[] tokes = new String[]{"+", "-", "*", "/",};
         ArrayList<String> tokens = new ArrayList<>(Arrays.asList(tokes));
@@ -87,14 +90,11 @@ public class G_func {
             ArrayList<String> news = new ArrayList<>();
             String name;
             if (parts.length == 1) {
-                if (parts[0].equals("*")) {
-                    return new Table(t);
-                }
                 int col = t.names.indexOf(parts[0]);
                 news = t.gets(col);
                 if (check.length > 1) {
                     check[1] = check[1].replaceAll("\\s+", "");
-                    news.set(0,check[1]);
+                    news.set(0, check[1]);
                 }
             } else {
                 String one = parts[0];
@@ -125,8 +125,7 @@ public class G_func {
                             }
                             news.add(Integer.toString(value));
                         }
-                    }
-                    else if (type.equals("float")) {
+                    } else if (type.equals("float")) {
                         for (int val = 2; val < t.rows; val++) {
                             if (operand.equals("+")) {
                                 floater = Float.parseFloat(colA.get(val)) + Float.parseFloat(colB.get(val));
@@ -201,7 +200,7 @@ public class G_func {
         rem.clear();
         rem.addAll(rm_rem);
         Comparator comparator = Collections.reverseOrder();
-        Collections.sort(rem,comparator);
+        Collections.sort(rem, comparator);
         return rem;
     }
 
@@ -216,27 +215,21 @@ public class G_func {
                 val1 = (float) Math.floor(val1);
                 val2 = (float) Math.floor(val2);
             }
-        }
-        else {
+        } else {
             val1 = val_1.compareTo(val_2);
             val2 = 0;
         }
         if (bool.equals("==")) {
             return val1 == val2;
-        }
-        else if (bool.equals("!=")) {
+        } else if (bool.equals("!=")) {
             return val1 != val2;
-        }
-        else if (bool.equals(">")) {
+        } else if (bool.equals(">")) {
             return val1 > val2;
-        }
-        else if (bool.equals(">=")) {
+        } else if (bool.equals(">=")) {
             return val1 >= val2;
-        }
-        else if (bool.equals("<")) {
+        } else if (bool.equals("<")) {
             return val1 < val2;
-        }
-        else if (bool.equals("<=")) {
+        } else if (bool.equals("<=")) {
             return val1 <= val2;
         }
         return false;
@@ -248,8 +241,7 @@ public class G_func {
         Boolean end = x.endsWith("'");
         if (begin && end) {
             return 0;
-        }
-        else {
+        } else {
             try {
                 int y = Integer.parseInt(x);
                 return 1;
@@ -268,47 +260,76 @@ public class G_func {
     protected static String lit_to_str(String x) {
         int y = check_literal(x);
         if (y == 0) {
-        return x.substring(1,x.length()-1); }
-        else {
+            return x.substring(1, x.length() - 1);
+        } else {
             return x;
         }
     }
 
-    //testing
-    public static void main(String[] args) {
-        String[] first = new String[]{"x", "y"};
-        String[] second = new String[]{"int", "int"};
-        String[] firsts = new String[]{"x", "z"};
-        String[] seconds = new String[]{"int", "int"};
-        Table t = new Table(3, new ArrayList<String>(Arrays.asList(first)), new ArrayList<String>(Arrays.asList(second)), "t");
-        Table s = new Table(3, new ArrayList<String>(Arrays.asList(firsts)), new ArrayList<String>(Arrays.asList(seconds)), "s");
-        Integer[] one = new Integer[]{2, 5};
-        Integer[] two = new Integer[]{8, 3};
-        Integer[] three = new Integer[]{13, 7};
-        Integer[] ones = new Integer[]{2, 4};
-        Integer[] twos = new Integer[]{8, 9};
-        Integer[] threes = new Integer[]{10, 1};
-        t.insert(new ArrayList<Integer>(Arrays.asList(one)));
-        t.insert(new ArrayList<Integer>(Arrays.asList(two)));
-        t.insert(new ArrayList<Integer>(Arrays.asList(three)));
-        s.insert(new ArrayList<Integer>(Arrays.asList(ones)));
-        s.insert(new ArrayList<Integer>(Arrays.asList(twos)));
-        s.insert(new ArrayList<Integer>(Arrays.asList(threes)));
-        String tables = "t,s";
-        String operand = "'*'";
-        String[] table = tables.split("\\s*,\\s*");
-        Database db = new Database();
-        db.storage.add(t);
-        db.storage.add(s);
-        Table[] ts =  db.retrieve(table);
-        Table k  = new Table(ts, "k");
-        k.print();
-        String[] columns = operand.split("\\s*,\\s*");
-        for (int x = 0; x < columns.length; x++) {
-            System.out.println(columns[x]);
+    //Creates table from a path aka load
+    protected static Table loadComp(String path, String name) {
+        ArrayList<String> names = new ArrayList<>();
+        ArrayList<String> types = new ArrayList<>();
+        try {
+            FileReader fr = new FileReader(path);
+            BufferedReader textR = new BufferedReader(fr);
+            int nlines = n_lines(path);
+            String[] lines = new String[nlines];
+            for (int x = 0; x < nlines; x++) {
+                lines[x] = textR.readLine();
+            }
+            String[] n_t = lines[0].split("\\s*,\\s*");
+            for (int y = 0; y < n_t.length; y++) {
+                String[] parts = n_t[y].split("\\s+");
+                names.add(parts[0]);
+                types.add(parts[1]);
+            }
+            Table t = new Table(names.size(), names, types, name);
+            for (int z = 1; z < nlines; z++) {
+                ArrayList<String> values = new ArrayList<>();
+                String[] vals = lines[z].split("\\s*,\\s*");
+                for (int v = 0; v < vals.length; v++) {
+                    values.add(vals[v]);
+                }
+                t.insert(values);
+            }
+            return t;
+
+        } catch (FileNotFoundException e) {
+            System.out.println("File does not exist");
+        } catch (IOException f) {
+            System.out.println("No more lines to read");
         }
-        Table j = oper(k, columns, "j");
-        j.print();
+        return new Table();
+
     }
+
+    //Gets number of lines in a file
+    protected static int n_lines(String path) {
+        try {
+            FileReader fr = new FileReader(path);
+            BufferedReader bf = new BufferedReader(fr);
+            String line_n;
+            int n = 0;
+            while ((line_n = bf.readLine()) != null) {
+                n++;
+            }
+            bf.close();
+            return n;
+
+        } catch (IOException f) {
+            System.out.println("");
+            return -1;
+        }
+    }
+
+    //Creates path
+    protected static String pathway(String name) {
+        String fileName = name + ".tbl";
+        String directory = System.getProperty("user.dir");
+        String path = directory + File.separator + fileName;
+        return path;
+    }
+
 
 }

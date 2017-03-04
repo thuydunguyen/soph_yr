@@ -1,12 +1,9 @@
 package db;
-import java.lang.reflect.Array;
+
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.StringJoiner;
 import java.util.regex.*;
-import db.Parser;
 import java.util.ArrayList;
-import db.G_func;
 
 
 public class Database {
@@ -19,6 +16,8 @@ public class Database {
     public String transact(String query) {
         return Parser.eval(query);
     }
+
+    //***************************************************************************************************************//
 
     // Various common constructs, simplifies parsing.
     private static final String REST = "\\s*(.*)\\s*",
@@ -46,6 +45,7 @@ public class Database {
             INSERT_CLS = Pattern.compile("(\\S+)\\s+values\\s+(.+?" +
                     "\\s*(?:,\\s*.+?\\s*)*)");
 
+    //****************************************************************************************************************//
 
     public void eval(String query) {
         Matcher m;
@@ -58,22 +58,27 @@ public class Database {
         } else if ((m = SELECT_CMD.matcher(query)).matches()) {
             select(m.group(1));
         } else if ((m = INSERT_CMD.matcher(query)).matches()) {
-            insertRow(m.group(1));}
+            insertRow(m.group(1));
+        } else if ((m = STORE_CMD.matcher(query)).matches()) {
+            storeTable(m.group(1));
+        } else if ((m = LOAD_CMD.matcher(query)).matches()) {
+            loadTable(m.group(1));
+        }
 
     }
 
-    public void createTable(String expr) {
+    //****************************************************************************************************************//
+
+    private void createTable(String expr) {
         Matcher m;
         if ((m = CREATE_NEW.matcher(expr)).matches()) {
             createNewTable(m.group(1), m.group(2).split(COMMA));
-        }
-        else if ((m = CREATE_SEL.matcher(expr)).matches()) {
+        } else if ((m = CREATE_SEL.matcher(expr)).matches()) {
             createSelectedTable(m.group(1), m.group(2), m.group(3), m.group(4));
         }
     }
 
-    //Added statements to get col_names and col_types.
-    public void createNewTable(String name, String[] cols) {
+    private void createNewTable(String name, String[] cols) {
         String[] named = new String[cols.length];
         String[] types = new String[cols.length];
         StringJoiner joiner = new StringJoiner(" ");
@@ -89,9 +94,7 @@ public class Database {
         storage.add(t);
     }
 
-    //Need to work on combining Table constructor with oper and cond from G_func
-    //Figure out how to separate exprs with "as" statement in it
-    public void createSelectedTable(String name, String exprs, String tables, String conds) {
+    private void createSelectedTable(String name, String exprs, String tables, String conds) {
         String[] columns = exprs.split("\\s*,\\s*");
         String[] table = tables.split("\\s*,\\s*");
         String[] cond;
@@ -113,8 +116,8 @@ public class Database {
     }
 
     private void dropTable(String name) {
-       int indx = index(name);
-       storage.remove(indx);
+        int indx = index(name);
+        storage.remove(indx);
     }
 
     private void printTable(String name) {
@@ -171,10 +174,21 @@ public class Database {
 
     }
 
+    private void storeTable(String name) {
+        Table t = retrieve(name);
+        t.createFile();
+    }
 
+    private void loadTable(String name) {
+        String path = G_func.pathway(name);
+        Table t = G_func.loadComp(path, name);
+        storage.add(t);
+    }
+
+    //****************************************************************************************************************//
 
     //Gets tables corresponding to desired names
-    public Table[] retrieve(String[] name) {
+    private Table[] retrieve(String[] name) {
         Table[] t = new Table[name.length];
         for (int n = 0; n < name.length; n++) {
             for (int x = 0; x < storage.size(); x++) {
@@ -186,15 +200,15 @@ public class Database {
         return t;
     }
 
-    public Table retrieve(String name) {
-            int indx = index(name);
-            if (indx >= 0) {
-                return storage.get(indx);
-            }
+    private Table retrieve(String name) {
+        int indx = index(name);
+        if (indx >= 0) {
+            return storage.get(indx);
+        }
         return new Table();
     }
 
-    public int index(String name) {
+    private int index(String name) {
         for (int x = 0; x < storage.size(); x++) {
             if (storage.get(x).named.equals(name)) {
                 return x;
@@ -203,9 +217,6 @@ public class Database {
         return -1;
     }
 
-    //Need to make commands for:
-    //Load
-    //Insert into
-    //Store
+    //Need to add in errors
 }
 

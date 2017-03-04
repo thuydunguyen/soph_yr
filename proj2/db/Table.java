@@ -1,11 +1,10 @@
 package db;
-import java.util.*;
-import db.G_func;
 
-/**
- * Created by Thuy-Du on 2/26/2017.
- */
+import java.io.*;
+import java.util.*;
+
 public class Table<T> {
+
     protected boolean CrTableSel = false;
     protected ArrayList<ArrayList<String>> table;
     protected ArrayList<String> names;
@@ -13,14 +12,14 @@ public class Table<T> {
     protected int rows;
     protected String named;
 
+    //*************************************************************************************************************//
+
     //Creates blank table
-    public Table() {
-        table = new ArrayList<>();
-        rows = 0;
+    protected Table() {
     }
 
     //Creates copy of a Table instance
-    public Table(Table to_copy) {
+    protected Table(Table to_copy) {
         names = to_copy.cloning(0);
         types = to_copy.cloning(1);
         rows = to_copy.rows;
@@ -29,7 +28,7 @@ public class Table<T> {
     }
 
     //Creates new table
-    public Table(int cols, ArrayList<String> col_names, ArrayList<String> col_types, String n) {
+    protected Table(int cols, ArrayList<String> col_names, ArrayList<String> col_types, String n) {
         named = n;
         names = col_names;
         types = col_types;
@@ -45,7 +44,7 @@ public class Table<T> {
 
     //Creates table as select aka Join
     //Need to add cases multiple shared columns
-    public Table(Table[] tables, String n) {
+    protected Table(Table[] tables, String n) {
         Table curr = new Table(tables[0]);
         for (int t = 1; t < tables.length; t++) {
             Boolean s_columns = true;
@@ -70,9 +69,9 @@ public class Table<T> {
                 }
             }
             if (shared.size() != 0) {
-            notshared1.removedAll(A_index);
-            notshared2.removedAll(B_index);}
-            else { //For when no columns are shared
+                notshared1.removedAll(A_index);
+                notshared2.removedAll(B_index);
+            } else { //For when no columns are shared
                 A_index.add(0);
                 B_index.add(0);
                 notshared1.removal(0);
@@ -91,8 +90,8 @@ public class Table<T> {
             for (int r = 2; r < curr.rows; r++) { //for each value in shared column of A
                 ArrayList<Integer> rowsB;
                 if (s_columns) {
-                    rowsB = G_func.each_index(next.gets(colB), curr.gets(colA, r));}
-                else {
+                    rowsB = G_func.each_index(next.gets(colB), curr.gets(colA, r));
+                } else {
                     rowsB = new ArrayList<>();
                     for (int k = 2; k < curr.rows; k++) {
                         rowsB.add(k);
@@ -124,7 +123,7 @@ public class Table<T> {
     }
 
     //Creates table from a list of ArrayLists<String>
-    public Table(ArrayList<String>[] columns, String n) {
+    protected Table(ArrayList<String>[] columns, String n) {
         table = new ArrayList<ArrayList<String>>();
         names = new ArrayList<String>();
         types = new ArrayList<String>();
@@ -137,8 +136,11 @@ public class Table<T> {
         named = n;
     }
 
+
+    //**************************************************************************************************************//
+
     //Inserts values
-    public void insert(ArrayList<T> data) {
+    protected void insert(ArrayList<T> data) {
         for (int x = 0; x < data.size(); x++) {
             ArrayList copy = table.get(x);
             String point = data.get(x).toString();
@@ -149,7 +151,7 @@ public class Table<T> {
     }
 
     //Prints table
-    public void print() {
+    protected void print() {
         if (table != null) {
             //Prints col_name and col_type together
             String comma;
@@ -176,41 +178,86 @@ public class Table<T> {
                     }
                 }
             }
-        }
-        else {
-            return;
+        } else {
+            System.out.println("No such table exists");
         }
     }
 
-    //Gets the ArrayList at column index
-    public ArrayList<String> gets(int index) {
-        return table.get(index);
+    //Stores table
+    protected void createFile() {
+        String path = G_func.pathway(named);
+        File fl = new File(path);
+        if (fl.exists()) {
+            fl.delete();
         }
+        try (FileWriter fw = new FileWriter(fl)) {
+            if (table != null) {
+                //Prints col_name and col_type together
+                String comma;
+                for (int x = 0; x < names.size(); x++) {
+                    if (x == names.size() - 1) {
+                        comma = "";
+                        fw.write(table.get(x).get(0) + " " + table.get(x).get(1) + comma);
+                        fw.write(System.lineSeparator());
+
+                    } else {
+                        comma = ",";
+                        fw.write(table.get(x).get(0) + " " + table.get(x).get(1) + comma);
+                    }
+                }
+                //Prints rest of the data
+                for (int y = 2; y < table.get(0).size(); y++) {
+                    for (int x = 0; x < names.size(); x++) {
+                        if (x == names.size() - 1) {
+                            comma = "";
+                            fw.write(table.get(x).get(y) + comma);
+                            fw.write(System.lineSeparator());
+
+                        } else {
+                            comma = ",";
+                            fw.write(table.get(x).get(y) + comma);
+                        }
+                    }
+                }
+            }
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }
+
+
+    //**************************************************************************************************************//
+
+    //Gets the ArrayList at column index
+    protected ArrayList<String> gets(int index) {
+        return table.get(index);
+    }
 
     //Gets the value at column col and row row
-    public String gets(int col, int row) {
+    protected String gets(int col, int row) {
         return table.get(col).get(row);
     }
 
     //Removes column at specified index
-    public void removal(int index) {
+    protected void removal(int index) {
         table.remove(index);
         names.remove(index);
         types.remove(index);
     }
 
-    public void removal_r(int row) {
+    //Removes row
+    protected void removal_r(int row) {
         for (int x = 0; x < names.size(); x++) {
-             ArrayList<String> copy = table.get(x);
-             copy.remove(row);
-             table.set(x,copy);
+            ArrayList<String> copy = table.get(x);
+            copy.remove(row);
+            table.set(x, copy);
         }
         rows--;
     }
 
-    //Supposed to remove all columns at the specified indexes, but not working
-    public void removedAll(ArrayList<Integer> x) {
-        for (int k = x.size()-1; k >= 0; k--) {
+    //Removes all Columns in ArrayList x
+    protected void removedAll(ArrayList<Integer> x) {
+        for (int k = x.size() - 1; k >= 0; k--) {
             int indx = x.get(k);
             table.remove(indx);
             names.remove(indx);
@@ -219,47 +266,17 @@ public class Table<T> {
     }
 
     //Creates clone of table
-    public ArrayList<ArrayList<String>> cloning() {
+    protected ArrayList<ArrayList<String>> cloning() {
         return (ArrayList<ArrayList<String>>) table.clone();
     }
 
-    //Clones table
-    public ArrayList<String> cloning(int n) {
+    //Clones Table's names or types
+    protected ArrayList<String> cloning(int n) {
         if (n == 0) {
-        return (ArrayList<String>) names.clone();}
-        else{
+            return (ArrayList<String>) names.clone();
+        } else {
             return (ArrayList<String>) types.clone();
         }
-    }
-
-    //This main method is for testing.
-    public static void main(String[] args) {
-        String[] first = new String[] {"x","y"};
-        String[] second = new String[] {"int", "int"};
-        String[] firsts = new String[] {"x", "z"};
-        String[] seconds = new String[] {"int", "int"};
-        String[] firsted = new String[] {"a","b"};
-        Table t = new Table(2, new ArrayList<String>(Arrays.asList(first)), new ArrayList<String>(Arrays.asList(second)), "t");
-        Table s = new Table(2, new ArrayList<String>(Arrays.asList(firsts)), new ArrayList<String>(Arrays.asList(seconds)), "s");
-        Table u = new Table(2, new ArrayList<String>(Arrays.asList(firsted)), new ArrayList<String>(Arrays.asList(seconds)), "u");
-        Integer[] one = new Integer[] {2,5};
-        Integer[] two = new Integer[] {8,3};
-        Integer[] three = new Integer[] {13,7};
-        Integer[] ones = new Integer[] {2,4};
-        Integer[] twos = new Integer[] {8,9};
-        Integer[] threes = new Integer[] {10,1};
-        Integer[] oned = new Integer[] {7,0};
-        Integer[] twod = new Integer[] {2,8};
-        t.insert(new ArrayList<Integer>(Arrays.asList(one)));
-        t.insert(new ArrayList<Integer>(Arrays.asList(two)));
-        t.insert(new ArrayList<Integer>(Arrays.asList(three)));
-        s.insert(new ArrayList<Integer>(Arrays.asList(ones)));
-        s.insert(new ArrayList<Integer>(Arrays.asList(twos)));
-        s.insert(new ArrayList<Integer>(Arrays.asList(threes)));
-        u.insert(new ArrayList<Integer>(Arrays.asList(oned)));
-        u.insert(new ArrayList<Integer>(Arrays.asList(twod)));
-        Table k = new Table(new Table[] {t, s, u}, "k");
-        k.print();
     }
 
 
