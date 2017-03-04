@@ -11,6 +11,7 @@ public class Table<T> {
     protected ArrayList<String> types;
     protected int rows;
     protected String named;
+    protected int error = 0;
 
     //*************************************************************************************************************//
 
@@ -29,6 +30,7 @@ public class Table<T> {
 
     //Creates new table
     protected Table(int cols, ArrayList<String> col_names, ArrayList<String> col_types, String n) {
+        ArrayList<String> type_check = new ArrayList<>(Arrays.asList(new String[] {"int", "float", "string"}));
         named = n;
         names = col_names;
         types = col_types;
@@ -36,10 +38,16 @@ public class Table<T> {
         table = new ArrayList<>(cols);
         for (int x = 0; x < col_names.size(); x++) {
             ArrayList<String> sets = new ArrayList<>();
+            String typed = col_types.get(x);
+            if (type_check.contains(typed)) {
             sets.add(col_names.get(x));
             sets.add(col_types.get(x));
-            table.add(sets);
+            table.add(sets); }
+            else {
+                rows =  -1;
+            }
         }
+
     }
 
     //Creates table as select aka Join
@@ -141,13 +149,28 @@ public class Table<T> {
 
     //Inserts values
     protected void insert(ArrayList<T> data) {
-        for (int x = 0; x < data.size(); x++) {
-            ArrayList copy = table.get(x);
-            String point = data.get(x).toString();
-            copy.add(point);
-            table.set(x, copy);
+        for (int c = 0; c < data.size(); c++) {
+            String point = data.get(c).toString();
+            String check_type = G_func.check_literal(point);
+            if (types.get(c).equals("string")) {
+                if (!check_type.equals("string")) {
+                    error = 1;}
+            }
+            else {
+                if (!check_type.equals("int") && !check_type.equals("float")) {
+                    error = 1;
+                }
+            }
         }
-        rows++;
+        if (error != 1) {
+            for (int x = 0; x < data.size(); x++) {
+                ArrayList copy = table.get(x);
+                String point = data.get(x).toString();
+                copy.add(point);
+                table.set(x, copy);
+            }
+            rows++;
+        }
     }
 
     //Prints table

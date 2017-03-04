@@ -77,8 +77,7 @@ public class Database {
             return createNewTable(m.group(1), m.group(2).split(COMMA));
         } else if ((m = CREATE_SEL.matcher(expr)).matches()) {
             return createSelectedTable(m.group(1), m.group(2), m.group(3), m.group(4));
-        }
-        else {
+        } else {
             return "ERROR: *";
         }
     }
@@ -96,6 +95,9 @@ public class Database {
         }
         String colSentence = joiner.toString();
         Table t = new Table(named.length, G_func.to_list(named), G_func.to_list(types), name);
+        if (t.rows < 0) {
+            return "ERROR: Column type not allowed";
+        }
         storage.add(t);
         return "";
     }
@@ -125,19 +127,19 @@ public class Database {
     protected String dropTable(String name) {
         int indx = index(name);
         if (indx >= 0) {
-        storage.remove(indx);
-        return "";}
-        else {
+            storage.remove(indx);
+            return "";
+        } else {
             return "ERROR: Table does not exist to be dropped";
         }
     }
 
     protected String printTable(String name) {
         if (index(name) >= 0) {
-        Table t = retrieve(name);
-        String printed = t.print();
-        return printed;}
-        else {
+            Table t = retrieve(name);
+            String printed = t.print();
+            return printed;
+        } else {
             return "ERROR: Table does not exist";
         }
     }
@@ -188,6 +190,10 @@ public class Database {
         int indx = index(name);
         Table t = retrieve(name);
         t.insert(values);
+        if (t.error == 1) {
+            t.error = 0;
+            return "ERROR: Insert type not allowed";
+        }
         storage.set(indx, t);
         return "";
 
@@ -195,10 +201,10 @@ public class Database {
 
     protected String storeTable(String name) {
         if (index(name) >= 0) {
-        Table t = retrieve(name);
-        t.createFile();
-        return "";}
-        else {
+            Table t = retrieve(name);
+            t.createFile();
+            return "";
+        } else {
             return "ERROR: Table does not exist";
         }
     }
@@ -210,8 +216,7 @@ public class Database {
             Table t = G_func.loadComp(path, name);
             storage.add(t);
             return "";
-            }
-        catch (FileNotFoundException e) {
+        } catch (FileNotFoundException e) {
             return "ERROR: File does not exist";
         }
 

@@ -162,22 +162,16 @@ public class G_func {
         for (int x = 2; x < t.rows; x++) { //For each row
             int failed = 0; //Number of conditions the row failed
             for (int y = 0; y < conds.length; y++) { //For each condition
-                int type_n; //type number: -1 to 2 from check_literal
+                String type_n; //type number: -1 to 2 from check_literal
                 String type; //column type
                 String[] parts = splits(conds[y]); //splits the condition into tokens
                 int indx1 = t.names.indexOf(parts[0]); //Gets column1
                 ArrayList<String> col1 = t.gets(indx1);
                 ArrayList<String> col2; //Initializes column2
-                if ((type_n = check_literal(parts[2])) != -1) { //Checks if  second arg is literal
+                if ((type_n = check_literal(parts[2])) != "none") { //Checks if  second arg is literal
                     String col_type; //Sets col_type of second arg based on type_n
-                    val_2 = lit_to_str(parts[2]); //Changes literal to string
-                    if (type_n == 0) {
-                        col_type = "string";
-                    } else if (type_n == 1) {
-                        col_type = "int";
-                    } else {
-                        col_type = "float";
-                    }
+                    val_2 = parts[2];
+                    col_type = type_n;
                     String[] vals = new String[t.rows]; //makes a string with same size as rows
                     Arrays.fill(vals, val_2); //Filled with second arg
                     col2 = new ArrayList<>(Arrays.asList(vals));
@@ -236,33 +230,23 @@ public class G_func {
     }
 
     //Checks if the string contains a literal
-    protected static int check_literal(String x) {
+    protected static String check_literal(String x) {
         Boolean begin = x.startsWith("'");
         Boolean end = x.endsWith("'");
         if (begin && end) {
-            return 0;
+            return "string";
         } else {
             try {
                 int y = Integer.parseInt(x);
-                return 1;
+                return "int";
             } catch (NumberFormatException e) {
                 try {
                     float z = Float.parseFloat(x);
-                    return 2;
+                    return "float";
                 } catch (NumberFormatException f) {
-                    return -1;
+                    return "none";
                 }
             }
-        }
-    }
-
-    //Converts literal to string
-    protected static String lit_to_str(String x) {
-        int y = check_literal(x);
-        if (y == 0) {
-            return x.substring(1, x.length() - 1);
-        } else {
-            return x;
         }
     }
 
@@ -332,6 +316,8 @@ public class G_func {
     }
 
     public static void main(String[] args) {
+
+
     }
 
 
