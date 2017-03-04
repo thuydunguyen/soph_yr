@@ -5,10 +5,11 @@ package db;
  */
 
 import java.io.*;
+import java.math.BigDecimal;
 import java.util.*;
 
 
-public class G_func {
+public class G_func<T> {
 
     //Combines 3 ArrayLists into one
     protected static ArrayList<String> combine_lists(ArrayList<String> list1, ArrayList<String> list2, ArrayList<String> list3) {
@@ -37,6 +38,15 @@ public class G_func {
 
     //Compares types and outputs resulting type
     protected static String type_out(Object a, Object b) {
+        if (a.equals("NaN") && b.equals("NaN")) {
+            return "";
+        }
+        else if (a.equals("NaN")) {
+            return (String) b;
+        }
+        else if (b.equals("NaN")) {
+            return (String) a;
+        }
         ArrayList<String> nums = new ArrayList<String>(Arrays.asList(new String[]{"int", "float"}));
         ArrayList<String> words = new ArrayList<String>(Arrays.asList(new String[]{"string"}));
         if (nums.contains(a) && nums.contains(b)) {
@@ -47,7 +57,7 @@ public class G_func {
             return "string";
         } else {
             System.err.printf("Cannot perform operation with class: " + a + " and " + b);
-            return "";
+            return "BAD";
         }
     }
 
@@ -81,74 +91,61 @@ public class G_func {
             return Q;
         }
         ArrayList<String>[] new_col = new ArrayList[columns.length];
-        String[] tokes = new String[]{"+", "-", "*", "/",};
-        ArrayList<String> tokens = new ArrayList<>(Arrays.asList(tokes));
         for (int cols = 0; cols < columns.length; cols++) {
             String[] check = columns[cols].split("\\s+as\\s+");
             check[0] = check[0].replaceAll("\\s+", "");
             String[] parts = tokens(check[0]);
             ArrayList<String> news = new ArrayList<>();
-            String name;
             if (parts.length == 1) {
                 int col = t.names.indexOf(parts[0]);
+                if (col < 0) {
+                    return new Table();
+                }
                 news = t.gets(col);
                 if (check.length > 1) {
                     check[1] = check[1].replaceAll("\\s+", "");
                     news.set(0, check[1]);
                 }
             } else {
+                ArrayList<String> colB;
                 String one = parts[0];
                 String operand = parts[1];
                 String two = parts[2];
                 int ind1 = t.names.indexOf(one);
                 int ind2 = t.names.indexOf(two);
+                if (ind1 == -1) {
+                    return new Table();
+                }
                 ArrayList<String> colA = t.gets(ind1);
-                ArrayList<String> colB = t.gets(ind2);
-                int value;
-                float floater;
-                String sentence;
-                String type = type_out(t.types.get(ind1), t.types.get(ind2));
+                Object typeA = t.types.get(ind1);
+                Object typeB;
+                if (ind2 >= 0) {
+                colB = t.gets(ind2);
+                typeB = t.types.get(ind2); }
+                else {
+                    colB = new ArrayList<>();
+                    for (int d = 0; d < colA.size(); d++) {
+                        colB.add(parts[2]);
+                    }
+                    typeB = check_literal(parts[2]);
+                    if (typeB.equals("none")) {
+                        return new Table();
+                    }
+                }
+                String type = type_out(typeA, typeB);
+                if (type.equals("BAD")) {
+                    return new Table();
+                }
+                if (check.length == 1) {
+                    System.out.println("Column name needed for arithmetic");
+                    return new Table();
+                }
                 check[1] = check[1].replaceAll("\\s+", "");
                 news.add(check[1]);
-                if (type.equals("int") || type.equals("float") && tokens.contains(operand)) {
-                    news.add(type);
-                    if (type.equals("int")) {
-                        for (int val = 2; val < t.rows; val++) {
-                            if (operand.equals("+")) {
-                                value = Integer.parseInt(colA.get(val)) + Integer.parseInt(colB.get(val));
-                            } else if (operand.equals("-")) {
-                                value = Integer.parseInt(colA.get(val)) - Integer.parseInt(colB.get(val));
-                            } else if (operand.equals("*")) {
-                                value = Integer.parseInt(colA.get(val)) * Integer.parseInt(colB.get(val));
-                            } else {
-
-                                value = Integer.parseInt(colA.get(val)) / Integer.parseInt(colB.get(val));
-
-                            }
-                            news.add(Integer.toString(value));
-                        }
-                    } else if (type.equals("float")) {
-                        for (int val = 2; val < t.rows; val++) {
-                            if (operand.equals("+")) {
-                                floater = Float.parseFloat(colA.get(val)) + Float.parseFloat(colB.get(val));
-                            } else if (operand.equals("-")) {
-                                floater = Float.parseFloat(colA.get(val)) - Float.parseFloat(colB.get(val));
-                            } else if (operand.equals("*")) {
-                                floater = Float.parseFloat(colA.get(val)) * Float.parseFloat(colB.get(val));
-                            } else {
-                                floater = Float.parseFloat(colA.get(val)) / Float.parseFloat(colB.get(val));
-                            }
-                            news.add(Float.toString(floater));
-                        }
-                    }
-                } else if (type.equals("string") && operand.equals("+")) {
-                    news.add(type);
-                    for (int val = 2; val < t.rows; val++) {
-                        sentence = colA.get(val) + colB.get(val);
-                        news.add(sentence);
-                    }
-                } else {
-                    System.err.printf("Operand: " + operand + " cannot be performed");
+                news.add(type);
+                for (int val = 2; val < t.rows; val++) {
+                    String str = compute(colA.get(val), colB.get(val), operand, type);
+                    news.add(str);
                 }
             }
             new_col[cols] = news;
@@ -235,7 +232,13 @@ public class G_func {
     protected static String check_literal(String x) {
         Boolean begin = x.startsWith("'");
         Boolean end = x.endsWith("'");
-        if (begin && end) {
+        if  (x.equals("NOVALUE")) {
+            return "NOVALUE";
+        }
+        else if (x.equals("NaN")) {
+            return "NaN";
+        }
+        else if (begin && end) {
             return "string";
         } else {
             try {
@@ -251,7 +254,6 @@ public class G_func {
             }
         }
     }
-
 
     //Creates table from a path aka load
     protected static Table loadComp(String path, String name) {
@@ -318,7 +320,47 @@ public class G_func {
         return path;
     }
 
+    protected static String compute(String val1, String val2, String oper, String type) {
+        if (val1.equals("NaN") || val2.equals("NaN")) {
+                return "NaN"; }
+        if (type.equals("string")) {
+            return val1 + val2;
+        } else {
+            float vals1 = Float.parseFloat(val1);
+            float vals2 = Float.parseFloat(val2);
+            float result;
+            String str;
+            if (oper.equals("+")) {
+                result = vals1 + vals2;
+            } else if (oper.equals("-")) {
+                result = vals1 - vals2;
+            } else if (oper.equals("*")) {
+                result = vals1 * vals2;
+            } else if (oper.equals("/")){
+                if (Math.signum(vals2) == 0) {
+                    return "NaN";
+                }
+                result = vals1 / vals2;
+            } else {
+                return "";
+            }
+            if (type.equals("int")) {
+                str = Integer.toString(Math.round(result));
+            } else {
+                str = f_to_str(result);
+            }
+            return str;
+        }
+    }
+
+    public static String f_to_str(float x) {
+        return String.format("%.3f", x);
+    }
+
     public static void main(String[] args) {
+        float x = 2.0f;
+        float y = 0.0f;
+        System.out.print(check_literal("k"));
 
 
     }

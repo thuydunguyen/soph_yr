@@ -4,13 +4,12 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.Arrays;
 import java.util.StringJoiner;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.regex.*;
 import java.util.ArrayList;
 
 
 public class Database {
-    private ArrayList<Table> storage;
+    public ArrayList<Table> storage;
 
     public Database() {
         storage = new ArrayList<>();
@@ -20,7 +19,7 @@ public class Database {
         return eval(query);
     }
 
-    //*************************************************//
+    //***************************************************************************************************************//
 
     // Various common constructs, simplifies parsing.
     protected static final String REST = "\\s*(.*)\\s*",
@@ -37,18 +36,18 @@ public class Database {
             SELECT_CMD = Pattern.compile("select " + REST);
 
     // Stage 2 syntax, contains the clauses of commands.
-    protected static final Pattern CREATE_NEW = Pattern.compile("(\\S+)\\s+\\((\\S+\\s+\\S+\\s*"
-            + "(?:,\\s*\\S+\\s+\\S+\\s*)*)\\)"),
-            SELECT_CLS = Pattern.compile("([^,]+?(?:,[^,]+?)*)\\s+from\\s+"
-                    + "(\\S+\\s*(?:,\\s*\\S+\\s*)*)(?:\\s+where\\s+"
-                    + "([\\w\\s+\\-*/'<>=!]+?(?:\\s+and\\s+"
-                    + "[\\w\\s+\\-*/'<>=!]+?)*))?"),
-            CREATE_SEL = Pattern.compile("(\\S+)\\s+as select\\s+"
-                    + SELECT_CLS.pattern()),
-            INSERT_CLS = Pattern.compile("(\\S+)\\s+values\\s+(.+?"
-                    + "\\s*(?:,\\s*.+?\\s*)*)");
+    protected static final Pattern CREATE_NEW = Pattern.compile("(\\S+)\\s+\\((\\S+\\s+\\S+\\s*" +
+            "(?:,\\s*\\S+\\s+\\S+\\s*)*)\\)"),
+            SELECT_CLS = Pattern.compile("([^,]+?(?:,[^,]+?)*)\\s+from\\s+" +
+                    "(\\S+\\s*(?:,\\s*\\S+\\s*)*)(?:\\s+where\\s+" +
+                    "([\\w\\s+\\-*/'<>=!]+?(?:\\s+and\\s+" +
+                    "[\\w\\s+\\-*/'<>=!]+?)*))?"),
+            CREATE_SEL = Pattern.compile("(\\S+)\\s+as select\\s+" +
+                    SELECT_CLS.pattern()),
+            INSERT_CLS = Pattern.compile("(\\S+)\\s+values\\s+(.+?" +
+                    "\\s*(?:,\\s*.+?\\s*)*)");
 
-    //***************************************************//
+    //****************************************************************************************************************//
 
     public String eval(String query) {
         Matcher m;
@@ -70,7 +69,7 @@ public class Database {
         return "ERROR: * ";
     }
 
-    //*******************************************//
+    //****************************************************************************************************************//
 
     protected String createTable(String expr) {
         Matcher m;
@@ -79,7 +78,7 @@ public class Database {
         } else if ((m = CREATE_SEL.matcher(expr)).matches()) {
             return createSelectedTable(m.group(1), m.group(2), m.group(3), m.group(4));
         } else {
-            return "ERROR: *";
+            return "ERROR: Cannot make table";
         }
     }
 
@@ -95,8 +94,8 @@ public class Database {
 
         }
         Table t = new Table(G_func.to_list(named), G_func.to_list(types), name);
-        if (t.error > 0) {
-            return "ERROR: Column type not allowed";
+        if (t.error == 1) {
+            return "ERROR: Table is BadTable";
         }
         storage.add(t);
         return "";
@@ -111,17 +110,25 @@ public class Database {
         } catch (NullPointerException e) {
             cond = new String[0];
         }
-        Table[] t = retrieve(table);
-        Table joined = new Table(t, name);
-        Table joined2 = G_func.oper(joined, columns, name);
-        if (cond.length > 0) {
-            ArrayList<Integer> rem = G_func.condition(joined2, cond);
-            for (int x = 0; x < rem.size(); x++) {
-                joined2.removal_r(rem.get(x));
+        try {
+            Table[] t = retrieve(table);
+            Table joined = new Table(t, "temp");
+            Table joined2 = G_func.oper(joined, columns, "temp");
+            if (joined2.error == 1) {
+                joined.error = 0;
+                return "ERROR: Column error";
             }
+            if (cond.length > 0) {
+                ArrayList<Integer> rem = G_func.condition(joined2, cond);
+                for (int x = 0; x < rem.size(); x++) {
+                    joined2.removal_r(rem.get(x));
+                }
+            }
+            storage.add(joined2);
+            return "";
+        } catch (NullPointerException e) {
+            return "ERROR: One or more tables do not exist";
         }
-        storage.add(joined2);
-        return "";
     }
 
     protected String dropTable(String name) {
@@ -162,16 +169,24 @@ public class Database {
         } catch (NullPointerException e) {
             cond = new String[0];
         }
-        Table[] t = retrieve(table);
-        Table joined = new Table(t, "temp");
-        Table joined2 = G_func.oper(joined, columns, "temp");
-        if (cond.length > 0) {
-            ArrayList<Integer> rem = G_func.condition(joined2, cond);
-            for (int x = 0; x < rem.size(); x++) {
-                joined2.removal_r(rem.get(x));
+        try {
+            Table[] t = retrieve(table);
+            Table joined = new Table(t, "temp");
+            Table joined2 = G_func.oper(joined, columns, "temp");
+            if (joined2.error == 1) {
+                joined.error = 0;
+                return "ERROR: Column error";
             }
+            if (cond.length > 0) {
+                ArrayList<Integer> rem = G_func.condition(joined2, cond);
+                for (int x = 0; x < rem.size(); x++) {
+                    joined2.removal_r(rem.get(x));
+                }
+            }
+            return joined2.print();
+        } catch (NullPointerException e) {
+            return "ERROR: One or more tables do not exist";
         }
-        return joined2.print();
     }
 
     protected String insertRow(String expr) {
@@ -190,10 +205,6 @@ public class Database {
         int indx = index(name);
         Table t = retrieve(name);
         t.insert(values);
-        if (t.error == 1) {
-            t.error = 0;
-            return "ERROR: Insert type not allowed";
-        }
         storage.set(indx, t);
         return "";
 
