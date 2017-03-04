@@ -1,5 +1,7 @@
 package db;
 
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.util.StringJoiner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -92,7 +94,13 @@ public class Parser {
     }
 
     private static String loadTable(String name) {
-        return "";
+        String path = G_func.pathway(name);
+        try {
+            FileReader fr = new FileReader(path);
+            return "";}
+            catch (FileNotFoundException e) {
+            return "Error: File does not exist";
+            }
     }
 
     private static String storeTable(String name) {
