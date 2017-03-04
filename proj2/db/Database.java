@@ -4,12 +4,13 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.Arrays;
 import java.util.StringJoiner;
-import java.util.regex.*;
+import java.util.regex.Matcher;
 import java.util.ArrayList;
+import java.util.regex.Pattern;
 
 
 public class Database {
-    public ArrayList<Table> storage;
+    private ArrayList<Table> storage;
 
     public Database() {
         storage = new ArrayList<>();
@@ -19,7 +20,7 @@ public class Database {
         return eval(query);
     }
 
-    //***************************************************************************************************************//
+    //**********************PARSING_PATTERNS*************************//
 
     // Various common constructs, simplifies parsing.
     protected static final String REST = "\\s*(.*)\\s*",
@@ -36,18 +37,19 @@ public class Database {
             SELECT_CMD = Pattern.compile("select " + REST);
 
     // Stage 2 syntax, contains the clauses of commands.
-    protected static final Pattern CREATE_NEW = Pattern.compile("(\\S+)\\s+\\((\\S+\\s+\\S+\\s*" +
-            "(?:,\\s*\\S+\\s+\\S+\\s*)*)\\)"),
-            SELECT_CLS = Pattern.compile("([^,]+?(?:,[^,]+?)*)\\s+from\\s+" +
-                    "(\\S+\\s*(?:,\\s*\\S+\\s*)*)(?:\\s+where\\s+" +
-                    "([\\w\\s+\\-*/'<>=!]+?(?:\\s+and\\s+" +
-                    "[\\w\\s+\\-*/'<>=!]+?)*))?"),
-            CREATE_SEL = Pattern.compile("(\\S+)\\s+as select\\s+" +
-                    SELECT_CLS.pattern()),
-            INSERT_CLS = Pattern.compile("(\\S+)\\s+values\\s+(.+?" +
-                    "\\s*(?:,\\s*.+?\\s*)*)");
+    protected static final Pattern CREATE_NEW = Pattern.compile("(\\S+)\\s+\\((\\S+\\s+\\S+\\s*"
+            + "(?:,\\s*\\S+\\s+\\S+\\s*)*)\\)"),
+            SELECT_CLS = Pattern.compile("([^,]+?(?:,[^,]+?)*)\\s+from\\s+"
+                    + "(\\S+\\s*(?:,\\s*\\S+\\s*)*)(?:\\s+where\\s+"
+                    + "([\\w\\s+\\-*/'<>=!]+?(?:\\s+and\\s+"
+                    + "[\\w\\s+\\-*/'<>=!]+?)*))?"),
+            CREATE_SEL = Pattern.compile("(\\S+)\\s+as select\\s+"
+                    + SELECT_CLS.pattern()),
+            INSERT_CLS = Pattern.compile("(\\S+)\\s+values\\s+(.+?"
+                    + "\\s*(?:,\\s*.+?\\s*)*)");
 
-    //****************************************************************************************************************//
+
+    //******************EVALUATOR**********************************//
 
     public String eval(String query) {
         Matcher m;
@@ -66,10 +68,11 @@ public class Database {
         } else if ((m = LOAD_CMD.matcher(query)).matches()) {
             return loadTable(m.group(1));
         }
-        return "ERROR: * ";
+        return "ERROR: Invalid Command";
     }
 
-    //****************************************************************************************************************//
+
+    //**********************COMMANDS***********************//
 
     protected String createTable(String expr) {
         Matcher m;
@@ -155,7 +158,7 @@ public class Database {
         Matcher m = SELECT_CLS.matcher(expr);
         if (!m.matches()) {
             System.err.printf("Malformed select: %s\n", expr);
-            return "ERROR: * ";
+            return "ERROR: Invalid command. Fix: select <*> from <table> <where...> ";
         }
         return select(m.group(1), m.group(2), m.group(3));
     }
@@ -194,20 +197,26 @@ public class Database {
 
         if (!m.matches()) {
             System.err.printf("Malformed insert: %s\n", expr);
-            return "ERROR: * ";
+            return "ERROR: Invalid command. Fix: insert into <table> values <vals>";
+        } else {
+
+            String name = m.group(1);
+            String data = m.group(2);
+
+
+            String[] vals = data.split("\\s*,\\s*");
+            ArrayList<String> values = new ArrayList<>(Arrays.asList(vals));
+            int indx = index(name);
+            Table t = retrieve(name);
+            t.insert(values);
+            if (t.error == 1) {
+                return "ERROR: Incorrect number of values";
+            } else if (t.error == 2) {
+                return "ERROR: Value type != column type";
+            }
+            storage.set(indx, t);
+            return "";
         }
-
-        String name = m.group(1);
-        String data = m.group(2);
-
-        String[] vals = data.split("\\s*,\\s*");
-        ArrayList<String> values = new ArrayList<>(Arrays.asList(vals));
-        int indx = index(name);
-        Table t = retrieve(name);
-        t.insert(values);
-        storage.set(indx, t);
-        return "";
-
     }
 
     protected String storeTable(String name) {
@@ -234,7 +243,7 @@ public class Database {
 
     }
 
-    //****************************************************************************************************************//
+    //*****************GENERAL********************//
 
     //Gets tables corresponding to desired names
     protected Table[] retrieve(String[] name) {
@@ -265,7 +274,5 @@ public class Database {
         }
         return -1;
     }
-
-    //Need to add in errors
 
 }

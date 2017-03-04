@@ -2,8 +2,6 @@ package db;
 
 import java.io.*;
 import java.util.*;
-import java.util.regex.Pattern;
-import java.util.regex.Matcher;
 
 public class Table<T> {
 
@@ -15,7 +13,8 @@ public class Table<T> {
     protected String named;
     protected int error;
 
-    //*********************************************//
+
+    //**************CONSTRUCTORS*************//
 
     //Creates blank table
     protected Table() {
@@ -161,18 +160,34 @@ public class Table<T> {
     }
 
 
-    //************************************************//
+    //*****************TABLE_METHODS**************//
 
     //Inserts values
-    protected void insert(ArrayList<T> data) {
-        for (int x = 0; x < data.size(); x++) {
-            ArrayList<String> copy = table.get(x);
-            T item = data.get(x);
-            String point = item.toString();
-            copy.add(point);
-            table.set(x, copy);
+    protected void insert(ArrayList<String> data) {
+        error = 0;
+        if (data.size() == names.size()) {
+            for (int x = 0; x < data.size(); x++) {
+                ArrayList<String> copy = table.get(x);
+                String item = data.get(x);
+                String type = G_func.type_out(G_func.check_literal(item), types.get(x));
+                if (types.get(x).equals("float") && type.equals("float")) {
+                    float num = Float.parseFloat(item);
+                    item = G_func.f_to_str(num);
+                } else if (type.equals("string")) {
+                } else if (types.get(x).equals("int") && type.equals("int")) {
+                } else {
+                    error = 2;
+                }
+                copy.add(item);
+                table.set(x, copy);
+            }
+            rows++;
+            if (error == 2) {
+                this.removal_r(rows - 1);
+            }
+        } else {
+            error = 1;
         }
-        rows++;
     }
 
     //Prints table
@@ -253,7 +268,7 @@ public class Table<T> {
     }
 
 
-    //**************************************************************************************************************//
+    //*********************GENERAL*************************//
 
     //Gets the ArrayList at column index
     protected ArrayList<String> gets(int index) {
@@ -306,23 +321,5 @@ public class Table<T> {
         }
     }
 
-    public static void main(String[] args) {
-        String[] first = new String[]{"x", "y"};
-        String[] second = new String[]{"int", "int"};
-        String[] firsts = new String[]{"x", "z"};
-        String[] seconds = new String[]{"int", "int"};
-        String[] firsted = new String[]{"a", "b"};
-        Table t = new Table(new ArrayList<String>(Arrays.asList(first)), new ArrayList<String>(Arrays.asList(second)), "t");
-        Table s = new Table(new ArrayList<String>(Arrays.asList(firsts)), new ArrayList<String>(Arrays.asList(seconds)), "s");
-        Table u = new Table(new ArrayList<String>(Arrays.asList(firsted)), new ArrayList<String>(Arrays.asList(seconds)), "u");
-        Integer[] one = new Integer[]{2, 5};
-        Integer[] two = new Integer[]{8, 3};
-        Integer[] three = new Integer[]{13, 7};
-        Integer[] ones = new Integer[]{2, 4};
-        Integer[] twos = new Integer[]{8, 9};
-        Integer[] threes = new Integer[]{10, 1};
-        Integer[] oned = new Integer[]{7, 0};
-        Integer[] twod = new Integer[]{2, 8};
-    }
 
 }

@@ -1,89 +1,14 @@
 package db;
 
-/**
- * Created by Thuy-Du on 3/1/2017.
- */
-
 import java.io.*;
-import java.math.BigDecimal;
 import java.util.*;
 
 
 public class G_func<T> {
 
-    //Combines 3 ArrayLists into one
-    protected static ArrayList<String> combine_lists(ArrayList<String> list1, ArrayList<String> list2, ArrayList<String> list3) {
-        ArrayList combination = new ArrayList<String>(list1);
-        combination.addAll(list2);
-        combination.addAll(list3);
-        return combination;
-    }
+    //*******************ARITHMETIC*********************//
 
-    //Changes a String array into and ArrayList
-    protected static ArrayList<String> to_list(String[] x) {
-        return new ArrayList<>(Arrays.asList(x));
-    }
-
-    //Gets all indexes of a value in and arraylist
-    protected static ArrayList<Integer> each_index(ArrayList<String> x, String y) {
-        ArrayList<Integer> index = new ArrayList<>();
-        for (int k = 2; k < x.size(); k++) {
-            String val = x.get(k);
-            if (val.equals(y)) {
-                index.add(k);
-            }
-        }
-        return index;
-    }
-
-    //Compares types and outputs resulting type
-    protected static String type_out(Object a, Object b) {
-        if (a.equals("NaN") && b.equals("NaN")) {
-            return "";
-        }
-        else if (a.equals("NaN")) {
-            return (String) b;
-        }
-        else if (b.equals("NaN")) {
-            return (String) a;
-        }
-        ArrayList<String> nums = new ArrayList<String>(Arrays.asList(new String[]{"int", "float"}));
-        ArrayList<String> words = new ArrayList<String>(Arrays.asList(new String[]{"string"}));
-        if (nums.contains(a) && nums.contains(b)) {
-            int x = nums.indexOf(a);
-            int y = nums.indexOf(b);
-            return nums.get(Math.max(x, y));
-        } else if (words.contains(a) && words.contains(b)) {
-            return "string";
-        } else {
-            System.err.printf("Cannot perform operation with class: " + a + " and " + b);
-            return "BAD";
-        }
-    }
-
-    //Splits String into conditional parts
-    protected static String[] splits(String str) {
-        str = str.replaceAll("\\s+", "");
-        String[] result = str.split("(?<=[<=>])|(?=[<=>])");
-        String[] fin = new String[3];
-        if (result.length == 4) {
-            fin[1] = result[1] + result[2];
-            fin[0] = result[0];
-            fin[2] = result[3];
-        } else {
-            fin = result;
-        }
-        return fin;
-
-    }
-
-    //Splits String into tokens;
-    protected static String[] tokens(String str) {
-        String[] result = str.split("(?<=[-+*/])|(?=[-+*/])");
-        return result;
-    }
-
-    //Computes the operation
+    //Computes arithmetic
     protected static Table oper(Table t, String[] columns, String named) {
         if (columns[0].equals("*")) {
             Table Q = new Table(t);
@@ -120,9 +45,9 @@ public class G_func<T> {
                 Object typeA = t.types.get(ind1);
                 Object typeB;
                 if (ind2 >= 0) {
-                colB = t.gets(ind2);
-                typeB = t.types.get(ind2); }
-                else {
+                    colB = t.gets(ind2);
+                    typeB = t.types.get(ind2);
+                } else {
                     colB = new ArrayList<>();
                     for (int d = 0; d < colA.size(); d++) {
                         colB.add(parts[2]);
@@ -153,7 +78,76 @@ public class G_func<T> {
         return new Table(new_col, named);
     }
 
-    //Gives rows that do not match conditions
+    //Splits String into tokens;
+    protected static String[] tokens(String str) {
+        String[] result = str.split("(?<=[-+*/])|(?=[-+*/])");
+        return result;
+    }
+
+    //Compares types and outputs resulting type
+    protected static String type_out(Object a, Object b) {
+        if (a.equals("NaN") && b.equals("NaN")) {
+            return "";
+        } else if (a.equals("NaN")) {
+            return (String) b;
+        } else if (b.equals("NaN")) {
+            return (String) a;
+        }
+        ArrayList<String> nums = new ArrayList<String>(Arrays.asList(new String[]{"int", "float"}));
+        ArrayList<String> words = new ArrayList<String>(Arrays.asList(new String[]{"string"}));
+        if (nums.contains(a) && nums.contains(b)) {
+            int x = nums.indexOf(a);
+            int y = nums.indexOf(b);
+            return nums.get(Math.max(x, y));
+        } else if (words.contains(a) && words.contains(b)) {
+            return "string";
+        } else {
+            System.err.printf("Cannot perform operation with types: " + a + " and " + b + "\n");
+            return "BAD";
+        }
+    }
+
+    //Computes the operation
+    protected static String compute(String val1, String val2, String oper, String type) {
+        if (val1.equals("NaN") || val2.equals("NaN")) {
+            return "NaN";
+        }
+        if (type.equals("string")) {
+            val1 = val1.substring(1, val1.length() - 1);
+            val2 = val2.substring(1, val2.length() - 1);
+            return val1 + val2;
+        } else {
+            float vals1 = Float.parseFloat(val1);
+            float vals2 = Float.parseFloat(val2);
+            float result;
+            String str;
+            if (oper.equals("+")) {
+                result = vals1 + vals2;
+            } else if (oper.equals("-")) {
+                result = vals1 - vals2;
+            } else if (oper.equals("*")) {
+                result = vals1 * vals2;
+            } else if (oper.equals("/")) {
+                if (Math.signum(vals2) == 0) {
+                    return "NaN";
+                }
+                result = vals1 / vals2;
+            } else {
+                return "";
+            }
+            if (type.equals("int")) {
+                str = Integer.toString(Math.round(result));
+            } else {
+                str = f_to_str(result);
+            }
+            return str;
+        }
+    }
+
+
+    //***********************CONDITIONS******************************//
+
+    //Computes conditional statement
     protected static ArrayList<Integer> condition(Table t, String[] conds) {
         String val_2;
         ArrayList<Integer> rem = new ArrayList<>();
@@ -197,6 +191,22 @@ public class G_func<T> {
         return rem;
     }
 
+    //Splits String into conditional parts
+    protected static String[] splits(String str) {
+        str = str.replaceAll("\\s+", "");
+        String[] result = str.split("(?<=[<=>])|(?=[<=>])");
+        String[] fin = new String[3];
+        if (result.length == 4) {
+            fin[1] = result[1] + result[2];
+            fin[0] = result[0];
+            fin[2] = result[3];
+        } else {
+            fin = result;
+        }
+        return fin;
+
+    }
+
     //Checks values with a single condition
     protected static Boolean sing_cond(String val_1, String val_2, String bool, String type) {
         float val1;
@@ -228,17 +238,18 @@ public class G_func<T> {
         return false;
     }
 
+
+    //**********************GENERAL****************************//
+
     //Checks if the string contains a literal
     protected static String check_literal(String x) {
         Boolean begin = x.startsWith("'");
         Boolean end = x.endsWith("'");
-        if  (x.equals("NOVALUE")) {
+        if (x.equals("NOVALUE")) {
             return "NOVALUE";
-        }
-        else if (x.equals("NaN")) {
+        } else if (x.equals("NaN")) {
             return "NaN";
-        }
-        else if (begin && end) {
+        } else if (begin && end) {
             return "string";
         } else {
             try {
@@ -254,6 +265,39 @@ public class G_func<T> {
             }
         }
     }
+
+    //Changes float to string at three decimals
+    protected static String f_to_str(float x) {
+        return String.format("%.3f", x);
+    }
+
+    //Combines 3 ArrayLists into one
+    protected static ArrayList<String> combine_lists(ArrayList<String> list1, ArrayList<String> list2, ArrayList<String> list3) {
+        ArrayList combination = new ArrayList<String>(list1);
+        combination.addAll(list2);
+        combination.addAll(list3);
+        return combination;
+    }
+
+    //Changes a String array into and ArrayList
+    protected static ArrayList<String> to_list(String[] x) {
+        return new ArrayList<>(Arrays.asList(x));
+    }
+
+    //Gets all indexes of a value in an arraylist
+    protected static ArrayList<Integer> each_index(ArrayList<String> x, String y) {
+        ArrayList<Integer> index = new ArrayList<>();
+        for (int k = 2; k < x.size(); k++) {
+            String val = x.get(k);
+            if (val.equals(y)) {
+                index.add(k);
+            }
+        }
+        return index;
+    }
+
+
+    //****************LOAD_TABLE****************************//
 
     //Creates table from a path aka load
     protected static Table loadComp(String path, String name) {
@@ -318,51 +362,6 @@ public class G_func<T> {
         String directory = System.getProperty("user.dir");
         String path = directory + File.separator + fileName;
         return path;
-    }
-
-    protected static String compute(String val1, String val2, String oper, String type) {
-        if (val1.equals("NaN") || val2.equals("NaN")) {
-                return "NaN"; }
-        if (type.equals("string")) {
-            return val1 + val2;
-        } else {
-            float vals1 = Float.parseFloat(val1);
-            float vals2 = Float.parseFloat(val2);
-            float result;
-            String str;
-            if (oper.equals("+")) {
-                result = vals1 + vals2;
-            } else if (oper.equals("-")) {
-                result = vals1 - vals2;
-            } else if (oper.equals("*")) {
-                result = vals1 * vals2;
-            } else if (oper.equals("/")){
-                if (Math.signum(vals2) == 0) {
-                    return "NaN";
-                }
-                result = vals1 / vals2;
-            } else {
-                return "";
-            }
-            if (type.equals("int")) {
-                str = Integer.toString(Math.round(result));
-            } else {
-                str = f_to_str(result);
-            }
-            return str;
-        }
-    }
-
-    public static String f_to_str(float x) {
-        return String.format("%.3f", x);
-    }
-
-    public static void main(String[] args) {
-        float x = 2.0f;
-        float y = 0.0f;
-        System.out.print(check_literal("k"));
-
-
     }
 
 
