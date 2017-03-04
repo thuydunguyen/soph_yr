@@ -151,18 +151,19 @@ public class Table<T> {
     }
 
     //Prints table
-    protected void print() {
+    protected String print() {
+        String lines = "";
         if (table != null) {
             //Prints col_name and col_type together
             String comma;
             for (int x = 0; x < names.size(); x++) {
                 if (x == names.size() - 1) {
                     comma = "";
-                    System.out.println(table.get(x).get(0) + " " + table.get(x).get(1) + comma);
+                    lines += table.get(x).get(0) + " " + table.get(x).get(1) + comma + "\n";
 
                 } else {
                     comma = ",";
-                    System.out.print(table.get(x).get(0) + " " + table.get(x).get(1) + comma);
+                    lines += table.get(x).get(0) + " " + table.get(x).get(1) + comma;
                 }
             }
             //Prints rest of the data
@@ -170,17 +171,18 @@ public class Table<T> {
                 for (int x = 0; x < names.size(); x++) {
                     if (x == names.size() - 1) {
                         comma = "";
-                        System.out.println(table.get(x).get(y) + comma);
+                        lines += table.get(x).get(y) + comma + "\n";
 
                     } else {
                         comma = ",";
-                        System.out.print(table.get(x).get(y) + comma);
+                        lines += table.get(x).get(y) + comma;
                     }
                 }
             }
         } else {
-            System.out.println("No such table exists");
+            return "No such table exists";
         }
+        return lines;
     }
 
     //Stores table

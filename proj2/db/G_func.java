@@ -331,5 +331,8 @@ public class G_func {
         return path;
     }
 
+    public static void main(String[] args) {
+    }
+
 
 }

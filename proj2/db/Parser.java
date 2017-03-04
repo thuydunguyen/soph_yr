@@ -99,7 +99,7 @@ public class Parser {
             FileReader fr = new FileReader(path);
             return "";}
             catch (FileNotFoundException e) {
-            return "Error: File does not exist";
+            return "ERROR: File does not exist";
             }
     }
 

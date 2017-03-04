@@ -1,5 +1,7 @@
 package db;
 
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.util.Arrays;
 import java.util.StringJoiner;
 import java.util.regex.*;
@@ -14,18 +16,18 @@ public class Database {
     }
 
     public String transact(String query) {
-        return Parser.eval(query);
+        return eval(query);
     }
 
     //***************************************************************************************************************//
 
     // Various common constructs, simplifies parsing.
-    private static final String REST = "\\s*(.*)\\s*",
+    protected static final String REST = "\\s*(.*)\\s*",
             COMMA = "\\s*,\\s*",
             AND = "\\s+and\\s+";
 
     // Stage 1 syntax, contains the command name.
-    private static final Pattern CREATE_CMD = Pattern.compile("create table " + REST),
+    protected static final Pattern CREATE_CMD = Pattern.compile("create table " + REST),
             LOAD_CMD = Pattern.compile("load " + REST),
             STORE_CMD = Pattern.compile("store " + REST),
             DROP_CMD = Pattern.compile("drop table " + REST),
@@ -34,7 +36,7 @@ public class Database {
             SELECT_CMD = Pattern.compile("select " + REST);
 
     // Stage 2 syntax, contains the clauses of commands.
-    private static final Pattern CREATE_NEW = Pattern.compile("(\\S+)\\s+\\((\\S+\\s+\\S+\\s*" +
+    protected static final Pattern CREATE_NEW = Pattern.compile("(\\S+)\\s+\\((\\S+\\s+\\S+\\s*" +
             "(?:,\\s*\\S+\\s+\\S+\\s*)*)\\)"),
             SELECT_CLS = Pattern.compile("([^,]+?(?:,[^,]+?)*)\\s+from\\s+" +
                     "(\\S+\\s*(?:,\\s*\\S+\\s*)*)(?:\\s+where\\s+" +
@@ -47,38 +49,41 @@ public class Database {
 
     //****************************************************************************************************************//
 
-    public void eval(String query) {
+    public String eval(String query) {
         Matcher m;
         if ((m = CREATE_CMD.matcher(query)).matches()) {
-            createTable(m.group(1));
+            return createTable(m.group(1));
         } else if ((m = DROP_CMD.matcher(query)).matches()) {
-            dropTable(m.group(1));
+            return dropTable(m.group(1));
         } else if ((m = PRINT_CMD.matcher(query)).matches()) {
-            printTable(m.group(1));
+            return printTable(m.group(1));
         } else if ((m = SELECT_CMD.matcher(query)).matches()) {
-            select(m.group(1));
+            return select(m.group(1));
         } else if ((m = INSERT_CMD.matcher(query)).matches()) {
-            insertRow(m.group(1));
+            return insertRow(m.group(1));
         } else if ((m = STORE_CMD.matcher(query)).matches()) {
-            storeTable(m.group(1));
+            return storeTable(m.group(1));
         } else if ((m = LOAD_CMD.matcher(query)).matches()) {
-            loadTable(m.group(1));
+            return loadTable(m.group(1));
         }
-
+        return "ERROR: * ";
     }
 
     //****************************************************************************************************************//
 
-    private void createTable(String expr) {
+    protected String createTable(String expr) {
         Matcher m;
         if ((m = CREATE_NEW.matcher(expr)).matches()) {
-            createNewTable(m.group(1), m.group(2).split(COMMA));
+            return createNewTable(m.group(1), m.group(2).split(COMMA));
         } else if ((m = CREATE_SEL.matcher(expr)).matches()) {
-            createSelectedTable(m.group(1), m.group(2), m.group(3), m.group(4));
+            return createSelectedTable(m.group(1), m.group(2), m.group(3), m.group(4));
+        }
+        else {
+            return "ERROR: *";
         }
     }
 
-    private void createNewTable(String name, String[] cols) {
+    protected String createNewTable(String name, String[] cols) {
         String[] named = new String[cols.length];
         String[] types = new String[cols.length];
         StringJoiner joiner = new StringJoiner(" ");
@@ -92,9 +97,10 @@ public class Database {
         String colSentence = joiner.toString();
         Table t = new Table(named.length, G_func.to_list(named), G_func.to_list(types), name);
         storage.add(t);
+        return "";
     }
 
-    private void createSelectedTable(String name, String exprs, String tables, String conds) {
+    protected String createSelectedTable(String name, String exprs, String tables, String conds) {
         String[] columns = exprs.split("\\s*,\\s*");
         String[] table = tables.split("\\s*,\\s*");
         String[] cond;
@@ -113,28 +119,39 @@ public class Database {
             }
         }
         storage.add(joined2);
+        return "";
     }
 
-    private void dropTable(String name) {
+    protected String dropTable(String name) {
         int indx = index(name);
+        if (indx >= 0) {
         storage.remove(indx);
+        return "";}
+        else {
+            return "ERROR: Table does not exist to be dropped";
+        }
     }
 
-    private void printTable(String name) {
+    protected String printTable(String name) {
+        if (index(name) >= 0) {
         Table t = retrieve(name);
-        t.print();
+        String printed = t.print();
+        return printed;}
+        else {
+            return "ERROR: Table does not exist";
+        }
     }
 
-    private void select(String expr) {
+    protected String select(String expr) {
         Matcher m = SELECT_CLS.matcher(expr);
         if (!m.matches()) {
             System.err.printf("Malformed select: %s\n", expr);
-            return;
+            return "ERROR: * ";
         }
-        select(m.group(1), m.group(2), m.group(3));
+        return select(m.group(1), m.group(2), m.group(3));
     }
 
-    private void select(String exprs, String tables, String conds) {
+    protected String select(String exprs, String tables, String conds) {
         String[] columns = exprs.split("\\s*,\\s*");
         String[] table = tables.split("\\s*,\\s*");
         String[] cond;
@@ -153,13 +170,15 @@ public class Database {
             }
         }
         joined2.print();
+        return "";
     }
 
-    private void insertRow(String expr) {
+    protected String insertRow(String expr) {
         Matcher m = INSERT_CLS.matcher(expr);
 
         if (!m.matches()) {
             System.err.printf("Malformed insert: %s\n", expr);
+            return "ERROR: * ";
         }
 
         String name = m.group(1);
@@ -171,24 +190,39 @@ public class Database {
         Table t = retrieve(name);
         t.insert(values);
         storage.set(indx, t);
+        return "";
 
     }
 
-    private void storeTable(String name) {
+    protected String storeTable(String name) {
+        if (index(name) >= 0) {
         Table t = retrieve(name);
         t.createFile();
+        return "";}
+        else {
+            return "ERROR: Table does not exist";
+        }
     }
 
-    private void loadTable(String name) {
-        String path = G_func.pathway(name);
-        Table t = G_func.loadComp(path, name);
-        storage.add(t);
+    protected String loadTable(String name) {
+        try {
+            String path = G_func.pathway(name);
+            FileReader fr = new FileReader(path);
+            Table t = G_func.loadComp(path, name);
+            storage.add(t);
+            return "";
+            }
+        catch (FileNotFoundException e) {
+            return "ERROR: File does not exist";
+        }
+
+
     }
 
     //****************************************************************************************************************//
 
     //Gets tables corresponding to desired names
-    private Table[] retrieve(String[] name) {
+    protected Table[] retrieve(String[] name) {
         Table[] t = new Table[name.length];
         for (int n = 0; n < name.length; n++) {
             for (int x = 0; x < storage.size(); x++) {
@@ -200,7 +234,7 @@ public class Database {
         return t;
     }
 
-    private Table retrieve(String name) {
+    protected Table retrieve(String name) {
         int indx = index(name);
         if (indx >= 0) {
             return storage.get(indx);
@@ -208,7 +242,7 @@ public class Database {
         return new Table();
     }
 
-    private int index(String name) {
+    protected int index(String name) {
         for (int x = 0; x < storage.size(); x++) {
             if (storage.get(x).named.equals(name)) {
                 return x;
@@ -218,5 +252,6 @@ public class Database {
     }
 
     //Need to add in errors
+
 }
 

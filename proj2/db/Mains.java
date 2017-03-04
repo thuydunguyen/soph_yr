@@ -17,7 +17,7 @@ public class Mains {
     public static void main(String[] args) throws IOException {
 
         String REST = "\\s*(.*)\\s*";
-        Pattern malfrm = Pattern.compile("Malformed " + REST);
+        Pattern malfrm = Pattern.compile("ERROR: " + REST);
         Pattern expect = Pattern.compile("Expected a single query argument");
 
         BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
@@ -32,12 +32,12 @@ public class Mains {
 
             if (!line.trim().isEmpty()) {
                 String result = db.transact(line);
-                if (result.length() == 0) {
+                if (!malfrm.matcher(result).matches()) {
                     db.eval(line);
-                } else {
-                    System.out.println("");
                 }
-            }
+                System.out.print(result);
+                }
+
 
             System.out.print(PROMPT);
         }
