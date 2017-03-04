@@ -169,8 +169,7 @@ public class Database {
                 joined2.removal_r(rem.get(x));
             }
         }
-        joined2.print();
-        return "";
+        return joined2.print();
     }
 
     protected String insertRow(String expr) {
