@@ -135,7 +135,7 @@ public class G_func {
             if (val2.equals("NOVALUE")) {
                 val2 = "";
             }
-            return val1 + val2;
+            return "'" + val1 + val2 + "'";
         } else {
             float vals1;
             float vals2;
@@ -166,7 +166,7 @@ public class G_func {
                 return "";
             }
             if (type.equals("int")) {
-                str = Integer.toString(Math.round(result));
+                str = Integer.toString((int) Math.floor(result));
             } else {
                 str = f_to_str(result);
             }
@@ -444,6 +444,13 @@ public class G_func {
         String directory = System.getProperty("user.dir");
         String path = directory + File.separator + fileName;
         return path;
+    }
+
+    public static void main(String[] args) {
+        String t = "Yes";
+        String s = "1";
+        String val = t+s;
+        System.out.println("'" + val + "'");
     }
 
 
