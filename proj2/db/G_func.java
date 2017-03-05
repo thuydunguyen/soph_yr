@@ -3,8 +3,9 @@ package db;
 import java.io.*;
 import java.util.*;
 
+//NEED TO ADD IN SCENARIOS FOR NaN AND NOVALUE//
 
-public class G_func<T> {
+public class G_func {
 
     //*******************ARITHMETIC*********************//
 
@@ -16,18 +17,18 @@ public class G_func<T> {
             return Q;
         }
         ArrayList<String>[] new_col = new ArrayList[columns.length];
-        for (int cols = 0; cols < columns.length; cols++) {
+        for (int cols = 0; cols < columns.length; cols++) { //for each arithmetic wanted
             String[] check = columns[cols].split("\\s+as\\s+");
             check[0] = check[0].replaceAll("\\s+", "");
             String[] parts = tokens(check[0]);
             ArrayList<String> news = new ArrayList<>();
-            if (parts.length == 1) {
+            if (parts.length == 1) { //Checks if arithmetic is a single column name
                 int col = t.names.indexOf(parts[0]);
-                if (col < 0) {
+                if (col < 0) { //Checks if column exists
                     return new Table();
                 }
                 news = t.gets(col);
-                if (check.length > 1) {
+                if (check.length > 1) { //Checks if col is renamed
                     check[1] = check[1].replaceAll("\\s+", "");
                     news.set(0, check[1]);
                 }
@@ -39,7 +40,9 @@ public class G_func<T> {
                 int ind1 = t.names.indexOf(one);
                 int ind2 = t.names.indexOf(two);
                 if (ind1 == -1) {
-                    return new Table();
+                    Table e = new Table();
+                    e.error = 3;
+                    return e;
                 }
                 ArrayList<String> colA = t.gets(ind1);
                 Object typeA = t.types.get(ind1);
@@ -54,7 +57,9 @@ public class G_func<T> {
                     }
                     typeB = check_literal(parts[2]);
                     if (typeB.equals("none")) {
-                        return new Table();
+                        Table e = new Table();
+                        e.error = 3;
+                        return e;
                     }
                 }
                 String type = type_out(typeA, typeB);
@@ -69,7 +74,13 @@ public class G_func<T> {
                 news.add(check[1]);
                 news.add(type);
                 for (int val = 2; val < t.rows; val++) {
+                    String valid = valid_oper(operand, type);
                     String str = compute(colA.get(val), colB.get(val), operand, type);
+                    if (valid.equals("false")) {
+                        Table e = new Table();
+                        e.error = 2;
+                        return e;
+                    }
                     news.add(str);
                 }
             }
@@ -78,19 +89,19 @@ public class G_func<T> {
         return new Table(new_col, named);
     }
 
-    //Splits String into tokens;
+    //Splits String into tokens (splits at every nonalphanumeric character;
     protected static String[] tokens(String str) {
-        String[] result = str.split("(?<=[-+*/])|(?=[-+*/])");
+        String[] result = str.split("(?<=[^\\w]+)|(?=[^\\w]+)");
         return result;
     }
 
     //Compares types and outputs resulting type
     protected static String type_out(Object a, Object b) {
-        if (a.equals("NaN") && b.equals("NaN")) {
+        if (a.equals("special") && b.equals("special")) {
             return "";
-        } else if (a.equals("NaN")) {
+        } else if (a.equals("special")) {
             return (String) b;
-        } else if (b.equals("NaN")) {
+        } else if (b.equals("special")) {
             return (String) a;
         }
         ArrayList<String> nums = new ArrayList<String>(Arrays.asList(new String[]{"int", "float"}));
@@ -112,15 +123,34 @@ public class G_func<T> {
         if (val1.equals("NaN") || val2.equals("NaN")) {
             return "NaN";
         }
+        if (val1.equals("NOVALUE") && val2.equals("NOVALUE")) {
+            return "NOVALUE";
+        }
         if (type.equals("string")) {
             val1 = val1.substring(1, val1.length() - 1);
             val2 = val2.substring(1, val2.length() - 1);
+            if (val1.equals("NOVALUE")) {
+                val1 = "";
+            }
+            if (val2.equals("NOVALUE")) {
+                val2 = "";
+            }
             return val1 + val2;
         } else {
-            float vals1 = Float.parseFloat(val1);
-            float vals2 = Float.parseFloat(val2);
+            float vals1;
+            float vals2;
             float result;
             String str;
+            if (val1.equals("NOVALUE")) {
+                vals1 = 0.0f;
+                vals2 = Float.parseFloat(val2);
+            } else if (val2.equals("NOVALUE")) {
+                vals2 = 0.0f;
+                vals1 = Float.parseFloat(val1);
+            } else {
+                vals1 = Float.parseFloat(val1);
+                vals2 = Float.parseFloat(val2);
+            }
             if (oper.equals("+")) {
                 result = vals1 + vals2;
             } else if (oper.equals("-")) {
@@ -144,6 +174,22 @@ public class G_func<T> {
         }
     }
 
+    //Checks if arithmetic is valid
+    protected static String valid_oper(String oper, String type) {
+        ArrayList<String> operations = new ArrayList<>(Arrays.asList(new String[]{"+", "-", "*", "/"}));
+        String valid = "true";
+        if (type.equals("string")) {
+            if (!oper.equals("+")) {
+                valid = "false";
+            }
+        } else {
+            if (!operations.contains(oper)) {
+                valid = "false";
+            }
+        }
+        return valid;
+    }
+
 
     //***********************CONDITIONS******************************//
 
@@ -155,7 +201,7 @@ public class G_func<T> {
         for (int x = 2; x < t.rows; x++) { //For each row
             int failed = 0; //Number of conditions the row failed
             for (int y = 0; y < conds.length; y++) { //For each condition
-                String type_n; //type number: -1 to 2 from check_literal
+                String type_n; //type produced from check_literal
                 String type; //column type
                 String[] parts = splits(conds[y]); //splits the condition into tokens
                 int indx1 = t.names.indexOf(parts[0]); //Gets column1
@@ -211,7 +257,42 @@ public class G_func<T> {
     protected static Boolean sing_cond(String val_1, String val_2, String bool, String type) {
         float val1;
         float val2;
-        if (type != "string") {
+        if ((val_1.equals("NOVALUE")) || val_2.equals("NOVALUE")) {
+            return false;
+        } else if ((val_1.equals("NaN") && val_2.equals("NaN"))) {
+            return true;
+        } else if (type != "string") {
+            if (val_1.equals("NaN")) {
+                switch (bool) {
+                    case "==":
+                        return false;
+                    case ">":
+                        return true;
+                    case "<":
+                        return false;
+                    case ">=":
+                        return true;
+                    case "<=":
+                        return false;
+                    case "!=" :
+                        return true;
+                }
+            } else if (val_2.equals("NaN")) {
+                switch (bool) {
+                    case "==":
+                        return false;
+                    case ">":
+                        return false;
+                    case "<":
+                        return true;
+                    case ">=":
+                        return false;
+                    case "<=":
+                        return true;
+                    case "!=" :
+                        return true;
+                }
+            }
             val1 = Float.parseFloat(val_1);
             val2 = Float.parseFloat(val_2);
             if (type == "int") {
@@ -222,18 +303,19 @@ public class G_func<T> {
             val1 = val_1.compareTo(val_2);
             val2 = 0;
         }
-        if (bool.equals("==")) {
-            return val1 == val2;
-        } else if (bool.equals("!=")) {
-            return val1 != val2;
-        } else if (bool.equals(">")) {
-            return val1 > val2;
-        } else if (bool.equals(">=")) {
-            return val1 >= val2;
-        } else if (bool.equals("<")) {
-            return val1 < val2;
-        } else if (bool.equals("<=")) {
-            return val1 <= val2;
+        switch (bool) {
+            case "==":
+                return val1 == val2;
+            case "!=":
+                return val1 != val2;
+            case ">":
+                return val1 > val2;
+            case ">=":
+                return val1 >= val2;
+            case "<":
+                return val1 < val2;
+            case "<=":
+                return val1 <= val2;
         }
         return false;
     }
@@ -246,9 +328,9 @@ public class G_func<T> {
         Boolean begin = x.startsWith("'");
         Boolean end = x.endsWith("'");
         if (x.equals("NOVALUE")) {
-            return "NOVALUE";
+            return "special";
         } else if (x.equals("NaN")) {
-            return "NaN";
+            return "special";
         } else if (begin && end) {
             return "string";
         } else {

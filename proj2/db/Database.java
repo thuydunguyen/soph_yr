@@ -115,11 +115,19 @@ public class Database {
         }
         try {
             Table[] t = retrieve(table);
-            Table joined = new Table(t, "temp");
-            Table joined2 = G_func.oper(joined, columns, "temp");
+            Table joined = new Table(t, name);
+            Table joined2 = G_func.oper(joined, columns, name);
             if (joined2.error == 1) {
                 joined.error = 0;
-                return "ERROR: Column error";
+                return "ERROR: Column name for arithmetic needed";
+            }
+            if (joined2.error == 2) {
+                joined.error = 0;
+                return "ERROR: Invalid arithmetic";
+            }
+            if (joined2.error == 3) {
+                joined.error = 0;
+                return "ERROR: Column not found";
             }
             if (cond.length > 0) {
                 ArrayList<Integer> rem = G_func.condition(joined2, cond);
@@ -178,7 +186,15 @@ public class Database {
             Table joined2 = G_func.oper(joined, columns, "temp");
             if (joined2.error == 1) {
                 joined.error = 0;
-                return "ERROR: Column error";
+                return "ERROR: Column name for arithmetic needed";
+            }
+            if (joined2.error == 2) {
+                joined.error = 0;
+                return "ERROR: Invalid arithmetic";
+            }
+            if (joined2.error == 3) {
+                joined.error = 0;
+                return "ERROR: Column not found";
             }
             if (cond.length > 0) {
                 ArrayList<Integer> rem = G_func.condition(joined2, cond);
@@ -239,8 +255,6 @@ public class Database {
         } catch (FileNotFoundException e) {
             return "ERROR: File does not exist";
         }
-
-
     }
 
     //*****************GENERAL********************//
