@@ -274,7 +274,7 @@ public class G_func {
                         return true;
                     case "<=":
                         return false;
-                    case "!=" :
+                    case "!=":
                         return true;
                 }
             } else if (val_2.equals("NaN")) {
@@ -289,7 +289,7 @@ public class G_func {
                         return false;
                     case "<=":
                         return true;
-                    case "!=" :
+                    case "!=":
                         return true;
                 }
             }

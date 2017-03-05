@@ -171,8 +171,7 @@ public class Table<T> {
                 String item = data.get(x);
                 String type = G_func.type_out(G_func.check_literal(item), types.get(x));
                 if (type.equals("special")) {
-                }
-                else if (types.get(x).equals("float") && type.equals("float")) {
+                } else if (types.get(x).equals("float") && type.equals("float")) {
                     float num = Float.parseFloat(item);
                     item = G_func.f_to_str(num);
                 } else if (type.equals("string")) {
