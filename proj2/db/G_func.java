@@ -449,7 +449,7 @@ public class G_func {
     public static void main(String[] args) {
         String t = "Yes";
         String s = "1";
-        String val = t+s;
+        String val = t + s;
         System.out.println("'" + val + "'");
     }
 
