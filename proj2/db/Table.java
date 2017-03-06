@@ -68,7 +68,8 @@ public class Table<T> {
             ArrayList<String> shared_t = new ArrayList<>(); //shared types
 
             //finds the indexes of shared columns
-            for (int x = 0; x < curr.names.size(); x++) {
+            int ntimes = Math.min(next.names.size(), curr.names.size());
+            for (int x = 0; x < ntimes; x++) {
                 if (next.names.get(x).equals(curr.names.get(x))) {
                     int indexb = next.names.indexOf(next.names.get(x));
                     if (next.types.get(indexb).equals(curr.types.get(x))) { //makes sure columns are same type too
