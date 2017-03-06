@@ -126,6 +126,7 @@ public class G_func {
         if (val1.equals("NOVALUE") && val2.equals("NOVALUE")) {
             return "NOVALUE";
         }
+        String str = "";
         if (type.equals("string")) {
             val1 = val1.substring(1, val1.length() - 1);
             val2 = val2.substring(1, val2.length() - 1);
@@ -136,11 +137,10 @@ public class G_func {
                 val2 = "";
             }
             return "'" + val1 + val2 + "'";
-        } else {
+        } else if (type.equals("float")){
             float vals1;
             float vals2;
             float result;
-            String str;
             if (val1.equals("NOVALUE")) {
                 vals1 = 0.0f;
                 vals2 = Float.parseFloat(val2);
@@ -165,13 +165,39 @@ public class G_func {
             } else {
                 return "";
             }
-            if (type.equals("int")) {
-                str = Integer.toString((int) Math.floor(result));
-            } else {
-                str = f_to_str(result);
-            }
-            return str;
+            str = f_to_str(result);
         }
+        else if (type.equals("int")) {
+            int vals1;
+            int vals2;
+            int result;
+            if (val1.equals("NOVALUE")) {
+                vals1 = 0;
+                vals2 = Integer.parseInt(val2);
+            } else if (val2.equals("NOVALUE")) {
+                vals2 = 0;
+                vals1 = Integer.parseInt(val1);
+            } else {
+                vals1 = Integer.parseInt(val1);
+                vals2 = Integer.parseInt(val2);
+            }
+            if (oper.equals("+")) {
+                result = vals1 + vals2;
+            } else if (oper.equals("-")) {
+                result = vals1 - vals2;
+            } else if (oper.equals("*")) {
+                result = vals1 * vals2;
+            } else if (oper.equals("/")) {
+                if (Math.signum(vals2) == 0) {
+                    return "NaN";
+                }
+                result = vals1 / vals2;
+            } else {
+                return "";
+            }
+            str = Integer.toString(result);
+        }
+            return str;
     }
 
     //Checks if arithmetic is valid
