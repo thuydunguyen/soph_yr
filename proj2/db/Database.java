@@ -269,6 +269,10 @@ public class Database {
                 t.error = 0;
                 return "ERROR: Malformed table";
             }
+            else if (t.error == 2) {
+                t.error = 0;
+                return "ERROR: Blank file";
+            }
             if (indx != -1) {
                 storage.set(indx, t);
             } else {

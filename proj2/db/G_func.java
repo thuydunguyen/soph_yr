@@ -262,7 +262,7 @@ public class G_func {
     //Splits String into conditional parts
     protected static String[] splits(String str) {
         str = str.replaceAll("\\s+", "");
-        String[] result = str.split("(?<=[<=>])|(?=[<=>])");
+        String[] result = str.split("(?<=[<=>!])|(?=[<=>!])");
         String[] fin = new String[3];
         if (result.length == 4) {
             fin[1] = result[1] + result[2];
@@ -343,7 +343,7 @@ public class G_func {
 
     //Checks if boolean is valid
     protected static Boolean valid_bool(String bool) {
-        ArrayList<String> booleans = new ArrayList<>(Arrays.asList(new String[]{"<", "<=", ">", ">=", "=="}));
+        ArrayList<String> booleans = new ArrayList<>(Arrays.asList(new String[]{"<", "<=", ">", ">=", "==", "!="}));
         if (!booleans.contains(bool)) {
             return false;
         } else {
@@ -420,6 +420,11 @@ public class G_func {
             FileReader fr = new FileReader(path);
             BufferedReader textR = new BufferedReader(fr);
             int nlines = n_lines(path);
+            if (nlines == 0) {
+                Table t = new Table();
+                t.error = 2;
+                return t;
+            }
             String[] lines = new String[nlines];
             for (int x = 0; x < nlines; x++) { //list of lines
                 lines[x] = textR.readLine();
@@ -427,6 +432,9 @@ public class G_func {
             String[] n_t = lines[0].split("\\s*,\\s*"); //splits each line by comma
             for (int y = 0; y < n_t.length; y++) { //Creating names and types arraylist
                 String[] parts = n_t[y].split("\\s+");
+                if (parts.length != 2) {
+                    return new Table();
+                }
                 names.add(parts[0]);
                 types.add(parts[1]);
             }
@@ -443,8 +451,12 @@ public class G_func {
                         if (!types.get(v).equals("string") && !types.get(v).equals("special")) {
                             return new Table();
                         }
-                    } else if (v_type.equals("int") || v_type.equals("float")) {
-                        if (!types.get(v).equals("int") && !types.get(v).equals("special") && !types.get(v).equals("float)")) {
+                    } else if (v_type.equals("int")) {
+                        if (!types.get(v).equals("int") && !types.get(v).equals("special")) {
+                            return new Table();
+                        }
+                    } else if (v_type.equals("float")) {
+                        if (!types.get(v).equals("float") && !types.get(v).equals("special")) {
                             return new Table();
                         }
                     } else if (!v_type.equals("special")) {
