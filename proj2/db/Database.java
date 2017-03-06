@@ -238,7 +238,7 @@ public class Database {
             ArrayList<String> values = new ArrayList<>(Arrays.asList(vals));
             int indx = index(name);
             if (indx == -1) {
-                return "Table " + name + " does not exist";
+                return "ERROR: Table " + name + " does not exist";
             }
             Table t = retrieve(name);
             t.insert(values);
