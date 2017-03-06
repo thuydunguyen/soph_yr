@@ -1,6 +1,7 @@
 a string,b string
-NaN,'c'
+NaN,'a'
 NaN,NaN
 NaN,NOVALUE
 NOVALUE,NOVALUE
-'a','t'
+'b','c''
+'d',NOVALUE

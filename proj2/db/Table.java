@@ -169,8 +169,9 @@ public class Table<T> {
             for (int x = 0; x < data.size(); x++) {
                 ArrayList<String> copy = table.get(x);
                 String item = data.get(x);
+                String literal = G_func.check_literal(item);
                 String type = G_func.type_out(G_func.check_literal(item), types.get(x));
-                if (type.equals("special")) {
+                if (literal.equals("special")) {
                 } else if (types.get(x).equals("float") && type.equals("float")) {
                     float num = Float.parseFloat(item);
                     item = G_func.f_to_str(num);

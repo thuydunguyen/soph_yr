@@ -433,6 +433,15 @@ public class G_func {
             for (int y = 0; y < n_t.length; y++) { //Creating names and types arraylist
                 String[] parts = n_t[y].split("\\s+");
                 if (parts.length != 2) {
+                    System.err.println("Missing column name or type");
+                    return new Table();
+                }
+                else if (!val_type(parts[1])) {
+                    System.err.println("Invalid column type");
+                    return new Table();
+                }
+                else if (!Character.isLetter(parts[0].charAt(0)) || !Character.isLetter(name.charAt(0))) {
+                    System.err.println("A name must start with a letter");
                     return new Table();
                 }
                 names.add(parts[0]);
@@ -475,6 +484,12 @@ public class G_func {
         }
         return new Table();
 
+    }
+
+    //Checks if valid column type
+    protected static Boolean val_type(String type) {
+        ArrayList<String> types = new ArrayList<>(Arrays.asList(new String[] {"string","int","float"}));
+        return types.contains(type);
     }
 
     //Gets number of lines in a file
