@@ -205,9 +205,23 @@ public class G_func {
                 String type; //column type
                 String[] parts = splits(conds[y]); //splits the condition into tokens
                 int indx1 = t.names.indexOf(parts[0]); //Gets column1
+                int indx2;
+                if (indx1 == -1) {
+                    rem.clear();
+                    rem.add(-2);
+                    return rem;
+                }
                 ArrayList<String> col1 = t.gets(indx1);
                 ArrayList<String> col2; //Initializes column2
-                if ((type_n = check_literal(parts[2])) != "none") { //Checks if  second arg is literal
+                if (!valid_bool(parts[1])) { //Makes sure its a valid boolean
+                    rem.clear();
+                    rem.add(-1);
+                    return rem;
+                }
+                if ((indx2 = t.names.indexOf(parts[2])) != -1) {//gets a column as second arg
+                    col2 = t.gets(indx2);
+                    type = type_out(t.types.get(indx1), t.types.get(indx2)); //gets resulting type
+                } else if ((type_n = check_literal(parts[2])) != "none") { //Checks if  second arg is literal
                     String col_type; //Sets col_type of second arg based on type_n
                     val_2 = parts[2];
                     col_type = type_n;
@@ -215,12 +229,20 @@ public class G_func {
                     Arrays.fill(vals, val_2); //Filled with second arg
                     col2 = new ArrayList<>(Arrays.asList(vals));
                     type = type_out(t.types.get(indx1), col_type); //Gets resulting type
-                } else { //if not a literal
-                    int indx2 = t.names.indexOf(parts[2]); //gets a column as second arg
-                    col2 = t.gets(indx2);
-                    type = type_out(t.types.get(indx1), t.types.get(indx2)); //gets resulting type
+                    if (type.equals("BAD")) {
+                        rem.clear();
+                        rem.add(-3);
+                        return rem;
+                    }
+                } else {
+                    rem.clear();
+                    rem.add(-3);
+                    return rem;
                 }
-                if (!sing_cond(col1.get(x), col2.get(x), parts[1], type)) {
+                String val1 = col1.get(x);
+                String val2 = col2.get(x);
+                val1 = val1.replaceAll("\\s+", "");
+                if (!sing_cond(val1, val2, parts[1], type)) {
                     failed++;
                 }
 
@@ -303,21 +325,30 @@ public class G_func {
             val1 = val_1.compareTo(val_2);
             val2 = 0;
         }
-        switch (bool) {
-            case "==":
-                return val1 == val2;
-            case "!=":
-                return val1 != val2;
-            case ">":
-                return val1 > val2;
-            case ">=":
-                return val1 >= val2;
-            case "<":
-                return val1 < val2;
-            case "<=":
-                return val1 <= val2;
+        if (bool.equals("==")) {
+            return val1 == val2;
+        } else if (bool.equals("!=")) {
+            return val1 != val2;
+        } else if (bool.equals(">")) {
+            return val1 > val2;
+        } else if (bool.equals(">=")) {
+            return val1 >= val2;
+        } else if (bool.equals("<")) {
+            return val1 < val2;
+        } else if (bool.equals("<=")) {
+            return val1 <= val2;
         }
         return false;
+    }
+
+    //Checks if boolean is valid
+    protected static Boolean valid_bool(String bool) {
+        ArrayList<String> booleans = new ArrayList<>(Arrays.asList(new String[]{"<", "<=", ">", ">=", "=="}));
+        if (!booleans.contains(bool)) {
+            return false;
+        } else {
+            return true;
+        }
     }
 
 
@@ -390,20 +421,35 @@ public class G_func {
             BufferedReader textR = new BufferedReader(fr);
             int nlines = n_lines(path);
             String[] lines = new String[nlines];
-            for (int x = 0; x < nlines; x++) {
+            for (int x = 0; x < nlines; x++) { //list of lines
                 lines[x] = textR.readLine();
             }
-            String[] n_t = lines[0].split("\\s*,\\s*");
-            for (int y = 0; y < n_t.length; y++) {
+            String[] n_t = lines[0].split("\\s*,\\s*"); //splits each line by comma
+            for (int y = 0; y < n_t.length; y++) { //Creating names and types arraylist
                 String[] parts = n_t[y].split("\\s+");
                 names.add(parts[0]);
                 types.add(parts[1]);
             }
             Table t = new Table(names, types, name);
-            for (int z = 1; z < nlines; z++) {
+            for (int z = 1; z < nlines; z++) { //Runs through lines of data
                 ArrayList<String> values = new ArrayList<>();
                 String[] vals = lines[z].split("\\s*,\\s*");
-                for (int v = 0; v < vals.length; v++) {
+                if (vals.length != names.size()) { //Makes sure enough data in each row
+                    return new Table();
+                }
+                for (int v = 0; v < vals.length; v++) { //Add vals to values to be inserted to t
+                    String v_type = check_literal(vals[v]);
+                    if (v_type.equals("string")) {
+                        if (!types.get(v).equals("string") && !types.get(v).equals("special")) {
+                            return new Table();
+                        }
+                    } else if (v_type.equals("int") || v_type.equals("float")) {
+                        if (!types.get(v).equals("int") && !types.get(v).equals("special") && !types.get(v).equals("float)")) {
+                            return new Table();
+                        }
+                    } else {
+                        return new Table();
+                    }
                     values.add(vals[v]);
                 }
                 t.insert(values);
@@ -447,10 +493,9 @@ public class G_func {
     }
 
     public static void main(String[] args) {
-        String t = "Yes";
-        String s = "1";
-        String val = t + s;
-        System.out.println("'" + val + "'");
+        Database db = new Database();
+        db.transact("load s");
+        db.transact("select * from s where x == 2");
     }
 
 

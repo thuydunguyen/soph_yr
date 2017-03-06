@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
 
 
 public class Database {
-    private ArrayList<Table> storage;
+    public ArrayList<Table> storage;
 
     public Database() {
         storage = new ArrayList<>();
@@ -132,6 +132,14 @@ public class Database {
             if (cond.length > 0) {
                 ArrayList<Integer> rem = G_func.condition(joined2, cond);
                 for (int x = 0; x < rem.size(); x++) {
+                    if (rem.get(0) == -1) {
+                        return "ERROR: Invalid conditional statement";
+                    }
+                    else if (rem.get(0) == -2) {
+                        return "ERROR: Column not found for condition";
+                    } else if (rem.get(0) == -3) {
+                        return "ERROR: Incompatible types compared";
+                    }
                     joined2.removal_r(rem.get(x));
                 }
             }
@@ -199,6 +207,13 @@ public class Database {
             if (cond.length > 0) {
                 ArrayList<Integer> rem = G_func.condition(joined2, cond);
                 for (int x = 0; x < rem.size(); x++) {
+                    if (rem.get(0) == -1) {
+                        return "ERROR: Invalid conditional statement";
+                    } else if (rem.get(0) == -2) {
+                        return "ERROR: Column not found for condition";
+                    } else if (rem.get(0) == -3) {
+                        return "ERROR: Incompatible types compared";
+                    }
                     joined2.removal_r(rem.get(x));
                 }
             }
@@ -247,10 +262,19 @@ public class Database {
 
     protected String loadTable(String name) {
         try {
+            int indx = index(name);
             String path = G_func.pathway(name);
             FileReader fr = new FileReader(path);
             Table t = G_func.loadComp(path, name);
-            storage.add(t);
+            if (t.error == 1) {
+                t.error = 0;
+                return "ERROR: Malformed table";
+            }
+            if (indx != -1) {
+                storage.set(indx,t);
+            }
+            else {
+            storage.add(t);}
             return "";
         } catch (FileNotFoundException e) {
             return "ERROR: File does not exist";

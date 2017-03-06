@@ -310,7 +310,16 @@ public class Table<T> {
 
     //Creates clone of table
     protected ArrayList<ArrayList<String>> cloning() {
-        return (ArrayList<ArrayList<String>>) table.clone();
+        ArrayList<ArrayList<String>> copied = new ArrayList<ArrayList<String>>();
+        for (int col = 0; col < names.size(); col++) {
+            ArrayList<String> value = new ArrayList<String>();
+            for (int x = 0; x < rows; x++ ) {
+                String val = table.get(col).get(x);
+                value.add(val);
+            }
+            copied.add(value);
+        }
+        return copied;
     }
 
     //Clones Table's names or types
