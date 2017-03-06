@@ -435,12 +435,10 @@ public class G_func {
                 if (parts.length != 2) {
                     System.err.println("Missing column name or type");
                     return new Table();
-                }
-                else if (!val_type(parts[1])) {
+                } else if (!val_type(parts[1])) {
                     System.err.println("Invalid column type");
                     return new Table();
-                }
-                else if (!Character.isLetter(parts[0].charAt(0)) || !Character.isLetter(name.charAt(0))) {
+                } else if (!Character.isLetter(parts[0].charAt(0)) || !Character.isLetter(name.charAt(0))) {
                     System.err.println("A name must start with a letter");
                     return new Table();
                 }
@@ -488,7 +486,7 @@ public class G_func {
 
     //Checks if valid column type
     protected static Boolean val_type(String type) {
-        ArrayList<String> types = new ArrayList<>(Arrays.asList(new String[] {"string","int","float"}));
+        ArrayList<String> types = new ArrayList<>(Arrays.asList(new String[]{"string", "int", "float"}));
         return types.contains(type);
     }
 

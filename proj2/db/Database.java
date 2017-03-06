@@ -268,8 +268,7 @@ public class Database {
             if (t.error == 1) {
                 t.error = 0;
                 return "ERROR: Malformed table";
-            }
-            else if (t.error == 2) {
+            } else if (t.error == 2) {
                 t.error = 0;
                 return "ERROR: Blank file";
             }
