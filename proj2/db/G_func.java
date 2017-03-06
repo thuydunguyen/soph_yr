@@ -137,7 +137,7 @@ public class G_func {
                 val2 = "";
             }
             return "'" + val1 + val2 + "'";
-        } else if (type.equals("float")){
+        } else if (type.equals("float")) {
             float vals1;
             float vals2;
             float result;
@@ -166,8 +166,7 @@ public class G_func {
                 return "";
             }
             str = f_to_str(result);
-        }
-        else if (type.equals("int")) {
+        } else if (type.equals("int")) {
             int vals1;
             int vals2;
             int result;
@@ -197,7 +196,7 @@ public class G_func {
             }
             str = Integer.toString(result);
         }
-            return str;
+        return str;
     }
 
     //Checks if arithmetic is valid
