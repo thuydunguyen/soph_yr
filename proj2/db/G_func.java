@@ -447,7 +447,7 @@ public class G_func {
                         if (!types.get(v).equals("int") && !types.get(v).equals("special") && !types.get(v).equals("float)")) {
                             return new Table();
                         }
-                    } else {
+                    } else if (!v_type.equals("special")) {
                         return new Table();
                     }
                     values.add(vals[v]);
@@ -492,5 +492,5 @@ public class G_func {
         return path;
     }
 
-   
+
 }
