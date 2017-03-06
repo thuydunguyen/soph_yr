@@ -237,6 +237,9 @@ public class Database {
             String[] vals = data.split("\\s*,\\s*");
             ArrayList<String> values = new ArrayList<>(Arrays.asList(vals));
             int indx = index(name);
+            if (indx == -1) {
+                return "Table " + name + " does not exist";
+            }
             Table t = retrieve(name);
             t.insert(values);
             if (t.error == 1) {
@@ -244,6 +247,7 @@ public class Database {
             } else if (t.error == 2) {
                 return "ERROR: Value type != column type";
             }
+
             storage.set(indx, t);
             return "";
         }
@@ -291,7 +295,7 @@ public class Database {
         for (int n = 0; n < name.length; n++) {
             for (int x = 0; x < storage.size(); x++) {
                 if (storage.get(x).named.equals(name[n])) {
-                    t[n] = storage.get(x);
+                    t[n] = new Table(storage.get(x));
                 }
             }
         }
@@ -301,7 +305,7 @@ public class Database {
     protected Table retrieve(String name) {
         int indx = index(name);
         if (indx >= 0) {
-            return storage.get(indx);
+            return new Table(storage.get(indx));
         }
         return new Table();
     }

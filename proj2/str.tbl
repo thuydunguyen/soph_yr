@@ -1,7 +1,7 @@
-a string,b string
-NaN,'a'
+a int,b int
+NaN,4
 NaN,NaN
 NaN,NOVALUE
 NOVALUE,NOVALUE
-'b','c''
-'d',NOVALUE
+-2,3
+0,NOVALUE
