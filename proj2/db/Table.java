@@ -313,7 +313,7 @@ public class Table<T> {
         ArrayList<ArrayList<String>> copied = new ArrayList<ArrayList<String>>();
         for (int col = 0; col < names.size(); col++) {
             ArrayList<String> value = new ArrayList<String>();
-            for (int x = 0; x < rows; x++ ) {
+            for (int x = 0; x < rows; x++) {
                 String val = table.get(col).get(x);
                 value.add(val);
             }

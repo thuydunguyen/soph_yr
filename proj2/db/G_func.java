@@ -492,11 +492,5 @@ public class G_func {
         return path;
     }
 
-    public static void main(String[] args) {
-        Database db = new Database();
-        db.transact("load s");
-        db.transact("select * from s where x == 2");
-    }
-
-
+   
 }

@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
 
 
 public class Database {
-    public ArrayList<Table> storage;
+    private ArrayList<Table> storage;
 
     public Database() {
         storage = new ArrayList<>();
@@ -134,8 +134,7 @@ public class Database {
                 for (int x = 0; x < rem.size(); x++) {
                     if (rem.get(0) == -1) {
                         return "ERROR: Invalid conditional statement";
-                    }
-                    else if (rem.get(0) == -2) {
+                    } else if (rem.get(0) == -2) {
                         return "ERROR: Column not found for condition";
                     } else if (rem.get(0) == -3) {
                         return "ERROR: Incompatible types compared";
@@ -271,10 +270,10 @@ public class Database {
                 return "ERROR: Malformed table";
             }
             if (indx != -1) {
-                storage.set(indx,t);
+                storage.set(indx, t);
+            } else {
+                storage.add(t);
             }
-            else {
-            storage.add(t);}
             return "";
         } catch (FileNotFoundException e) {
             return "ERROR: File does not exist";
