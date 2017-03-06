@@ -95,7 +95,7 @@ public class Table<T> {
             ArrayList<String> named = G_func.combine_lists(shared, notshared1.names, notshared2.names);
             ArrayList<String> typed = G_func.combine_lists(shared_t, notshared1.types, notshared2.types);
             Table curr_new = new Table(named, typed, n);
-            int x = 0; //Used to be a for loop but had complications so got rid of it
+            int x = 0;
             int colA = curr_index.get(x); //Shared column x in curr
             int colB = next_index.get(x); //Shared column x in next
             for (int r = 2; r < curr.rows; r++) { //for each value in shared column of A
@@ -105,7 +105,7 @@ public class Table<T> {
                     //gets shared values of shared colB
                 } else { //If no shared columns, create a linearly incr column
                     rowsB = new ArrayList<>();
-                    for (int k = 2; k < curr.rows; k++) {
+                    for (int k = 2; k < next.rows; k++) {
                         rowsB.add(k);
                     }
                 }
