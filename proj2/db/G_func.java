@@ -502,10 +502,12 @@ public class G_func {
 
         } catch (FileNotFoundException e) {
             System.out.println("File does not exist");
+            return new Table();
         } catch (IOException f) {
             System.out.println("No more lines to read");
+            return new Table();
         }
-        return new Table();
+
 
     }
 
@@ -541,6 +543,5 @@ public class G_func {
         String path = directory + File.separator + fileName;
         return path;
     }
-
 
 }
