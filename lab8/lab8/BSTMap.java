@@ -4,8 +4,7 @@ package lab8;
 import java.util.Iterator;
 import java.util.Set;
 
-public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V>
-{
+public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
     private Node root;
 
     private class Node {
@@ -22,7 +21,8 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V>
 
     }
 
-    public BSTMap() {}
+    public BSTMap() {
+    }
 
     public void clear() {
         root = null;
@@ -33,10 +33,9 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V>
     }
 
     private int size(Node x) {
-        if (x==null) {
+        if (x == null) {
             return 0;
-        }
-        else {
+        } else {
             return x.size;
         }
     }
@@ -58,11 +57,10 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V>
         }
         int cmp = key.compareTo(x.key);
         if (cmp < 0) {
-            return get(x.left,key);}
-        else if (cmp > 0) {
+            return get(x.left, key);
+        } else if (cmp > 0) {
             return get(x.right, key);
-        }
-        else {
+        } else {
             return x.val;
         }
     }
@@ -85,11 +83,9 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V>
         int cmp = key.compareTo(x.key);
         if (cmp < 0) {
             x.left = put(x.left, key, val);
-        }
-        else if (cmp > 0) {
+        } else if (cmp > 0) {
             x.right = put(x.right, key, val);
-        }
-        else {
+        } else {
             x.val = val;
         }
         x.size = 1 + size(x.left) + size(x.right);
@@ -102,22 +98,28 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V>
 
     private Node delete(Node x, K key) {
         if (x == null) {
-            return null;}
+            return null;
+        }
         int cmp = key.compareTo(x.key);
-        if (cmp < 0) {x.left = delete(x.left, key);}
-        else if (cmp > 0) {x.right = delete(x.right, key);}
-        else {
+        if (cmp < 0) {
+            x.left = delete(x.left, key);
+        } else if (cmp > 0) {
+            x.right = delete(x.right, key);
+        } else {
             if (x.right == null) {
-                return x.left;}
+                return x.left;
+            }
             if (x.left == null) {
-            return x.right;}
-        Node t = x;
-        x = min(t.right);
-        x.right = deleteMin(t.right);
-        x.left = t.left;
+                return x.right;
+            }
+            Node t = x;
+            x = min(t.right);
+            x.right = deleteMin(t.right);
+            x.left = t.left;
         }
         x.size = size(x.left) + size(x.right) + 1;
-        return x; }
+        return x;
+    }
 
     private Node deleteMin(Node x) {
         if (x.left == null) return x.right;
@@ -128,7 +130,7 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V>
 
     private Node min(Node x) {
         if (x.left == null) return x;
-        else                return min(x.left);
+        else return min(x.left);
     }
 
     public void printInOrder() {
@@ -162,8 +164,6 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V>
     public Iterator iterator() {
         throw new UnsupportedOperationException("iterator is not supported");
     }
-
-
 
 
 }
