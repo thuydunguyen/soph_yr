@@ -13,7 +13,7 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
         private Node left, right;
         private int size;
 
-        public Node(K key, V val, int size) {
+        Node(K key, V val, int size) {
             this.key = key;
             this.val = val;
             this.size = size;
@@ -122,15 +122,20 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
     }
 
     private Node deleteMin(Node x) {
-        if (x.left == null) return x.right;
+        if (x.left == null) {
+            return x.right;
+        }
         x.left = deleteMin(x.left);
         x.size = size(x.left) + size(x.right) + 1;
         return x;
     }
 
     private Node min(Node x) {
-        if (x.left == null) return x;
-        else return min(x.left);
+        if (x.left == null) {
+            return x;
+        } else {
+            return min(x.left);
+        }
     }
 
     public void printInOrder() {
