@@ -19,8 +19,6 @@ public class Percolation {
         opened = new ArrayList<>();
         neighbors.add(1);
         neighbors.add(-1);
-        neighbors.add(N);
-        neighbors.add(-N);
     }
 
     public void open(int row, int col) {
@@ -30,8 +28,8 @@ public class Percolation {
         int D = xyto1D(row, col);
         opened.add(D);
         for (int z = 0; z < 2; z++) {
+            int cols = col + neighbors.get(z);
             int rows = row + neighbors.get(z);
-            int cols = col + neighbors.get(z + 2);
             if (rows >= 0 && rows < size) {
                 if (isOpen(rows, col)) {
                     int d = xyto1D(rows, col);
@@ -82,7 +80,7 @@ public class Percolation {
         for (int x = size * (size - 1); x < size * size; x++) {
             if (opened.contains(x)) {
                 for (int y = 0; y < size; y++) {
-                    if (unite.connected(x, y)) {
+                    if (unite.connected(y, x)) {
                         return true;
                     }
                 }
@@ -101,15 +99,16 @@ public class Percolation {
     }
 
     public static void main(String[] args) {
-        Percolation p = new Percolation(200);
-        p.open(0, 0);
+        Percolation p = new Percolation(5);
+        p.open(3, 4);
         p.open(2, 4);
         p.open(2, 2);
         p.open(2, 3);
         p.open(0, 2);
         p.open(1, 2);
         p.open(4, 4);
-        System.out.println(p.isFull(199, 0));
+        System.out.println(p.isFull(4, 4));
+
     }
 
 }                       
