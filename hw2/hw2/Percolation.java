@@ -73,7 +73,7 @@ public class Percolation {
     }
 
     public int numberOfOpenSites() {
-        return opened.size() - 1;
+        return opened.size();
     }
 
     public boolean percolates() {
