@@ -73,15 +73,17 @@ public class Percolation {
     }
 
     public int numberOfOpenSites() {
-        return opened.size();
+        return opened.size() - 1;
     }
 
     public boolean percolates() {
         for (int x = size * (size - 1); x < size * size; x++) {
             if (opened.contains(x)) {
                 for (int y = 0; y < size; y++) {
-                    if (unite.connected(y, x)) {
-                        return true;
+                    if (opened.contains(y)) {
+                        if (unite.connected(y, x)) {
+                            return true;
+                        }
                     }
                 }
             }
@@ -107,7 +109,7 @@ public class Percolation {
         p.open(0, 2);
         p.open(1, 2);
         p.open(4, 4);
-        System.out.println(p.isFull(4, 4));
+        System.out.println(p.percolates());
 
     }
 
