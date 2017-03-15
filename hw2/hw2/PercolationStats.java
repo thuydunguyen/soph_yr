@@ -15,14 +15,14 @@ public class PercolationStats {
         results = new double[T];
         for (int x = 0; x < T; x++) {
             Percolation sample = new Percolation(N);
-            double nth_site = 0;
+            double n = 0;
             while (!sample.percolates()) {
                 int r = StdRandom.uniform(N);
                 int c = StdRandom.uniform(N);
                 sample.open(r, c);
-                nth_site++;
+                n++;
             }
-            results[x] = (nth_site / (N * N));
+            results[x] = (n / (N * N));
         }
         tests = T;
     }
@@ -47,6 +47,12 @@ public class PercolationStats {
         double std = stddev();
         double sqrt = Math.pow(tests, 0.5);
         return (m + (1.96 * std / sqrt));
+    }
+
+    public static void main(String[] args) {
+        PercolationStats test = new PercolationStats(4, 30);
+        System.out.println(test.mean());
+        System.out.println("Done");
     }
 
 }                       

@@ -5,36 +5,44 @@ import edu.princeton.cs.algs4.WeightedQuickUnionUF;
 import java.util.ArrayList;
 
 public class Percolation {
-    private int[][] perc;
     private int size;
     private ArrayList<Integer> opened;
     private WeightedQuickUnionUF unite;
+    private ArrayList<Integer> neighbors = new ArrayList<>();
 
     public Percolation(int N) {
         if (N <= 0) {
             throw new IllegalArgumentException("N must be greater than ZERO");
         }
-        perc = new int[N][N];
-        for (int x = 0; x < N; x++) {
-            for (int y = 0; y < N; y++) {
-                perc[x][y] = 0;
-            }
-        }
         size = N;
         unite = new WeightedQuickUnionUF(N * N);
         opened = new ArrayList<>();
+        neighbors.add(1);
+        neighbors.add(-1);
+        neighbors.add(N);
+        neighbors.add(-N);
     }
 
     public void open(int row, int col) {
         if (row >= size || row < 0 || col >= size || col < 0) {
             throw new IndexOutOfBoundsException("Desired site is out of bounds");
         }
-        perc[row][col] = 1;
         int D = xyto1D(row, col);
         opened.add(D);
-        for (int z = 0; z < opened.size(); z++) {
-            if (connects(opened.get(z), D)) {
-                unite.union(opened.get(z), D);
+        for (int z = 0; z < 2; z++) {
+            int rows = row + neighbors.get(z);
+            int cols = col + neighbors.get(z + 2);
+            if (rows >= 0 && rows < size) {
+                if (isOpen(rows, col)) {
+                    int d = xyto1D(rows, col);
+                    unite.union(d, D);
+                }
+            }
+            if (cols >= 0 && cols < size) {
+                if (isOpen(row, cols)) {
+                    int d = xyto1D(row, cols);
+                    unite.union(d, D);
+                }
             }
         }
 
@@ -44,7 +52,8 @@ public class Percolation {
         if (row >= size || row < 0 || col >= size || col < 0) {
             throw new IndexOutOfBoundsException("Desired site is out of bounds");
         }
-        return perc[row][col] == 1;
+        int D = xyto1D(row, col);
+        return opened.contains(D);
     }
 
     public boolean isFull(int row, int col) {
@@ -92,15 +101,15 @@ public class Percolation {
     }
 
     public static void main(String[] args) {
-        Percolation p = new Percolation(5);
-        p.open(3, 4);
+        Percolation p = new Percolation(200);
+        p.open(0, 0);
         p.open(2, 4);
         p.open(2, 2);
         p.open(2, 3);
         p.open(0, 2);
         p.open(1, 2);
         p.open(4, 4);
-        System.out.println(p.isFull(0, 0));
+        System.out.println(p.isFull(199, 0));
     }
 
 }                       
