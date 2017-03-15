@@ -26,20 +26,22 @@ public class Percolation {
             throw new IndexOutOfBoundsException("Desired site is out of bounds");
         }
         int D = xyto1D(row, col);
-        opened.add(D);
-        for (int z = 0; z < 2; z++) {
-            int cols = col + neighbors.get(z);
-            int rows = row + neighbors.get(z);
-            if (rows >= 0 && rows < size) {
-                if (isOpen(rows, col)) {
-                    int d = xyto1D(rows, col);
-                    unite.union(d, D);
+        if (!opened.contains(D)) {
+            opened.add(D);
+            for (int z = 0; z < 2; z++) {
+                int cols = col + neighbors.get(z);
+                int rows = row + neighbors.get(z);
+                if (rows >= 0 && rows < size) {
+                    if (isOpen(rows, col)) {
+                        int d = xyto1D(rows, col);
+                        unite.union(d, D);
+                    }
                 }
-            }
-            if (cols >= 0 && cols < size) {
-                if (isOpen(row, cols)) {
-                    int d = xyto1D(row, cols);
-                    unite.union(d, D);
+                if (cols >= 0 && cols < size) {
+                    if (isOpen(row, cols)) {
+                        int d = xyto1D(row, cols);
+                        unite.union(d, D);
+                    }
                 }
             }
         }
