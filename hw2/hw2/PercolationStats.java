@@ -6,8 +6,7 @@ import edu.princeton.cs.algs4.StdStats;
 
 public class PercolationStats {
     private double[] results;
-    private int num_tests;
-    private int size;
+    private int tests;
 
     public PercolationStats(int N, int T) {
         if (N <= 0 || T <= 0) {
@@ -25,8 +24,7 @@ public class PercolationStats {
             }
             results[x] = (nth_site / (N * N));
         }
-        size = N;
-        num_tests = T;
+        tests = T;
     }
 
     public double mean() {
@@ -40,15 +38,15 @@ public class PercolationStats {
     public double confidenceLow() {
         double m = mean();
         double std = stddev();
-        double sqr_T = Math.pow(num_tests, 0.5);
-        return (m - (1.96 * std / sqr_T));
+        double sqrt = Math.pow(tests, 0.5);
+        return (m - (1.96 * std / sqrt));
     }
 
     public double confidenceHigh() {
         double m = mean();
         double std = stddev();
-        double sqr_T = Math.pow(num_tests, 0.5);
-        return (m + (1.96 * std / sqr_T));
+        double sqrt = Math.pow(tests, 0.5);
+        return (m + (1.96 * std / sqrt));
     }
 
 }                       

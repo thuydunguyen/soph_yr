@@ -11,6 +11,9 @@ public class Percolation {
     private WeightedQuickUnionUF unite;
 
     public Percolation(int N) {
+        if (N <= 0) {
+            throw new IllegalArgumentException("N must be greater than ZERO");
+        }
         perc = new int[N][N];
         for (int x = 0; x < N; x++) {
             for (int y = 0; y < N; y++) {
@@ -50,7 +53,7 @@ public class Percolation {
         }
         int D = xyto1D(row, col);
         if (D < size - 1) {
-            return true;
+            return isOpen(row, col);
         }
         for (int x = 0; x < size; x++) {
             if (opened.contains(x)) {
@@ -97,7 +100,7 @@ public class Percolation {
         p.open(0, 2);
         p.open(1, 2);
         p.open(4, 4);
-        System.out.println(p.percolates());
+        System.out.println(p.isFull(0, 0));
     }
 
 }                       
