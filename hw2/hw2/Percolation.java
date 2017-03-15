@@ -3,12 +3,15 @@ package hw2;
 import edu.princeton.cs.algs4.WeightedQuickUnionUF;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
 public class Percolation {
     private int size;
-    private ArrayList<Integer> opened;
+    private HashSet opened;
     private WeightedQuickUnionUF unite;
     private ArrayList<Integer> neighbors = new ArrayList<>();
+    private ArrayList<Integer> top = new ArrayList<>();
+    private ArrayList<Integer> bottom = new ArrayList<>();
 
     public Percolation(int N) {
         if (N <= 0) {
@@ -16,7 +19,7 @@ public class Percolation {
         }
         size = N;
         unite = new WeightedQuickUnionUF(N * N);
-        opened = new ArrayList<>();
+        opened = new HashSet();
         neighbors.add(1);
         neighbors.add(-1);
     }
@@ -28,6 +31,12 @@ public class Percolation {
         int D = xyto1D(row, col);
         if (!opened.contains(D)) {
             opened.add(D);
+            if (D < size) {
+                top.add(D);
+            }
+            if (D >= size * (size - 1)) {
+                bottom.add(D);
+            }
             for (int z = 0; z < 2; z++) {
                 int cols = col + neighbors.get(z);
                 int rows = row + neighbors.get(z);
@@ -64,11 +73,9 @@ public class Percolation {
         if (D < size - 1) {
             return isOpen(row, col);
         }
-        for (int x = 0; x < size; x++) {
-            if (opened.contains(x)) {
-                if (unite.connected(x, D)) {
-                    return true;
-                }
+        for (int x = 0; x < top.size(); x++) {
+            if (unite.connected(top.get(x), D)) {
+                return true;
             }
         }
         return false;
@@ -79,14 +86,10 @@ public class Percolation {
     }
 
     public boolean percolates() {
-        for (int x = size * (size - 1); x < size * size; x++) {
-            if (opened.contains(x)) {
-                for (int y = 0; y < size; y++) {
-                    if (opened.contains(y)) {
-                        if (unite.connected(y, x)) {
-                            return true;
-                        }
-                    }
+        for (int x = 0; x < bottom.size(); x++) {
+            for (int y = 0; y < top.size(); y++) {
+                if (unite.connected(top.get(y), bottom.get(x))) {
+                    return true;
                 }
             }
         }
