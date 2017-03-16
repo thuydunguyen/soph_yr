@@ -24,7 +24,6 @@ public class PercolationStats {
                     n++;
                 }
             }
-            System.out.println(x + ": " + n);
             results[x] = (n / (N * N));
         }
         tests = T;
