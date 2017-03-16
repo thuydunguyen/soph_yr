@@ -19,9 +19,12 @@ public class PercolationStats {
             while (!sample.percolates()) {
                 int r = StdRandom.uniform(N);
                 int c = StdRandom.uniform(N);
-                sample.open(r, c);
-                n++;
+                if (!sample.isOpen(r, c)) {
+                    sample.open(r, c);
+                    n++;
+                }
             }
+            System.out.println(x + ": " + n);
             results[x] = (n / (N * N));
         }
         tests = T;
@@ -50,7 +53,7 @@ public class PercolationStats {
     }
 
     public static void main(String[] args) {
-        PercolationStats test = new PercolationStats(200, 100);
+        PercolationStats test = new PercolationStats(32, 10);
         System.out.println(test.mean());
         System.out.println("Done");
     }

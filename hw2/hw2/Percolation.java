@@ -7,7 +7,7 @@ import java.util.HashSet;
 
 public class Percolation {
     private int size;
-    private HashSet opened;
+    private HashSet<Integer> opened;
     private WeightedQuickUnionUF unite;
     private ArrayList<Integer> neighbors = new ArrayList<>();
     private ArrayList<Integer> top = new ArrayList<>();
@@ -106,7 +106,7 @@ public class Percolation {
     }
 
     public static void main(String[] args) {
-        Percolation p = new Percolation(5);
+        Percolation p = new Percolation(32);
         p.open(3, 4);
         p.open(2, 4);
         p.open(2, 2);
