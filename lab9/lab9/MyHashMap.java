@@ -10,7 +10,7 @@ import java.util.Iterator;
  */
 public class MyHashMap<K, V> implements Map61B<K, V> {
     private int entries;
-    public int length;
+    private int length;
     private HashSet<K> keys = new HashSet<>();
     private ArrayList<V> table;
     private double lf;
