@@ -12,20 +12,16 @@ public class Percolation {
     private ArrayList<Integer> neighbors = new ArrayList<>();
     private ArrayList<Integer> top = new ArrayList<>();
     private ArrayList<Integer> bottom = new ArrayList<>();
-    int virttop;
-    int virtbot;
 
     public Percolation(int N) {
         if (N <= 0) {
             throw new IllegalArgumentException("N must be greater than ZERO");
         }
         size = N;
-        unite = new WeightedQuickUnionUF(N * N + 2);
+        unite = new WeightedQuickUnionUF(N * N);
         opened = new HashSet();
         neighbors.add(1);
         neighbors.add(-1);
-        virttop = N * N;
-        virtbot = N * N + 1;
     }
 
     public void open(int row, int col) {
@@ -47,24 +43,12 @@ public class Percolation {
                 if (rows >= 0 && rows < size) {
                     if (isOpen(rows, col)) {
                         int d = xyto1D(rows, col);
-                        if (d < size) {
-                            d = virttop;
-                        }
-                        if (row == size - 1) {
-                            D = virtbot;
-                        }
                         unite.union(d, D);
                     }
                 }
                 if (cols >= 0 && cols < size) {
                     if (isOpen(row, cols)) {
                         int d = xyto1D(row, cols);
-                        if (d < size) {
-                            d = virttop;
-                        }
-                        if (row == size - 1) {
-                            D = virtbot;
-                        }
                         unite.union(d, D);
                     }
                 }
@@ -89,7 +73,12 @@ public class Percolation {
         if (D < size) {
             return isOpen(row, col);
         }
-        return unite.connected(virttop, D);
+        for (int x = 0; x < top.size(); x++) {
+            if (unite.connected(top.get(x), D)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public int numberOfOpenSites() {
@@ -97,7 +86,14 @@ public class Percolation {
     }
 
     public boolean percolates() {
-        return unite.connected(virttop, virtbot);
+        for (int x = 0; x < bottom.size(); x++) {
+            for (int y = 0; y < top.size(); y++) {
+                if (unite.connected(top.get(y), bottom.get(x))) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     private int xyto1D(int row, int col) {
@@ -119,7 +115,7 @@ public class Percolation {
         p.open(1, 2);
         p.open(4, 4);
         System.out.println(p.isFull(2, 3));
-        System.out.println(p.percolates());
+        System.out.println(p.unite.connected(13, 2));
 
     }
 
