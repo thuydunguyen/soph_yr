@@ -52,7 +52,7 @@ public class PercolationStats {
     }
 
     public static void main(String[] args) {
-        PercolationStats test = new PercolationStats(32, 10);
+        PercolationStats test = new PercolationStats(200, 1);
         System.out.println(test.mean());
         System.out.println("Done");
     }
