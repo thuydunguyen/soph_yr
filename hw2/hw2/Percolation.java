@@ -114,8 +114,8 @@ public class Percolation {
         p.open(0, 2);
         p.open(1, 2);
         p.open(4, 4);
-        System.out.println(p.isFull(2,3));
-        System.out.println(p.unite.connected(13,2));
+        System.out.println(p.isFull(2, 3));
+        System.out.println(p.unite.connected(13, 2));
 
     }
 
