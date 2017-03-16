@@ -3,7 +3,6 @@ package hw2;
 import edu.princeton.cs.algs4.WeightedQuickUnionUF;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 
 public class Percolation {
@@ -13,7 +12,6 @@ public class Percolation {
     private ArrayList<Integer> neighbors = new ArrayList<>();
     private ArrayList<Integer> top = new ArrayList<>();
     private ArrayList<Integer> bottom = new ArrayList<>();
-    private ArrayList<Integer> parent;
 
     public Percolation(int N) {
         if (N <= 0) {
@@ -22,12 +20,8 @@ public class Percolation {
         size = N;
         unite = new WeightedQuickUnionUF(N * N);
         opened = new HashSet();
-        parent = new ArrayList<>();
         neighbors.add(1);
         neighbors.add(-1);
-        for (int x = 0; x < size * size; x++) {
-            parent.add(x);
-        }
     }
 
     public void open(int row, int col) {
@@ -50,22 +44,12 @@ public class Percolation {
                     if (isOpen(rows, col)) {
                         int d = xyto1D(rows, col);
                         unite.union(d, D);
-                        if (parent.get(D) < parent.get(d)) {
-                            Collections.replaceAll(parent, d, parent.get(D));
-                        } else if (parent.get(D) > parent.get(d)) {
-                            Collections.replaceAll(parent, D, parent.get(d));
-                        }
                     }
                 }
                 if (cols >= 0 && cols < size) {
                     if (isOpen(row, cols)) {
                         int d = xyto1D(row, cols);
                         unite.union(d, D);
-                        if (parent.get(D) < parent.get(d)) {
-                            Collections.replaceAll(parent, d, parent.get(D));
-                        } else if (parent.get(D) > parent.get(d)) {
-                            Collections.replaceAll(parent, D, parent.get(d));
-                        }
                     }
                 }
             }
@@ -86,8 +70,13 @@ public class Percolation {
             throw new IndexOutOfBoundsException("Desired site is out of bounds");
         }
         int D = xyto1D(row, col);
-        if (isOpen(row, col)) {
-            return parent.get(D) < size;
+        if (D < size) {
+            return isOpen(row, col);
+        }
+        for (int x = 0; x < top.size(); x++) {
+            if (unite.connected(top.get(x), D)) {
+                return true;
+            }
         }
         return false;
     }
@@ -98,8 +87,10 @@ public class Percolation {
 
     public boolean percolates() {
         for (int x = 0; x < bottom.size(); x++) {
-            if (parent.get(bottom.get(x)) < size) {
-                return true;
+            for (int y = 0; y < top.size(); y++) {
+                if (unite.connected(top.get(y), bottom.get(x))) {
+                    return true;
+                }
             }
         }
         return false;
@@ -123,7 +114,8 @@ public class Percolation {
         p.open(0, 2);
         p.open(1, 2);
         p.open(4, 4);
-        System.out.println(p.percolates());
+        System.out.println(p.isFull(2,3));
+        System.out.println(p.unite.connected(13,2));
 
     }
 
