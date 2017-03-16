@@ -55,6 +55,7 @@ public class PercolationStats {
         PercolationStats test = new PercolationStats(200, 1);
         System.out.println(test.mean());
         System.out.println("Done");
+
     }
 
 }                       
