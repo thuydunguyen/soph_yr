@@ -86,7 +86,10 @@ public class Percolation {
             throw new IndexOutOfBoundsException("Desired site is out of bounds");
         }
         int D = xyto1D(row, col);
-        return parent.get(D) < size;
+        if (isOpen(row, col)) {
+            return parent.get(D) < size;
+        }
+        return false;
     }
 
     public int numberOfOpenSites() {
