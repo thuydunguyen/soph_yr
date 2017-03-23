@@ -130,7 +130,7 @@ public class ArrayHeap<T> implements ExtrinsicPQ<T> {
 
         int l_ind = leftIndex(index);
         int r_ind = rightIndex(index);
-        while ((min(index, l_ind) == l_ind) || (min(index, r_ind) == r_ind)) {
+        while ((min(l_ind, index) == l_ind) || (min(r_ind, index) == r_ind)) {
             if (min(l_ind, r_ind) == l_ind) {
                 swap(index, l_ind);
                 index = l_ind;
@@ -211,11 +211,20 @@ public class ArrayHeap<T> implements ExtrinsicPQ<T> {
      */
     @Override
     public void changePriority(T item, double priority) {
+        double old_p = priority;
+        int indx = 1;
         for (int x = 1; x < size; x++) {
             if (contents[x].myItem.equals(item)) {
-                Node node = new Node(item, priority);
-                contents[x] = node;
+                indx = x;
+                old_p = contents[x].myPriority;
+                contents[x].myPriority = priority;
+                break;
             }
+        }
+        if (old_p > priority) {
+            swim(indx);
+        } else if (old_p < priority) {
+            sink(indx);
         }
         return;
     }
@@ -451,5 +460,6 @@ public class ArrayHeap<T> implements ExtrinsicPQ<T> {
             i += 1;
         }
     }
+    
 
 }
