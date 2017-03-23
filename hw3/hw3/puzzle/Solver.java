@@ -13,7 +13,6 @@ public class Solver {
 
     private int move = 0;
     private ArrayList<WorldState> solved = new ArrayList<>();
-    private WorldState desired;
 
     private class SearchNode {
         private SearchNode prev;
@@ -34,19 +33,16 @@ public class Solver {
         SearchNode check = new SearchNode(new SearchNode(null, initial, 0), initial, 0);
         Comparator<SearchNode> comp = new Compares();
         MinPQ<SearchNode> store = new MinPQ<>(comp);
-        desired = initial;
         store.insert(check);
         while (!store.isEmpty()) {
-            SearchNode next = store.delMin();
-            desired = next.curr;
-            check = next;
+            check = store.delMin();
             if (check.curr.isGoal()) {
                 break;
             }
             Iterator<WorldState> neighbors = check.curr.neighbors().iterator();
             while (neighbors.hasNext()) {
                 WorldState neigh = neighbors.next();
-                if (!neigh.equals(check.prev.curr)) {
+                if (!(neigh.equals(check.prev.curr) && neigh.equals(check.curr))) {
                     store.insert(new SearchNode(check, neigh, check.moves + 1));
                 }
             }
@@ -74,25 +70,6 @@ public class Solver {
             int disb = b.dist + b.moves;
             return disa - disb;
         }
-    }
-
-    private boolean checkword(SearchNode a) {
-        String word = a.curr.toString();
-        File file = new File("words10000.txt");
-
-        try {
-            Scanner scanner = new Scanner(file);
-            while (scanner.hasNextLine()) {
-                String line = scanner.nextLine();
-                if (line.equals(word)) {
-                    return true;
-                }
-            }
-            return false;
-        } catch (FileNotFoundException e) {
-            System.err.printf("File not found");
-        }
-        return false;
     }
 
 

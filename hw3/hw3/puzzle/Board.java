@@ -33,18 +33,22 @@ public class Board implements WorldState {
         size = tiles.length;
         goal = new int[size][size];
         int n = 1;
+        this.tiles = new int[size][size];
         for (int x = 0; x < size; x++) {
             for (int y = 0; y < size; y++) {
                 goal[y][x] = n;
                 n++;
+                this.tiles[y][x] = tiles[y][x];
             }
         }
         goal[size - 1][size - 1] = 0;
         size = tiles.length;
-        this.tiles = tiles;
     }
 
     public int tileAt(int i, int j) {
+        if (i >= size || j >= size || i < 0 || j < 0) {
+            throw new IndexOutOfBoundsException("Index is out of bounds");
+        }
         return tiles[i][j];
     }
 
@@ -116,14 +120,17 @@ public class Board implements WorldState {
         return n;
     }
 
+    @Override
     public int estimatedDistanceToGoal() {
         return manhattan();
     }
 
+    @Override
     public boolean isGoal() {
         return hamming() == 0;
     }
 
+    @Override
     public boolean equals(Object y) {
         if (y instanceof int[][]) {
             return false;
