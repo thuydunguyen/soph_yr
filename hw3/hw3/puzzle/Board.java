@@ -1,6 +1,5 @@
 package hw3.puzzle;
 
-import java.util.ArrayList;
 
 import edu.princeton.cs.algs4.Queue;
 
@@ -74,14 +73,14 @@ public class Board implements WorldState {
                 ntile[pug][yug] = tileAt(pug, yug);
             }
         }
-        for (int l11il = 0; l11il < hug; l11il++) {
-            for (int lil1il1 = 0; lil1il1 < hug; lil1il1++) {
-                if (Math.abs(-bug + l11il) + Math.abs(lil1il1 - zug) - 1 == 0) {
-                    ntile[bug][zug] = ntile[l11il][lil1il1];
-                    ntile[l11il][lil1il1] = 0;
+        for (int x = 0; x < hug; x++) {
+            for (int y = 0; y < hug; y++) {
+                if (Math.abs(-bug + x) + Math.abs(y - zug) - 1 == 0) {
+                    ntile[bug][zug] = ntile[x][y];
+                    ntile[x][y] = 0;
                     Board neighbor = new Board(ntile);
                     neighbors.enqueue(neighbor);
-                    ntile[l11il][lil1il1] = ntile[bug][zug];
+                    ntile[x][y] = ntile[bug][zug];
                     ntile[bug][zug] = 0;
                 }
             }
@@ -126,12 +125,13 @@ public class Board implements WorldState {
     }
 
     public boolean equals(Object y) {
-        int[][] board = (int[][]) y;
-        int n = 0;
+        if (y instanceof int[][]) {
+            return false;
+        }
+        Board board = (Board) y;
         for (int x = 0; x < size; x++) {
             for (int z = 0; z < size; z++) {
-                if (tiles[z][x] == board[z][x] || tiles[z][x] == 0) {
-                    n += 0;
+                if (tiles[z][x] == board.tileAt(z, x) || tiles[z][x] == 0) {
                 } else {
                     return false;
                 }

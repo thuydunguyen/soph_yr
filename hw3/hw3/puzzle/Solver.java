@@ -38,9 +38,6 @@ public class Solver {
         store.insert(check);
         while (!store.isEmpty()) {
             SearchNode next = store.delMin();
-            while (!checkword(next)) {
-                next = store.delMin();
-            }
             desired = next.curr;
             check = next;
             if (check.curr.isGoal()) {
