@@ -35,14 +35,15 @@ public class Solver {
         MinPQ<SearchNode> store = new MinPQ<>(comp);
         store.insert(check);
         while (!store.isEmpty()) {
-            check = store.delMin();
+            SearchNode next = store.delMin();
+            check = next;
             if (check.curr.isGoal()) {
                 break;
             }
             Iterator<WorldState> neighbors = check.curr.neighbors().iterator();
             while (neighbors.hasNext()) {
                 WorldState neigh = neighbors.next();
-                if (!(neigh.equals(check.prev.curr) && neigh.equals(check.curr))) {
+                if (!neigh.equals(check.prev.curr)) {
                     store.insert(new SearchNode(check, neigh, check.moves + 1));
                 }
             }
