@@ -1,8 +1,10 @@
 package hw3.puzzle;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.util.*;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.Comparator;
 
 import edu.princeton.cs.algs4.MinPQ;
 
@@ -21,7 +23,7 @@ public class Solver {
         private int dist;
 
 
-        public SearchNode(SearchNode prev, WorldState curr, int moves) {
+        SearchNode(SearchNode prev, WorldState curr, int moves) {
             this.prev = prev;
             this.curr = curr;
             this.moves = moves;
