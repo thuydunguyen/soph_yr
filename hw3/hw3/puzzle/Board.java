@@ -149,6 +149,11 @@ public class Board implements WorldState {
         return true;
     }
 
+    @Override
+    public int hashCode() {
+        return 1;
+    }
+
     private int[] int2coords(int x) {
         int row = (x - 1) / size;
         int col = x - size * row - 1;
