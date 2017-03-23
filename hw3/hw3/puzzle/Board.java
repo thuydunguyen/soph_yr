@@ -134,17 +134,18 @@ public class Board implements WorldState {
 
     @Override
     public boolean equals(Object y) {
-        if (!(y instanceof int[][])) {
+        if (!(y instanceof Board)) {
             return false;
         }
         Board board = (Board) y;
         if (board.size() != size) {
             return false;
-        }
-        for (int x = 0; x < size; x++) {
-            for (int z = 0; z < size; z++) {
-                if (!(tiles[z][x] == board.tileAt(z, x) || tiles[z][x] == 0)) {
-                    return false;
+        } else {
+            for (int x = 0; x < size; x++) {
+                for (int z = 0; z < size; z++) {
+                    if (!(tiles[z][x] == board.tileAt(z, x) || tiles[z][x] == 0)) {
+                        return false;
+                    }
                 }
             }
         }
@@ -161,6 +162,5 @@ public class Board implements WorldState {
         int col = x - size * row - 1;
         return new int[]{row, col};
     }
-
 
 }
