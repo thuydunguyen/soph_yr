@@ -1,6 +1,7 @@
 package hw3.puzzle;
 
 
+import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.Queue;
 
 public class Board implements WorldState {
@@ -36,7 +37,7 @@ public class Board implements WorldState {
         this.tiles = new int[size][size];
         for (int x = 0; x < size; x++) {
             for (int y = 0; y < size; y++) {
-                goal[y][x] = n;
+                goal[x][y] = n;
                 n++;
                 this.tiles[y][x] = tiles[y][x];
             }
@@ -96,7 +97,7 @@ public class Board implements WorldState {
         int n = 0;
         for (int x = 0; x < size; x++) {
             for (int y = 0; y < size; y++) {
-                if (tiles[y][x] == goal[y][x] || tiles[y][x] == 0) {
+                if ((tiles[y][x] == goal[y][x]) || (tiles[y][x] == 0)) {
                     n += 0;
                 } else {
                     n += 1;
@@ -110,11 +111,13 @@ public class Board implements WorldState {
         int n = 0;
         for (int x = 0; x < size; x++) {
             for (int y = 0; y < size; y++) {
-                int[] origin = int2coords(tiles[y][x]);
-                int orow = origin[0];
-                int ocol = origin[1];
-                int away = (Math.abs(y - orow) + Math.abs(x - ocol));
-                n += away;
+                if (tiles[y][x] != 0) {
+                    int[] origin = int2coords(tiles[y][x]);
+                    int orow = origin[0];
+                    int ocol = origin[1];
+                    int away = (Math.abs(y - orow) + Math.abs(x - ocol));
+                    n += away;
+                }
             }
         }
         return n;
@@ -148,8 +151,8 @@ public class Board implements WorldState {
     }
 
     private int[] int2coords(int x) {
-        int row = x / size;
-        int col = (x % size) - 1;
+        int row = (x - 1) / size;
+        int col = x - size * row - 1;
         return new int[]{row, col};
     }
 
