@@ -212,19 +212,15 @@ public class ArrayHeap<T> implements ExtrinsicPQ<T> {
     @Override
     public void changePriority(T item, double priority) {
         double old_p = priority;
-        int indx = 1;
-        for (int x = 1; x < size; x++) {
-            if (contents[x].myItem.equals(item)) {
-                indx = x;
-                old_p = contents[x].myPriority;
-                contents[x].myPriority = priority;
-                break;
-            }
-        }
+        int x = getindx(item);
+        old_p = contents[x].myPriority;
+        contents[x].myPriority = priority;
         if (old_p > priority) {
-            swim(indx);
-        } else if (old_p < priority) {
+            swim(x);
+            int indx = getindx(item);
             sink(indx);
+        } else if (old_p < priority) {
+            sink(x);
         }
         return;
     }
@@ -256,6 +252,17 @@ public class ArrayHeap<T> implements ExtrinsicPQ<T> {
             toReturn += toStringHelper(leftChild, "        " + soFar);
             return toReturn;
         }
+    }
+
+    private int getindx(T item) {
+        int n = 1;
+        for (int x = 1; x < size; x++) {
+            if (contents[x].myItem.equals(item)) {
+                break;
+            }
+            n++;
+        }
+        return n;
     }
 
 
@@ -460,6 +467,26 @@ public class ArrayHeap<T> implements ExtrinsicPQ<T> {
             i += 1;
         }
     }
-    
+
+    @Test
+    public void testChangePriority() {
+        ArrayHeap<String> pq = new ArrayHeap<>();
+        pq.insert("c", 3);
+        pq.insert("i", 9);
+        pq.insert("g", 7);
+        pq.insert("d", 4);
+        pq.insert("a", 1);
+        pq.insert("h", 8);
+        pq.insert("e", 5);
+        pq.insert("b", 2);
+        pq.insert("c", 3);
+        pq.insert("d", 4);
+        System.out.println("Before: ");
+        System.out.println(pq);
+        pq.changePriority("a", 7);
+        pq.changePriority("i", 1);
+        System.out.println("After: ");
+        System.out.println(pq);
+    }
 
 }
