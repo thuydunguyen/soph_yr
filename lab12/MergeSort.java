@@ -66,27 +66,19 @@ public class MergeSort {
             Queue<Item> q1, Queue<Item> q2) {
         Queue<Item> comb = new Queue<>();
         while (!q1.isEmpty() && !q2.isEmpty()) {
-            Item curr1 = q1.peek();
-            Item curr2 = q2.peek();
-            if (curr1.compareTo(curr2) <= 0) {
-                q1.dequeue();
-                comb.enqueue(curr1);
-            } else {
-                q2.dequeue();
-                comb.enqueue(curr2);
-            }
+            Item min = getMin(q1, q2);
+            comb.enqueue(min);
         }
-        if (q1.isEmpty()) {
-            while (!q2.isEmpty()) {
-                Item add = q2.dequeue();
-                comb.enqueue(add);
-            }
-        } else {
-            while (!q1.isEmpty()) {
-                Item add = q1.dequeue();
-                comb.enqueue(add);
-            }
+        while (!q2.isEmpty()) {
+            Item add = q2.dequeue();
+            comb.enqueue(add);
+
         }
+        while (!q1.isEmpty()) {
+            Item add = q1.dequeue();
+            comb.enqueue(add);
+        }
+
         return comb;
     }
 
@@ -95,6 +87,9 @@ public class MergeSort {
      */
     public static <Item extends Comparable> Queue<Item> mergeSort(
             Queue<Item> items) {
+        if (items.isEmpty()) {
+            return items;
+        }
         Queue<Queue<Item>> sing = MergeSort.makeSingleItemQueues(items);
         Queue<Item> curr = sing.dequeue();
         while (!sing.isEmpty()) {
@@ -104,15 +99,6 @@ public class MergeSort {
         return curr;
     }
 
-
-    private static <Item extends Comparable> Queue<Item> makecopy(Queue<Item> item) {
-        Queue<Item> copy = new Queue<>();
-        Iterator<Item> iter = item.iterator();
-        while (iter.hasNext()) {
-            copy.enqueue(iter.next());
-        }
-        return copy;
-    }
 
     public static void main(String[] args) {
         Queue<String> students = new Queue<String>();
