@@ -63,20 +63,10 @@ public class MergeSort {
     private static <Item extends Comparable> Queue<Item> mergeSortedQueues(
             Queue<Item> q1, Queue<Item> q2) {
         Queue<Item> comb = new Queue<>();
-        while (!q1.isEmpty() && !q2.isEmpty()) {
+        while (!q1.isEmpty() || !q2.isEmpty()) {
             Item min = getMin(q1, q2);
             comb.enqueue(min);
         }
-        while (!q2.isEmpty()) {
-            Item add = q2.dequeue();
-            comb.enqueue(add);
-
-        }
-        while (!q1.isEmpty()) {
-            Item add = q1.dequeue();
-            comb.enqueue(add);
-        }
-
         return comb;
     }
 
