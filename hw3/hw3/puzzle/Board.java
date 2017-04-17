@@ -163,4 +163,13 @@ public class Board implements WorldState {
         return new int[]{row, col};
     }
 
+
+    public static void main(String[] args) {
+        int[] image_data = new int[]{0,0,1,0,1,1,0,2,2,1,0,3,1,1,4,1,2,5};
+        for (int i = 0; i < image_data.length; i += 3) {
+            double j = Math.floor((Math.random() * image_data.length) / 3) * 3;
+            System.out.println(j);
+        }
+    }
+
 }
