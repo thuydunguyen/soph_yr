@@ -1,3 +1,4 @@
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -118,7 +119,8 @@ public class Rasterer {
 
     private void placeZoom(String img, Node t) {
         int len = img.length();
-        if (len == 1) {
+        if (img.equals("root")) {
+        } else if (len == 1) {
             Zoom1.add(t);
         } else if (len == 2) {
             Zoom2.add(t);
@@ -236,10 +238,10 @@ public class Rasterer {
                 rowed = row.toArray(new String[n_rows]);
                 imgs[x] = rowed;
             }
-            sec = QuadTree.get(imgs[0][n_cols - 1]);
-            third = QuadTree.get(imgs[n_rows - 1][0]);
+            sec = QuadTree.get(imgs[0][n_cols - 1].replaceAll("\\D+", ""));
+            third = QuadTree.get(imgs[n_rows - 1][0].replaceAll("\\D+", ""));
 
-            results.put("rendered_grid", imgs);
+            results.put("render_grid", imgs);
             results.put("raster_ul_lon", first.ullon);
             results.put("raster_ul_lat", first.ullat);
             results.put("raster_lr_lon", sec.lrlon);
@@ -316,17 +318,19 @@ public class Rasterer {
     }
 
     private ArrayList<String> nimgs(String img, double d_lrlat, double d_lrlon, String horv) {
+        String imgstr = "img/";
+        String endstr = ".png";
         ArrayList<String> row = new ArrayList<>();
         ArrayList<String> col = new ArrayList<>();
         Node curr = QuadTree.get(img);
         String comp2 = "\\b[2,4]+\\b";
         String comp3 = "\\b[3,4]+\\b";
         col.add(curr.img);
-        row.add(curr.img);
+        row.add(imgstr + curr.img + endstr);
         if (horv.equals("h")) {
             while (curr.lrlon < d_lrlon && !curr.img.matches(comp2)) {
                 curr = QuadTree.get(incr(curr.img, "h"));
-                row.add(curr.img);
+                row.add(imgstr + curr.img + endstr);
             }
             return row;
         } else {
@@ -340,12 +344,15 @@ public class Rasterer {
     }
 
     private ArrayList<String> imgrows(String img, int times) {
+        String imgstr = "img/";
+        String endstr = ".png";
         ArrayList<String> row = new ArrayList<>();
         Node node = QuadTree.get(img);
         String curr = node.img;
-        row.add(curr);
+        row.add(imgstr + curr + endstr);
         for (int x = 0; x < times; x++) {
-            row.add(incr(curr, "h"));
+            curr = incr(curr, "h");
+            row.add(imgstr + curr + endstr);
         }
         return row;
     }
@@ -367,20 +374,21 @@ public class Rasterer {
     public static void main(String[] args) {
         Rasterer t = new Rasterer("img");
         Map<String, Double> params = new HashMap<>();
-        params.put("lrlon", -122.2104604264636);
-        params.put("ullon", -122.30410170759153);
-        params.put("w", 2048.0);
-        params.put("h", 1536.0);
-        params.put("ullat", 37.870213571328854);
-        params.put("lrlat", 37.8318576119893);
+        params.put("lrlon", -122.22275132672245);
+        params.put("ullon", -122.23995662778569);
+        params.put("w", 613.0);
+        params.put("h", 676.0);
+        params.put("ullat", 37.877266154010954);
+        params.put("lrlat", 37.85829260830337);
         Map<String, Object> k = t.getMapRaster(params);
-        String[][] imgs = (String[][]) k.get("rendered_grid");
+        String[][] imgs = (String[][]) k.get("render_grid");
         for (int x = 0; x < imgs.length; x++) {
             for (int y = 0; y < imgs[0].length; y++) {
                 System.out.print(imgs[x][y] + "  ");
             }
             System.out.println("");
         }
+        System.out.println(Array.getLength(imgs));
 
 
         double r_lrlon = -122.2104604264636;
