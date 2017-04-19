@@ -1,4 +1,3 @@
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -22,6 +21,10 @@ public class Rasterer {
     private ArrayList<Node> zoom5 = new ArrayList<>();
     private ArrayList<Node> zoom6 = new ArrayList<>();
     private ArrayList<Node> zoom7 = new ArrayList<>();
+    private double rullat = MapServer.ROOT_ULLAT;
+    private double rlrlat = MapServer.ROOT_LRLAT;
+    private double rullon = MapServer.ROOT_ULLON;
+    private double rlrlon = MapServer.ROOT_LRLON;
 
 
     // Recommended: quadtree instance variable. You'll need to make
@@ -41,10 +44,6 @@ public class Rasterer {
         double ullat;
 
         Node(String img) {
-            double rullat = MapServer.ROOT_ULLAT;
-            double rlrlat = MapServer.ROOT_LRLAT;
-            double rullon = MapServer.ROOT_ULLON;
-            double rlrlon = MapServer.ROOT_LRLON;
             this.img = img;
             if (img.equals("root")) {
                 parent = this;
@@ -95,12 +94,10 @@ public class Rasterer {
                     sub[x] = new Node(img + num[x]);
                 }
             }
-
-
         }
 
-
-        double[][][] coords(double rullon, double rullat, double rlrlon, double rlrlat) {
+        double[][][] coords(double rullon, double rullat,
+                            double rlrlon, double rlrlat) {
             double mlon = (rullon + rlrlon) / 2;
             double mlat = (rullat + rlrlat) / 2;
             double[] longs = new double[]{rullon, mlon, rlrlon};
@@ -226,9 +223,9 @@ public class Rasterer {
             }
             first = check;
 
-            ArrayList<String> col = nimgs(first.img, dlrlat, dlrlon, "v");
+            ArrayList<String> col = nimgs(first.img, first.lrlat, dlrlat, dlrlon, "v");
             int nrows = col.size();
-            ArrayList<String> row = nimgs(first.img, dlrlat, dlrlon, "h");
+            ArrayList<String> row = nimgs(first.img, first.lrlon, dlrlat, dlrlon, "h");
             int ncols = row.size();
             imgs = new String[nrows][ncols];
             imgs = fill(imgs, row, 0);
@@ -259,10 +256,6 @@ public class Rasterer {
     }
 
     private double adjust(double d, String point) {
-        double rullat = MapServer.ROOT_ULLAT;
-        double rlrlat = MapServer.ROOT_LRLAT;
-        double rullon = MapServer.ROOT_ULLON;
-        double rlrlon = MapServer.ROOT_LRLON;
         if (point.equals("ullon")) {
             if (d < rullon) {
                 return rullon;
@@ -323,26 +316,29 @@ public class Rasterer {
         return x;
     }
 
-    private ArrayList<String> nimgs(String img, double dlrlat, double dlrlon, String horv) {
+    private ArrayList<String> nimgs(String img, double imgstart, double dlrlat, double dlrlon, String horv) {
         String imgstr = "img/";
         String endstr = ".png";
         ArrayList<String> row = new ArrayList<>();
         ArrayList<String> col = new ArrayList<>();
-        Node curr = quadtree.get(img);
         String comp2 = "\\b[2,4]+\\b";
         String comp3 = "\\b[3,4]+\\b";
-        col.add(curr.img);
-        row.add(imgstr + curr.img + endstr);
+        col.add(img);
+        row.add(imgstr + img + endstr);
+        double increment1 = (rlrlon - rullon) / Math.pow(2, img.length());
+        double increment2 = (rullat - rlrlat) / Math.pow(2, img.length());
         if (horv.equals("h")) {
-            while (curr.lrlon < dlrlon && !curr.img.matches(comp2)) {
-                curr = quadtree.get(incr(curr.img, "h"));
-                row.add(imgstr + curr.img + endstr);
+            while (imgstart < dlrlon && !img.matches(comp2)) {
+                img = incr(img, horv);
+                imgstart = imgstart + increment1;
+                row.add(imgstr + img + endstr);
             }
             return row;
         } else {
-            while (curr.lrlat > dlrlat && !curr.img.matches(comp3)) {
-                curr = quadtree.get(incr(curr.img, "v"));
-                col.add(curr.img);
+            while (imgstart > dlrlat && !img.matches(comp3)) {
+                imgstart = imgstart - increment2;
+                img = incr(img, horv);
+                col.add(img);
             }
             return col;
         }
@@ -353,8 +349,7 @@ public class Rasterer {
         String imgstr = "img/";
         String endstr = ".png";
         ArrayList<String> row = new ArrayList<>();
-        Node node = quadtree.get(img);
-        String curr = node.img;
+        String curr = img;
         row.add(imgstr + curr + endstr);
         for (int x = 0; x < times - 1; x++) {
             curr = incr(curr, "h");
@@ -364,10 +359,6 @@ public class Rasterer {
     }
 
     private boolean valid(double ullon, double lrlon, double ullat, double lrlat) {
-        double rullat = MapServer.ROOT_ULLAT;
-        double rlrlat = MapServer.ROOT_LRLAT;
-        double rullon = MapServer.ROOT_ULLON;
-        double rlrlon = MapServer.ROOT_LRLON;
         if (ullon > lrlon || lrlat > ullat) {
             return false;
         }
@@ -375,40 +366,4 @@ public class Rasterer {
 
     }
 
-    public static void main(String[] args) {
-        Rasterer t = new Rasterer("img");
-        Map<String, Double> params = new HashMap<>();
-        params.put("lrlon", -122.2533216608664);
-        params.put("ullon", -122.25990170169933);
-        params.put("w", 609.0);
-        params.put("h", 676.0);
-        params.put("ullat", 37.85568119586176);
-        params.put("lrlat", 37.84752367397528);
-        Map<String, Object> k = t.getMapRaster(params);
-        String[][] imgs = (String[][]) k.get("render_grid");
-        for (int x = 0; x < imgs.length; x++) {
-            for (int y = 0; y < imgs[0].length; y++) {
-                System.out.print(imgs[x][y] + "  ");
-            }
-            System.out.println("");
-        }
-
-        double rlrlon = -122.2104604264636;
-        double rullon = -122.30410170759153;
-        double rullat = 37.870213571328854;
-        double rlrlat = 37.8318576119893;
-        rlrlon = t.adjust(rlrlon, "lrlon");
-        rlrlat = t.adjust(rlrlat, "lrlat");
-        rullon = t.adjust(rullon, "ullon");
-        rullat = t.adjust(rullat, "ullat");
-
-
-        /**double lrlon = t.quadtree.get("11").lrlon;
-         double ullon = t.quadtree.get("11").ullon;
-         double ullat = t.quadtree.get("11").ullat;
-         double lrlat = t.quadtree.get("11").lrlat;
-         */
-
-
-    }
 }
