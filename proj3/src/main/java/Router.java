@@ -14,7 +14,7 @@ public class Router {
      * where the longs are node IDs.
      */
     public static LinkedList<Long> shortestPath
-    (GraphDB g, double stlon, double stlat, double destlon, double destlat) {
+        (GraphDB g, double stlon, double stlat, double destlon, double destlat) {
         return new LinkedList<Long>();
     }
 }
