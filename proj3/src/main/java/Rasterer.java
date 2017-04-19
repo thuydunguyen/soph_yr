@@ -10,7 +10,6 @@ import java.util.Hashtable;
  * not draw the output correctly.
  */
 public class Rasterer {
-    private String[][] imgs;
     private String[] num = new String[]{"1", "2", "3", "4"};
     private Map<String, Node> quadtree = new Hashtable<>();
     private ArrayList<ArrayList<Node>> zooms = new ArrayList<>();
@@ -59,7 +58,8 @@ public class Rasterer {
             }
             if (!img.equals("root")) {
                 String lnum = img.substring(img.length() - 1);
-                double[][][] coords = coords(parent.ullon, parent.ullat, parent.lrlon, parent.lrlat);
+                double[][][] coords = coords(parent.ullon,
+                        parent.ullat, parent.lrlon, parent.lrlat);
                 if (lnum.equals("1")) {
                     ullon = coords[0][0][0];
                     ullat = coords[0][0][1];
@@ -96,12 +96,12 @@ public class Rasterer {
             }
         }
 
-        double[][][] coords(double rullon, double rullat,
-                            double rlrlon, double rlrlat) {
-            double mlon = (rullon + rlrlon) / 2;
-            double mlat = (rullat + rlrlat) / 2;
-            double[] longs = new double[]{rullon, mlon, rlrlon};
-            double[] lats = new double[]{rullat, mlat, rlrlat};
+        double[][][] coords(double dullon, double dullat,
+                            double dlrlon, double dlrlat) {
+            double mlon = (dullon + dlrlon) / 2;
+            double mlat = (dullat + dlrlat) / 2;
+            double[] longs = new double[]{dullon, mlon, dlrlon};
+            double[] lats = new double[]{dullat, mlat, dlrlat};
             double[][][] coord = new double[3][3][2];
             for (int x = 0; x < 3; x++) {
                 for (int y = 0; y < 3; y++) {
@@ -316,7 +316,9 @@ public class Rasterer {
         return x;
     }
 
-    private ArrayList<String> nimgs(String img, double imgstart, double dlrlat, double dlrlon, String horv) {
+    private ArrayList<String> nimgs(String img, double imgstart,
+                                    double dlrlat, double dlrlon,
+                                    String horv) {
         String imgstr = "img/";
         String endstr = ".png";
         ArrayList<String> row = new ArrayList<>();

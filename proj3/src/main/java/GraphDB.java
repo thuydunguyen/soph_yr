@@ -53,7 +53,7 @@ public class GraphDB {
      *  we can reasonably assume this since typically roads are connected.
      */
     private void clean() {
-        // TODO: Your code here.
+        //Code here
     }
 
     /** Returns an iterable of all vertex IDs in the graph. */
