@@ -369,8 +369,8 @@ public class Rasterer {
         Map<String, Double> params = new HashMap<>();
         params.put("lrlon", -122.2104604264636);
         params.put("ullon", -122.30410170759153);
-        params.put("w", 1085.0);
-        params.put("h", 566.0);
+        params.put("w", 2048.0);
+        params.put("h", 1536.0);
         params.put("ullat", 37.870213571328854);
         params.put("lrlat", 37.8318576119893);
         Map<String, Object> k = t.getMapRaster(params);
@@ -398,10 +398,6 @@ public class Rasterer {
          double ullat = t.QuadTree.get("11").ullat;
          double lrlat = t.QuadTree.get("11").lrlat;
          */
-
-        Node a = t.QuadTree.get("11");
-        Node b = t.QuadTree.get("13");
-        System.out.print(t.contained(r_ullon, r_ullat, a));
 
 
     }
