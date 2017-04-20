@@ -50,6 +50,9 @@ public class GraphDB {
         private String lat;
         private Set<Edge> edge;
         private Set<Long> adj;
+        private Node parent;
+        private double dist;
+        private double prior;
 
         Node(Long id, String lon, String lat) {
             this.name = null;
@@ -60,10 +63,6 @@ public class GraphDB {
             adj = new HashSet<>();
         }
 
-        Node(double lon, double lat) {
-            this.lon = Double.toString(lon);
-            this.lat = Double.toString(lat);
-        }
 
         void setName(String name) {
             this.name = name;
@@ -80,6 +79,47 @@ public class GraphDB {
         Long getId() {
             return id;
         }
+
+        double distance(double tlon, double tlat) {
+            double x1 = Double.parseDouble(lon);
+            double y1 = Double.parseDouble(lat);
+            double first = Math.pow((tlon - x1), 2);
+            double second = Math.pow((tlat - y1), 2);
+            return Math.pow((first + second), .5);
+        }
+
+        void setRest(Node parent, double endlon, double endlat) {
+            this.parent = parent;
+            if (parent == null) {
+                this.dist = 0;
+            } else {
+                double plon = Double.valueOf(parent.lon);
+                double plat = Double.valueOf(parent.lat);
+                this.dist = parent.dist + distance(plon, plat);
+            }
+            this.prior = this.dist + distance(endlon, endlat);
+        }
+
+        double getPrior() {
+            return prior;
+        }
+
+        Node getParent() {
+            return parent;
+        }
+
+        double getDist() {
+            return dist;
+        }
+
+        double getLon() {
+            return Double.parseDouble(lon);
+        }
+
+        double getLat() {
+            return Double.parseDouble(lat);
+        }
+
 
     }
 
