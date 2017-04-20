@@ -53,13 +53,19 @@ public class Router {
                         check.getLon(), check.getLat(), destlon, destlat,
                         pot.getLon(), pot.getLat());
                 if (checked.contains(neigh)) {
-                    if (check.getPrior() > potPrior) {
-                        pot.setRest(check, destlon, destlat);
-                        store.add(pot);
+                    if (pot.getPrior() > potPrior) {
+                        String nlon = Double.toString(pot.getLon());
+                        String nlat = Double.toString(pot.getLat());
+                        GraphDB.Node nnode = new GraphDB.Node(pot.getId(), nlon, nlat);
+                        nnode.setRest(check, destlon, destlat);
+                        store.add(nnode);
                     }
                 } else {
-                    pot.setRest(check, destlon, destlat);
-                    store.add(pot);
+                    String nlon = Double.toString(pot.getLon());
+                    String nlat = Double.toString(pot.getLat());
+                    GraphDB.Node nnode = new GraphDB.Node(pot.getId(), nlon, nlat);
+                    nnode.setRest(check, destlon, destlat);
+                    store.add(nnode);
                 }
             }
         }
@@ -99,8 +105,17 @@ public class Router {
         }
     }
 
-    public static void main(String[] args) {
+    /** public static void main(String[] args) {
+     GraphDB g = new GraphDB("berkeley.osm");
+     double end_lat = 37.845081078529674;
+     double start_lon = -122.28519110469321;
+     double start_lat = 37.84905886746832;
+     double end_lon = -122.28857762092196;
+     LinkedList<Long> path = shortestPath(g, start_lon, start_lat, end_lon, end_lat);
+     System.out.println(path);
 
-    }
+     }
+     */
+
 
 }
