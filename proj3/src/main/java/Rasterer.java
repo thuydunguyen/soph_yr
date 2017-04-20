@@ -1,4 +1,8 @@
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.HashMap;
 
 /**
  * This class provides all code necessary to take a query box and produce
@@ -118,13 +122,13 @@ public class Rasterer {
 
     public Rasterer(String imgRoot) {
         new Node("root");
-        zooms.put(1,zoom1);
-        zooms.put(2,zoom2);
-        zooms.put(3,zoom3);
-        zooms.put(4,zoom4);
-        zooms.put(5,zoom5);
-        zooms.put(6,zoom6);
-        zooms.put(7,zoom7);
+        zooms.put(1, zoom1);
+        zooms.put(2, zoom2);
+        zooms.put(3, zoom3);
+        zooms.put(4, zoom4);
+        zooms.put(5, zoom5);
+        zooms.put(6, zoom6);
+        zooms.put(7, zoom7);
     }
 
     private static double londp(double dlrlon, double dullon, double width) {
