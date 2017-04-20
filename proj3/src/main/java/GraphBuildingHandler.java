@@ -104,14 +104,14 @@ public class GraphBuildingHandler extends DefaultHandler {
             String v = attributes.getValue("v");
             if (k.equals("maxspeed")) {
                 //System.out.println("Max Speed: " + v);
-                lastEdge.setEdgespeed(v);
+
             } else if (k.equals("highway")) {
                 //System.out.println("Highway type: " + v);
                 lastEdge.setValidity(ALLOWED_HIGHWAY_TYPES.contains(v));
                 /* Hint: Setting a "flag" is good enough! */
             } else if (k.equals("name")) {
                 //System.out.println("Way Name: " + v);
-                lastEdge.setName(v);
+
             }
             //System.out.println("Tag with k=" + k + ", v=" + v + ".");
         } else if (activeState.equals("node") && qName.equals("tag") && attributes.getValue("k")

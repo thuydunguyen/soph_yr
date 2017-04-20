@@ -5,7 +5,13 @@ import java.io.IOException;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
-import java.util.*;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.ArrayList;
+import java.util.HashSet;
+
 
 /**
  * Graph for storing all of the intersection (vertex) and road (edge) information.
@@ -68,8 +74,8 @@ public class GraphDB {
             this.name = name;
         }
 
-        void addEdge(Edge edge) {
-            this.edge.add(edge);
+        void addEdge(Edge edged) {
+            this.edge.add(edged);
         }
 
         void addAdj(Node n) {
@@ -88,8 +94,8 @@ public class GraphDB {
             return Math.pow((first + second), .5);
         }
 
-        void setRest(Node parent, double endlon, double endlat) {
-            this.parent = parent;
+        void setRest(Node parented, double endlon, double endlat) {
+            this.parent = parented;
             if (parent == null) {
                 this.dist = 0;
             } else {
@@ -124,11 +130,10 @@ public class GraphDB {
     }
 
     static class Edge {
-        private String name;
         private String id;
         private ArrayList<Node> ref;
         private boolean valid;
-        private String maxspeed;
+
 
         Edge(String id) {
             this.id = id;
@@ -136,13 +141,6 @@ public class GraphDB {
             valid = false;
         }
 
-        void setName(String name) {
-            this.name = name;
-        }
-
-        void setEdgespeed(String maxspeed) {
-            this.maxspeed = maxspeed;
-        }
 
         void setValidity(boolean tf) {
             this.valid = tf;
@@ -259,7 +257,7 @@ public class GraphDB {
         Iterator<Long> iter = vertices().iterator();
         double min = 0;
         int start = 0;
-        Long curr_id = Long.valueOf("0");
+        Long currid = Long.valueOf("0");
         while (iter.hasNext()) {
             Long id = iter.next();
             Node a = nodes.get(id);
@@ -271,11 +269,11 @@ public class GraphDB {
 
             if (min > dist || start == 0) {
                 min = dist;
-                curr_id = id;
+                currid = id;
             }
             start++;
         }
-        return curr_id;
+        return currid;
 
     }
 

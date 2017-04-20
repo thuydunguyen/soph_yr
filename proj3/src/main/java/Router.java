@@ -1,5 +1,8 @@
-import java.util.*;
-
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.PriorityQueue;
+import java.util.Iterator;
 
 /**
  * This class provides a shortestPath method for finding routes between two points
@@ -14,27 +17,10 @@ public class Router {
      * Return a LinkedList of <code>Long</code>s representing the shortest path from st to dest,
      * where the longs are node IDs.
      */
-    private class SearchNode {
-        private SearchNode parent;
-        private Long curr;
-        private double prior;
-        private double lon;
-        private double lat;
-        private double dist;
-        private double endlon;
-        private double endlat;
 
-
-        private SearchNode(SearchNode parent, Long c, double lon, double lat) {
-            this.parent = parent;
-            this.curr = c;
-            this.lon = lon;
-            this.lat = lat;
-        }
-    }
 
     private Comparator<GraphDB.Node> comp;
-    private SearchNode node;
+
 
     private Router() {
         comp = new Compares();
@@ -93,7 +79,9 @@ public class Router {
         return Math.pow((first + second), 0.5);
     }
 
-    private static double checkPrior(double pdist, double plon, double plat, double endlon, double endlat, double lon, double lat) {
+    private static double checkPrior
+            (double pdist, double plon, double plat,
+             double endlon, double endlat, double lon, double lat) {
         double dist = pdist + dist(lon, lat, plon, plat);
         return dist + dist(lon, lat, endlon, endlat);
     }
