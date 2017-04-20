@@ -44,7 +44,7 @@ public class GraphDB {
     }
 
     static class Node {
-        static String name;
+        private String name;
         private Long id;
         private String lon;
         private String lat;

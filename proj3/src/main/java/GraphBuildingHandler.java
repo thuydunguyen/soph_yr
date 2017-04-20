@@ -92,9 +92,6 @@ public class GraphBuildingHandler extends DefaultHandler {
             lastnode = g.getNode(ref);
             lastEdge.addRef(lastnode);
 
-
-
-
             /* Hint1: It would be useful to remember what was the last node in this way. */
             /* Hint2: Not all ways are valid. So, directly connecting the nodes here would be
             cumbersome since you might have to remove the connections if you later see a tag that
@@ -152,17 +149,19 @@ public class GraphBuildingHandler extends DefaultHandler {
             if (lastEdge.isValid()) {
                 ArrayList<GraphDB.Node> refs = lastEdge.getrefs();
                 GraphDB.Node prev = (GraphDB.Node) refs.get(0);
-                prev.addEdge(lastEdge);
-                for (int x = 1; x < refs.size(); x++) {
-                    GraphDB.Node node = refs.get(x);
-                    node.addEdge(lastEdge);
-                    node.addAdj(prev);
-                    prev.addAdj(node);
-                    prev = node;
+                if (refs.size() > 1) {
+                    prev.addEdge(lastEdge);
+                    for (int x = 1; x < refs.size(); x++) {
+                        GraphDB.Node node = refs.get(x);
+                        node.addEdge(lastEdge);
+                        node.addAdj(prev);
+                        prev.addAdj(node);
+                        prev = node;
+                    }
                 }
+                lastnode = null;
             }
-            lastnode = null;
         }
-    }
 
+    }
 }
