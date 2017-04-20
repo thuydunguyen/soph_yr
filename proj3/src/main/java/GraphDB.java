@@ -5,7 +5,7 @@ import java.io.IOException;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
-import java.util.ArrayList;
+import java.util.*;
 
 /**
  * Graph for storing all of the intersection (vertex) and road (edge) information.
@@ -23,8 +23,13 @@ public class GraphDB {
     /**
      * Example constructor shows how to create and start an XML parser.
      * You do not need to modify this constructor, but you're welcome to do so.
+     *
      * @param dbPath Path to the XML file to be parsed.
      */
+
+    private final Map<Long, Node> nodes = new LinkedHashMap<>();
+    private final Map<String, Edge> edges = new LinkedHashMap<>();
+
     public GraphDB(String dbPath) {
         try {
             File inputFile = new File(dbPath);
@@ -38,8 +43,87 @@ public class GraphDB {
         clean();
     }
 
+    static class Node {
+        static String name;
+        private Long id;
+        private String lon;
+        private String lat;
+        private Set<Edge> edge;
+        private Set<Long> adj;
+
+        Node(Long id, String lon, String lat) {
+            this.name = null;
+            this.id = id;
+            this.lon = lon;
+            this.lat = lat;
+            edge = new HashSet<>();
+            adj = new HashSet<>();
+        }
+
+        Node(double lon, double lat) {
+            this.lon = Double.toString(lon);
+            this.lat = Double.toString(lat);
+        }
+
+        void setName(String name) {
+            this.name = name;
+        }
+
+        void addEdge(Edge edge) {
+            this.edge.add(edge);
+        }
+
+        void addAdj(Node n) {
+            this.adj.add(n.id);
+        }
+
+        Long getId() {
+            return id;
+        }
+
+    }
+
+    static class Edge {
+        private String name;
+        private String id;
+        private ArrayList<Node> ref;
+        private boolean valid;
+        private String maxspeed;
+
+        Edge(String id) {
+            this.id = id;
+            this.ref = new ArrayList<>();
+            valid = false;
+        }
+
+        void setName(String name) {
+            this.name = name;
+        }
+
+        void setEdgespeed(String maxspeed) {
+            this.maxspeed = maxspeed;
+        }
+
+        void setValidity(boolean tf) {
+            this.valid = tf;
+        }
+
+        void addRef(Node node) {
+            this.ref.add(node);
+        }
+
+        ArrayList<Node> getrefs() {
+            return this.ref;
+        }
+
+        boolean isValid() {
+            return valid;
+        }
+    }
+
     /**
      * Helper to process strings into their "cleaned" form, ignoring punctuation and capitalization.
+     *
      * @param s Input string.
      * @return Cleaned string.
      */
@@ -48,43 +132,127 @@ public class GraphDB {
     }
 
     /**
-     *  Remove nodes with no connections from the graph.
-     *  While this does not guarantee that any two nodes in the remaining graph are connected,
-     *  we can reasonably assume this since typically roads are connected.
+     * Remove nodes with no connections from the graph.
+     * While this does not guarantee that any two nodes in the remaining graph are connected,
+     * we can reasonably assume this since typically roads are connected.
      */
     private void clean() {
-        //Code here
+        Iterable itera = vertices();
+        Iterator<Long> iter = itera.iterator();
+        while (iter.hasNext()) {
+            Long id = iter.next();
+            Node node = getNode(id);
+            if (node.edge.isEmpty()) {
+                iter.remove();
+            }
+
+        }
     }
 
-    /** Returns an iterable of all vertex IDs in the graph. */
+//////////////////////////////////***HELPERS***/////////////////////////////////////////
+
+    void addNode(Node node) {
+        nodes.put(node.id, node);
+    }
+
+    void addEdge(Edge edge) {
+        edges.put(edge.id, edge);
+    }
+
+    boolean contains(Long id) {
+        return nodes.containsKey(id);
+    }
+
+    boolean contains(String id) {
+        return edges.containsKey(id);
+    }
+
+    Node getNode(Long id) {
+        return nodes.get(id);
+    }
+
+    Edge getEdge(String id) {
+        return edges.get(id);
+    }
+
+
+    /////////////////////////////////////////////////////////////////////////////////////
+
+    /**
+     * Returns an iterable of all vertex IDs in the graph.
+     */
     Iterable<Long> vertices() {
-        //YOUR CODE HERE, this currently returns only an empty list.
-        return new ArrayList<Long>();
+        return nodes.keySet();
     }
 
-    /** Returns ids of all vertices adjacent to v. */
+    /**
+     * Returns ids of all vertices adjacent to v.
+     */
     Iterable<Long> adjacent(long v) {
-        return null;
+        return nodes.get(v).adj;
     }
 
-    /** Returns the Euclidean distance between vertices v and w, where Euclidean distance
-     *  is defined as sqrt( (lonV - lonV)^2 + (latV - latV)^2 ). */
+    /**
+     * Returns the Euclidean distance between vertices v and w, where Euclidean distance
+     * is defined as sqrt( (lonV - lonV)^2 + (latV - latV)^2 ).
+     */
     double distance(long v, long w) {
-        return 0;
+        Node a = nodes.get(v);
+        Node b = nodes.get(w);
+        double x1 = Double.parseDouble(a.lon);
+        double y1 = Double.parseDouble(a.lat);
+        double x2 = Double.parseDouble(b.lon);
+        double y2 = Double.parseDouble(b.lat);
+
+        double first = Math.pow((x1 - x2), 2);
+        double second = Math.pow((y1 - y2), 2);
+
+        return Math.pow((first + second), .5);
+
+
     }
 
-    /** Returns the vertex id closest to the given longitude and latitude. */
+    /**
+     * Returns the vertex id closest to the given longitude and latitude.
+     */
     long closest(double lon, double lat) {
-        return 0;
+        Iterator<Long> iter = vertices().iterator();
+        double min = 0;
+        int start = 0;
+        Long curr_id = Long.valueOf("0");
+        while (iter.hasNext()) {
+            Long id = iter.next();
+            Node a = nodes.get(id);
+            double x1 = Double.parseDouble(a.lon);
+            double y1 = Double.parseDouble(a.lat);
+            double first = Math.pow((x1 - lon), 2);
+            double second = Math.pow((y1 - lat), 2);
+            double dist = Math.pow((first + second), .5);
+
+            if (min > dist || start == 0) {
+                min = dist;
+                curr_id = id;
+            }
+            start++;
+        }
+        return curr_id;
+
     }
 
-    /** Longitude of vertex v. */
+    /**
+     * Longitude of vertex v.
+     */
     double lon(long v) {
-        return 0;
+        Node n = nodes.get(v);
+        return Double.parseDouble(n.lon);
     }
 
-    /** Latitude of vertex v. */
+    /**
+     * Latitude of vertex v.
+     */
     double lat(long v) {
-        return 0;
+        Node n = nodes.get(v);
+        return Double.parseDouble(n.lat);
     }
+
 }
