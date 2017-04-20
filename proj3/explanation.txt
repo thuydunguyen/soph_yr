@@ -4,4 +4,6 @@ The shortestPath method of Router class was not working properly and needed debu
 that was because everytime I added a node into the PQ, I was replacing any old nodes rather than creating a whole new node entry.
 Also trying to fix for style points and hopefully time tests.
 
+Really late submissions are now due to trying to improve speed.
+
 On another note, I didn't start the project until Tuesday, so that probably factored into the late submission.
