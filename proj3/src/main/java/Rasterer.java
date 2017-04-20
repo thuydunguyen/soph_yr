@@ -118,13 +118,13 @@ public class Rasterer {
 
     public Rasterer(String imgRoot) {
         new Node("root");
-        zooms.put(1, zoom1);
-        zooms.put(2, zoom2);
-        zooms.put(3, zoom3);
-        zooms.put(4, zoom4);
-        zooms.put(5, zoom5);
-        zooms.put(6, zoom6);
-        zooms.put(7, zoom7);
+        zooms.put(1,zoom1);
+        zooms.put(2,zoom2);
+        zooms.put(3,zoom3);
+        zooms.put(4,zoom4);
+        zooms.put(5,zoom5);
+        zooms.put(6,zoom6);
+        zooms.put(7,zoom7);
     }
 
     private static double londp(double dlrlon, double dullon, double width) {
@@ -347,18 +347,5 @@ public class Rasterer {
         return (!(rullon > ullon && rlrlon < lrlon && rullat < ullat && rlrlat > lrlat));
 
     }
-
-    /**public static void main(String[] args){
-     Rasterer r = new Rasterer("img/");
-     Map<String, Double> params = new HashMap<>();
-     params.put("lrlon",-122.2325964987882);
-     params.put("w",633.0);
-     params.put("ullon",-122.23326874429999);
-     params.put("h", 461.0);
-     params.put("ullat", 37.846094782003604);
-     params.put("lrlat", 37.84560520035915);
-     Map<String, Object> results = r.getMapRaster(params);
-     }
-     */
 
 }
