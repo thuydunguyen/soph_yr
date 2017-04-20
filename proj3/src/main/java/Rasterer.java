@@ -58,28 +58,28 @@ public class Rasterer {
             }
             if (!img.equals("root")) {
                 String lnum = img.substring(img.length() - 1);
-                double[][][] coords = coords(parent.ullon,
-                        parent.ullat, parent.lrlon, parent.lrlat);
+                double mlon = (parent.ullon + parent.lrlon) / 2;
+                double mlat = (parent.ullat + parent.lrlat) / 2;
                 if (lnum.equals("1")) {
-                    ullon = coords[0][0][0];
-                    ullat = coords[0][0][1];
-                    lrlat = coords[1][1][1];
-                    lrlon = coords[1][1][0];
+                    ullon = parent.ullon;
+                    ullat = parent.ullat;
+                    lrlat = mlat;
+                    lrlon = mlon;
                 } else if (lnum.equals("2")) {
-                    ullon = coords[0][1][0];
-                    ullat = coords[0][1][1];
-                    lrlat = coords[1][2][1];
-                    lrlon = coords[1][2][0];
+                    ullon = mlon;
+                    ullat = parent.ullat;
+                    lrlat = mlat;
+                    lrlon = parent.lrlon;
                 } else if (lnum.equals("3")) {
-                    ullon = coords[1][0][0];
-                    ullat = coords[1][0][1];
-                    lrlat = coords[2][1][1];
-                    lrlon = coords[2][1][0];
+                    ullon = parent.ullon;
+                    ullat = mlat;
+                    lrlat = parent.lrlat;
+                    lrlon = mlon;
                 } else if (lnum.equals("4")) {
-                    ullon = coords[1][1][0];
-                    ullat = coords[1][1][1];
-                    lrlat = coords[2][2][1];
-                    lrlon = coords[2][2][0];
+                    ullon = mlon;
+                    ullat = mlat;
+                    lrlat = parent.lrlat;
+                    lrlon = parent.lrlon;
                 }
             }
             placezoom(img, this);
@@ -94,23 +94,6 @@ public class Rasterer {
                     sub[x] = new Node(img + num[x]);
                 }
             }
-        }
-
-        double[][][] coords(double dullon, double dullat,
-                            double dlrlon, double dlrlat) {
-            double mlon = (dullon + dlrlon) / 2;
-            double mlat = (dullat + dlrlat) / 2;
-            double[] longs = new double[]{dullon, mlon, dlrlon};
-            double[] lats = new double[]{dullat, mlat, dlrlat};
-            double[][][] coord = new double[3][3][2];
-            for (int x = 0; x < 3; x++) {
-                for (int y = 0; y < 3; y++) {
-                    coord[x][y][0] = longs[y];
-                    coord[x][y][1] = lats[x];
-                }
-            }
-            return coord;
-
         }
     }
 

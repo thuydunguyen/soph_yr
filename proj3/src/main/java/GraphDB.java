@@ -197,20 +197,8 @@ public class GraphDB {
         edges.put(edge.id, edge);
     }
 
-    boolean contains(Long id) {
-        return nodes.containsKey(id);
-    }
-
-    boolean contains(String id) {
-        return edges.containsKey(id);
-    }
-
     Node getNode(Long id) {
         return nodes.get(id);
-    }
-
-    Edge getEdge(String id) {
-        return edges.get(id);
     }
 
 
