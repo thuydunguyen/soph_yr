@@ -242,22 +242,19 @@ public class GraphDB {
      * Returns the vertex id closest to the given longitude and latitude.
      */
     long closest(double lon, double lat) {
-        Iterator<Long> iter = vertices().iterator();
         double min = 0;
         int start = 0;
         Long currid = Long.valueOf("0");
-        while (iter.hasNext()) {
-            Long id = iter.next();
-            Node a = nodes.get(id);
+        for (Map.Entry<Long, Node> e : nodes.entrySet()) {
+            Node a = (Node) e.getValue();
             double x1 = Double.parseDouble(a.lon);
             double y1 = Double.parseDouble(a.lat);
             double first = Math.pow((x1 - lon), 2);
             double second = Math.pow((y1 - lat), 2);
             double dist = Math.pow((first + second), .5);
-
             if (min > dist || start == 0) {
                 min = dist;
-                currid = id;
+                currid = a.id;
             }
             start++;
         }
