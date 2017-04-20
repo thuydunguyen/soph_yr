@@ -1,5 +1,3 @@
-import com.sun.corba.se.impl.orbutil.graph.Graph;
-
 import java.util.*;
 
 
@@ -65,7 +63,8 @@ public class Router {
             while (adj.hasNext()) {
                 Long neigh = adj.next();
                 GraphDB.Node pot = g.getNode(neigh);
-                double potPrior = checkPrior(check.getDist(), check.getLon(), check.getLat(), destlon, destlat,
+                double potPrior = checkPrior(check.getDist(),
+                        check.getLon(), check.getLat(), destlon, destlat,
                         pot.getLon(), pot.getLat());
                 if (checked.contains(neigh)) {
                     if (check.getPrior() > potPrior) {
