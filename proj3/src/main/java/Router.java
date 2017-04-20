@@ -27,8 +27,10 @@ public class Router {
     }
 
 
-    public static LinkedList<Long> shortestPath
-            (GraphDB g, double stlon, double stlat, double destlon, double destlat) {
+    public static LinkedList<Long> shortestPath(GraphDB g,
+                                                double stlon,
+                                                double stlat,
+                                                double destlon, double destlat) {
         PriorityQueue<GraphDB.Node> store = new PriorityQueue<>(new Router().comp);
         HashSet<Long> checked = new HashSet<>();
         LinkedList solved = new LinkedList();
@@ -79,15 +81,17 @@ public class Router {
         return solved;
     }
 
-    private static double dist(double lon, double lat, double lon2, double lat2) {
+    private static double dist(double lon, double lat,
+                               double lon2, double lat2) {
         double first = Math.pow((lon - lon2), 2);
         double second = Math.pow((lat - lat2), 2);
         return Math.pow((first + second), 0.5);
     }
 
-    private static double checkPrior
-            (double pdist, double plon, double plat,
-             double endlon, double endlat, double lon, double lat) {
+    private static double checkPrior(double pdist,
+                                     double plon, double plat,
+                                     double endlon, double endlat,
+                                     double lon, double lat) {
         double dist = pdist + dist(lon, lat, plon, plat);
         return dist + dist(lon, lat, endlon, endlat);
     }
