@@ -2,5 +2,6 @@ Proj 3 late submission explanation:
 
 The shortestPath method of Router class was not working properly and needed debugging. It was going along the wrong paths. The reason for
 that was because everytime I added a node into the PQ, I was replacing any old nodes rather than creating a whole new node entry.
+Also trying to fix for style points and hopefully time tests.
 
 On another note, I didn't start the project until Tuesday, so that probably factored into the late submission.
