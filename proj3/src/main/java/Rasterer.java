@@ -1,7 +1,4 @@
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Hashtable;
+import java.util.*;
 
 /**
  * This class provides all code necessary to take a query box and produce
@@ -12,7 +9,7 @@ import java.util.Hashtable;
 public class Rasterer {
     private String[] num = new String[]{"1", "2", "3", "4"};
     private Map<String, Node> quadtree = new Hashtable<>();
-    private ArrayList<ArrayList<Node>> zooms = new ArrayList<>();
+    private Map<Integer, ArrayList> zooms = new LinkedHashMap<>();
     private ArrayList<Node> zoom1 = new ArrayList<>();
     private ArrayList<Node> zoom2 = new ArrayList<>();
     private ArrayList<Node> zoom3 = new ArrayList<>();
@@ -121,13 +118,13 @@ public class Rasterer {
 
     public Rasterer(String imgRoot) {
         new Node("root");
-        zooms.add(zoom1);
-        zooms.add(zoom2);
-        zooms.add(zoom3);
-        zooms.add(zoom4);
-        zooms.add(zoom5);
-        zooms.add(zoom6);
-        zooms.add(zoom7);
+        zooms.put(1, zoom1);
+        zooms.put(2, zoom2);
+        zooms.put(3, zoom3);
+        zooms.put(4, zoom4);
+        zooms.put(5, zoom5);
+        zooms.put(6, zoom6);
+        zooms.put(7, zoom7);
     }
 
     private static double londp(double dlrlon, double dullon, double width) {
@@ -199,10 +196,10 @@ public class Rasterer {
             }
             int len = curr.img.length();
             int k = 0;
-            Node check = zooms.get(len - 1).get(k);
+            Node check = (Node) zooms.get(len).get(k);
             while (!contained(dullon, dullat, check)) {
                 k++;
-                check = zooms.get(len - 1).get(k);
+                check = (Node) zooms.get(len).get(k);
             }
             first = check;
 
@@ -350,5 +347,18 @@ public class Rasterer {
         return (!(rullon > ullon && rlrlon < lrlon && rullat < ullat && rlrlat > lrlat));
 
     }
+
+    /**public static void main(String[] args){
+     Rasterer r = new Rasterer("img/");
+     Map<String, Double> params = new HashMap<>();
+     params.put("lrlon",-122.2325964987882);
+     params.put("w",633.0);
+     params.put("ullon",-122.23326874429999);
+     params.put("h", 461.0);
+     params.put("ullat", 37.846094782003604);
+     params.put("lrlat", 37.84560520035915);
+     Map<String, Object> results = r.getMapRaster(params);
+     }
+     */
 
 }
