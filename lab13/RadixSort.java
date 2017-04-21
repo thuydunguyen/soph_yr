@@ -30,15 +30,26 @@ public class RadixSort {
      * @param index  the index of the character the method is currently sorting on
      **/
     private static void sortHelper(String[] asciis, int start, int end, int index) {
-        int[] counts = new int[256];
+        int[] counts = new int[257];
         String[] sort = new String[asciis.length];
+        int max = 0;
         for (String str : asciis) {
-            char last = str.charAt(str.length() - index - 1);
-            int num = (int) last;
-            counts[num] += 1;
+            if (str.length() > max) {
+                max = str.length();
+            }
+        }
+        for (String str : asciis) {
+            if ((str.length() + index < max)) {
+                counts[256] += 1;
+            } else {
+                char last = str.charAt(max - index - 1);
+                int num = (int) last;
+                counts[num] += 1;
+            }
+
         }
 
-        int[] place = new int[256];
+        int[] place = new int[257];
         int x = 0;
         int tally = 0;
         for (int c : counts) {
@@ -53,11 +64,16 @@ public class RadixSort {
 
         for (int z = asciis.length - 1; z > -1; z--) {
             String str = asciis[z];
-            char last = str.charAt(str.length() - index - 1);
-            int num = (int) last;
-            int ind = place[num];
-            place[num] = ind - 1;
-            sort[ind - 1] = str;
+            if ((str.length() + index < max)) {
+                sort[place[256] - 1] = str;
+                place[256] = place[256] - 1;
+            } else {
+                char last = str.charAt(max - index - 1);
+                int num = (int) last;
+                int ind = place[num];
+                place[num] = ind - 1;
+                sort[ind - 1] = str;
+            }
         }
 
         String[] copy = asciis;
@@ -66,7 +82,8 @@ public class RadixSort {
             copy[k] = str;
             k++;
         }
-        if (index != 3) {
+
+        if (index < max - 1) {
             sortHelper(asciis, start, end, index + 1);
         }
 
@@ -76,8 +93,10 @@ public class RadixSort {
     public static void main(String[] args) {
         String[] list = new String[]{"able", "cave", "arts", "book", "acts"};
         String[] uns = new String[]{"?????", "??", "???-", "???", "????A", "1", "?", "3?4", "?@", "??", "?b", "?cp???", "?s??k", "???", "q?", ">M", "???O]", "?A?", "???+?", "P?", "? ?", "??I?", "^???"};
-        sortHelper(list, 0, 4, 0);
-        for (String str : uns) {
+        String[] t1 = new String[]{"hello", "success!", "hahahaha", "iloveyou", "heythisdidntwork", "why", "tellme", "123", "!!"};
+        sortHelper(t1, 0, 0, 0);
+
+        for (String str : t1) {
             System.out.println(str);
         }
     }
