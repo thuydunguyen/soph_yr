@@ -109,17 +109,16 @@ public class Router {
         }
     }
 
-    /** public static void main(String[] args) {
-     GraphDB g = new GraphDB("berkeley.osm");
-     double end_lat = 37.845081078529674;
-     double start_lon = -122.28519110469321;
-     double start_lat = 37.84905886746832;
-     double end_lon = -122.28857762092196;
-     LinkedList<Long> path = shortestPath(g, start_lon, start_lat, end_lon, end_lat);
-     System.out.println(path);
+    public static void main(String[] args) {
+        GraphDB g = new GraphDB("berkeley.osm");
+        double end_lat = 37.845081078529674;
+        double start_lon = -122.28519110469321;
+        double start_lat = 37.84905886746832;
+        double end_lon = -122.28857762092196;
+        LinkedList<Long> path = shortestPath(g, start_lon, start_lat, end_lon, end_lat);
+        System.out.println(path);
 
-     }
-     */
+    }
 
 
 }
