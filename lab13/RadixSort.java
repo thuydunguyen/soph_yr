@@ -16,7 +16,8 @@ public class RadixSort {
      * @return String[] the sorted array
      **/
     public static String[] sort(String[] asciis) {
-        return null;
+        sortHelper(asciis, 0, asciis.length, 0);
+        return asciis;
     }
 
     /**
@@ -29,38 +30,58 @@ public class RadixSort {
      * @param index  the index of the character the method is currently sorting on
      **/
     private static void sortHelper(String[] asciis, int start, int end, int index) {
-        int v = start;
-        for (int y = start; y < end + 1; y++) {
-            for (int x = start; x < end + 1; x++) {
-                String str = asciis[v];
-                String str2 = asciis[x];
-                char last = str.charAt(index);
-                int i = (int) last;
-                char next = str2.charAt(index);
-                int j = (int) next;
-                if (i > j) {
-                    asciis[v] = str2;
-                    asciis[x] = str;
-                }
-                v = x;
-            }
-            v = start;
-        }
-        if (index != 0) {
-            sortHelper(asciis, start, end, index - 1);
-        }
+       int[] counts = new int[256];
+       String[] sort = new String[asciis.length];
+       for (String str: asciis) {
+           char last = str.charAt(str.length()-index-1);
+           int num = (int) last;
+           counts[num] += 1;
+       }
+
+       int[] place = new int[256];
+       int x = 0;
+       int tally = 0;
+       for (int c: counts) {
+           if (c == 0) {
+               place[x] = 0;
+           }
+           else {
+               tally = tally+c;
+               place[x] = tally;
+           }
+           x++;
+       }
+
+       for (int z = asciis.length-1; z > -1; z--) {
+           String str = asciis[z];
+           char last = str.charAt(str.length()-index-1);
+           int num = (int) last;
+           int ind = place[num];
+           place[num] = ind-1;
+           sort[ind-1] = str;
+       }
+
+       String[] copy = asciis;
+       int k = 0;
+       for (String str: sort) {
+           copy[k] = str;
+           k++;
+       }
+       if (index!=3) {
+           sortHelper(asciis, start, end, index+1);
+       }
 
     }
 
 
-    /**public static void main(String[] args) {
-     String[] list = new String[]{"able", "cave", "arts", "book", "acts"};
-     sortHelper(list, 0, 4, 3);
-     for (String str : list) {
-     System.out.println(str);
-     }
-     }
-     */
+    public static void main(String[] args) {
+        String[] list = new String[]{"able", "cave", "arts", "book", "acts"};
+        String[] uns = new String[]{"?????", "??", "???-", "???", "????A", "1", "?", "3?4", "?@", "??", "?b", "?cp???", "?s??k", "???", "q?", ">M", "???O]", "?A?", "???+?", "P?", "? ?", "??I?", "^???"};
+        sortHelper(list, 0, 4, 0);
+        for (String str : uns) {
+            System.out.println(str);
+        }
+    }
 
 
 }
