@@ -3,38 +3,64 @@
  *
  * @author Akhil Batra
  * @version 1.4 - April 14, 2016
- *
  **/
-public class RadixSort
-{
+public class RadixSort {
 
     /**
      * Does Radix sort on the passed in array with the following restrictions:
-     *  The array can only have ASCII Strings (sequence of 1 byte characters)
-     *  The sorting is stable and non-destructive
-     *  The Strings can be variable length (all Strings are not constrained to 1 length)
+     * The array can only have ASCII Strings (sequence of 1 byte characters)
+     * The sorting is stable and non-destructive
+     * The Strings can be variable length (all Strings are not constrained to 1 length)
      *
      * @param asciis String[] that needs to be sorted
-     *
      * @return String[] the sorted array
      **/
-    public static String[] sort(String[] asciis)
-    {
+    public static String[] sort(String[] asciis) {
         return null;
     }
 
     /**
      * Radix sort helper function that recursively calls itself to achieve the sorted array
-     *  destructive method that changes the passed in array, asciis
+     * destructive method that changes the passed in array, asciis
      *
      * @param asciis String[] to be sorted
-     * @param start int for where to start sorting in this method (includes String at start)
-     * @param end int for where to end sorting in this method (does not include String at end)
-     * @param index the index of the character the method is currently sorting on
-     *
+     * @param start  int for where to start sorting in this method (includes String at start)
+     * @param end    int for where to end sorting in this method (does not include String at end)
+     * @param index  the index of the character the method is currently sorting on
      **/
-    private static void sortHelper(String[] asciis, int start, int end, int index)
-    {
-        //TODO use if you want to
+    private static void sortHelper(String[] asciis, int start, int end, int index) {
+        int v = start;
+        for (int y = start; y < end + 1; y++) {
+            for (int x = start; x < end + 1; x++) {
+                String str = asciis[v];
+                String str2 = asciis[x];
+                char last = str.charAt(index);
+                int i = (int) last;
+                char next = str2.charAt(index);
+                int j = (int) next;
+                if (i > j) {
+                    asciis[v] = str2;
+                    asciis[x] = str;
+                }
+                v = x;
+            }
+            v = start;
+        }
+        if (index != 0) {
+            sortHelper(asciis, start, end, index - 1);
+        }
+
     }
+
+
+    /**public static void main(String[] args) {
+     String[] list = new String[]{"able", "cave", "arts", "book", "acts"};
+     sortHelper(list, 0, 4, 3);
+     for (String str : list) {
+     System.out.println(str);
+     }
+     }
+     */
+
+
 }
