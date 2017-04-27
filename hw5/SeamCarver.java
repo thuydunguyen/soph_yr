@@ -38,7 +38,7 @@ public class SeamCarver {
     }
 
     public Picture picture() {
-        return pic;
+        return new Picture(pic);
     }
 
     public int width() {
@@ -119,11 +119,13 @@ public class SeamCarver {
     }
 
     public void removeHorizontalSeam(int[] seam) {
-
+        SeamRemover.removeHorizontalSeam(pic, seam);
+        height = pic.height();
     }
 
     public void removeVerticalSeam(int[] seam) {
-        
+        SeamRemover.removeVerticalSeam(pic, seam);
+        width = pic.width();
     }
 
     private Node minNode(Node[] nodes) {
