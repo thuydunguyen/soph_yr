@@ -33,7 +33,7 @@ public class SeamCarver {
         height = picture.height();
         width = picture.width();
         energies = new double[height][width];
-        pic = picture;
+        pic = new Picture(picture);
         energied();
     }
 
@@ -123,9 +123,7 @@ public class SeamCarver {
     }
 
     public void removeVerticalSeam(int[] seam) {
-        for (int v = 0; v < seam.length; v++) {
-
-        }
+        
     }
 
     private Node minNode(Node[] nodes) {
@@ -196,26 +194,5 @@ public class SeamCarver {
         }
         return newarray;
     }
-
-    public static void main(String[] args) {
-        double[][] t = new double[2][4];
-        for (int x = 0; x < 2; x++) {
-            for (int y = 0; y < 4; y++) {
-                t[x][y] = (double) y;
-                System.out.print(y + " ");
-            }
-            System.out.println("");
-        }
-
-        double[][] t1 = transpose(t);
-        for (int x = 0; x < 4; x++) {
-            for (int y = 0; y < 2; y++) {
-                System.out.print(t1[x][y] + " ");
-            }
-            System.out.println("");
-        }
-
-    }
-
 
 }
