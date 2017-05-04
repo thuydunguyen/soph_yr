@@ -64,8 +64,9 @@ public class Boggle {
 
 
     public static void main(String[] args) {
-        System.out.println("longitudes");
-        System.out.println("omniscient");
+        for (String x : args) {
+            System.out.println(x);
+        }
     }
 
 }
