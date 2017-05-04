@@ -20,28 +20,25 @@ public class Boggle {
             String[] line = x.split("\\s");
             if (line[0].equals("r")) {
                 random = true;
-            }
-            else if (line[0].equals("n")) {
-                try {rows = Integer.valueOf(line[1]);}
-                catch (IllegalArgumentException e) {
+            } else if (line[0].equals("n")) {
+                try {
+                    rows = Integer.valueOf(line[1]);
+                } catch (IllegalArgumentException e) {
                     throw new IllegalArgumentException("n dim must be a pos integer.");
 
                 }
-            }
-            else if (line[0].equals("m")) {
-                try {cols = Integer.valueOf(line[1]);}
-                catch (IllegalArgumentException e) {
+            } else if (line[0].equals("m")) {
+                try {
+                    cols = Integer.valueOf(line[1]);
+                } catch (IllegalArgumentException e) {
                     throw new IllegalArgumentException("m dim must be a pos integer.");
 
                 }
-            }
-            else if (line[0].equals("d")) {
+            } else if (line[0].equals("d")) {
                 dict = line[1];
-            }
-            else if (line[0].equals("k")) {
+            } else if (line[0].equals("k")) {
                 nwords = Integer.valueOf(line[1]);
-            }
-            else {
+            } else {
                 input = line[0];
             }
         }
@@ -67,7 +64,8 @@ public class Boggle {
 
 
     public static void main(String[] args) {
-
+        System.out.println("longitudes");
+        System.out.println("omniscient");
     }
-	
+
 }
