@@ -7,7 +7,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.HashSet;
 import java.util.Random;
-
+import java.util.Scanner;
 
 public class Boggle {
     private boolean random = false;
@@ -15,15 +15,15 @@ public class Boggle {
     private int cols = 4;
     private String dict = "words";
     private int nwords = 1;
-    private String input;
-    private String[][] board;
+    private Scanner input;
+    private ArrayList<ArrayList<String>> board;
     private DictHashSet diction;
     private ArrayList<String> words = new ArrayList<>();
     private Comparator<String> comp = new Compares();
     private int maxL;
 
 
-    public Boggle(String[] args) {
+    public Boggle(String[] args, Scanner file) {
         String[] parts = args;
         int ind = 0;
         for (String x : parts) {
@@ -47,46 +47,41 @@ public class Boggle {
                 dict = parts[ind + 1];
             } else if (x.equals("-k")) {
                 nwords = Integer.valueOf(parts[ind + 1]);
-            } else if (x.equals("<")) {
-                input = parts[ind + 1];
             }
             ind++;
         }
+        input = file;
         createBoard();
         createDict();
         for (int x = 0; x < rows; x++) {
             for (int y = 0; y < cols; y++) {
-                generateWords(board[x][y], x, y, new CoordHashSet());
+                generateWords(board.get(x).get(y), x, y, new CoordHashSet());
             }
         }
         Collections.sort(words, comp);
     }
 
     private void createBoard() {
+        board = new ArrayList<>();
         if (random) {
-            board = new String[rows][cols];
             for (int x = 0; x < rows; x++) {
+                ArrayList<String> part = new ArrayList<>();
                 for (int y = 0; y < cols; y++) {
-                    board[x][y] = randomLett();
+                    part.add(randomLett());
                 }
+                board.add(part);
             }
         } else {
-
-            try {
-                List<String> lines = Files.readAllLines(Paths.get(input));
-                rows = lines.size();
-                cols = lines.get(0).length();
-                board = new String[rows][cols];
-                for (int x = 0; x < rows; x++) {
-                    String line = lines.get(x);
-                    for (int ind = 0; ind < cols; ind++) {
-                        board[x][ind] = line.substring(ind, ind + 1);
-                    }
+            while (input.hasNext()) {
+                String line = input.next();
+                cols = line.length();
+                ArrayList<String> part = new ArrayList<>();
+                for (int x = 0; x < cols; x++) {
+                    part.add(line.substring(x, x + 1));
                 }
-            } catch (IOException e) {
-                System.out.println("Not a file");
-
+                board.add(part);
             }
+            rows = board.size();
         }
     }
 
@@ -137,7 +132,7 @@ public class Boggle {
                     nused.add(check);
                 }
                 if (xn >= 0 && yn >= 0 && xn < rows && yn < cols && !nused.containsCoord(coord)) {
-                    generateWords(curr + board[xn][yn], xn, yn, nused);
+                    generateWords(curr + board.get(xn).get(yn), xn, yn, nused);
 
                 }
             }
@@ -192,7 +187,8 @@ public class Boggle {
 
 
     public static void main(String[] args) {
-        Boggle game = new Boggle(args);
+        Scanner scan = new Scanner(System.in);
+        Boggle game = new Boggle(args, scan);
         for (int x = 0; x < game.nwords; x++) {
             System.out.println(game.words.get(x));
             if (x == game.words.size() - 1) {
