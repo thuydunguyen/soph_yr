@@ -1,9 +1,13 @@
-import javafx.collections.transformation.SortedList;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.HashSet;
+import java.util.Random;
+
 
 public class Boggle {
     private boolean random = false;
@@ -13,7 +17,7 @@ public class Boggle {
     private int nwords = 1;
     private String input;
     private String[][] board;
-    private HashSet diction;
+    private DictHashSet diction;
     private ArrayList<String> words = new ArrayList<>();
     private Comparator<String> comp = new Compares();
     private int maxL;
@@ -52,7 +56,7 @@ public class Boggle {
         createDict();
         for (int x = 0; x < rows; x++) {
             for (int y = 0; y < cols; y++) {
-                generateWords(board[x][y], x, y, false);
+                generateWords(board[x][y], x, y, new CoordHashSet());
             }
         }
         Collections.sort(words, comp);
@@ -81,7 +85,7 @@ public class Boggle {
                 }
             } catch (IOException e) {
                 System.out.println("Not a file");
-                Scanner token = new Scanner(input);
+
             }
         }
     }
@@ -94,7 +98,6 @@ public class Boggle {
         neigh.add(new int[]{x - 1, y + 1});
         neigh.add(new int[]{x, y - 1});
         neigh.add(new int[]{x, y + 1});
-        neigh.add(new int[]{x, y});
         neigh.add(new int[]{x + 1, y - 1});
         neigh.add(new int[]{x + 1, y});
         neigh.add(new int[]{x + 1, y + 1});
@@ -102,7 +105,7 @@ public class Boggle {
     }
 
     private void createDict() {
-        diction = new HashSet();
+        diction = new DictHashSet();
         maxL = 0;
         try {
             List<String> lines = Files.readAllLines(Paths.get(dict));
@@ -117,30 +120,30 @@ public class Boggle {
         }
     }
 
-    private void generateWords(String curr, int x, int y, boolean prev) {
+    private void generateWords(String curr, int x, int y, CoordHashSet used) {
         if (diction.contains(curr)) {
             if (!words.contains(curr)) {
                 words.add(curr);
             }
-            prev = true;
         }
-        if ((prev == true) && (!diction.contains(curr))) {
-            return;
-        }
-        if (curr.length() >= maxL) {
-            return;
-        }
-        ArrayList<int[]> neighbors = getNeigh(x, y);
+        if (diction.partMatch(curr)) {
+            ArrayList<int[]> neighbors = getNeigh(x, y);
+            used.add(new int[]{x, y});
+            for (int[] coord : neighbors) {
+                int xn = coord[0];
+                int yn = coord[1];
+                CoordHashSet nused = new CoordHashSet();
+                for (int[] check : used) {
+                    nused.add(check);
+                }
+                if (xn >= 0 && yn >= 0 && xn < rows && yn < cols && !nused.containsCoord(coord)) {
+                    generateWords(curr + board[xn][yn], xn, yn, nused);
 
-        for (int[] coord : neighbors) {
-            int xn = coord[0];
-            int yn = coord[1];
-            if (xn >= 0 && yn >= 0 && xn < rows && yn < cols) {
-                generateWords(curr + board[xn][yn], xn, yn, prev);
-
+                }
             }
+        } else {
+            return;
         }
-
 
     }
 
@@ -165,16 +168,38 @@ public class Boggle {
         }
     }
 
+    private class CoordHashSet extends HashSet<int[]> {
+        public boolean containsCoord(int[] Coord) {
+            for (int[] coords : this) {
+                if (coords[0] == Coord[0] && coords[1] == Coord[1]) {
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
+
+    private class DictHashSet extends HashSet<String> {
+        public boolean partMatch(String match) {
+            for (String x : this) {
+                if (x.startsWith(match)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
+
 
     public static void main(String[] args) {
-        String[] test = new String[]{"-k", "7", "<", "testBoggle"};
-        Boggle game = new Boggle(test);
+        Boggle game = new Boggle(args);
         for (int x = 0; x < game.nwords; x++) {
             System.out.println(game.words.get(x));
-            if (x == game.words.size()-1) {
+            if (x == game.words.size() - 1) {
                 break;
             }
         }
+
     }
 
 }
