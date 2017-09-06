@@ -1,7 +1,0 @@
-a int,b int
-NaN,4
-NaN,NaN
-NaN,NOVALUE
-NOVALUE,NOVALUE
--2,3
-0,NOVALUE
